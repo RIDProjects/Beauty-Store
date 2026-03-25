@@ -12,18 +12,16 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addItem, openCart } = useCartStore();
+  const { addItem } = useCartStore();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     addItem(product);
-    openCart();
     toast.success(`${product.name} agregado al carrito 🛍️`);
   };
 
   return (
     <Link href={`/shop/products/${product.id}`} className="group card hover:shadow-md transition-all duration-300">
-      {/* Image */}
       <div className="relative aspect-[3/4] bg-emerald-50 overflow-hidden">
         <Image
           src={getImageUrl(product.primary_image)}
@@ -33,7 +31,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.jpg'; }}
         />
 
-        {/* Wishlist button (UI only) */}
         <button
           onClick={(e) => e.preventDefault()}
           className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-emerald-50"
@@ -41,14 +38,12 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Heart className="w-4 h-4 text-emerald-400" />
         </button>
 
-        {/* Category badge */}
         {product.category_name && (
           <div className="absolute top-3 left-3">
             <span className="badge-emerald text-xs">{product.category_name}</span>
           </div>
         )}
 
-        {/* Add to cart overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
             onClick={handleAddToCart}
@@ -60,7 +55,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
-      {/* Info */}
       <div className="p-4">
         <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-emerald-600 transition-colors">
           {product.name}

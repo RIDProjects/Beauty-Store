@@ -41,7 +41,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Logo */}
       <div className="p-6 border-b border-emerald-100">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-sage-600 rounded-full flex items-center justify-center">
@@ -54,7 +53,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </Link>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           const active = isActive(item.href, item.exact);
@@ -77,7 +75,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         })}
       </nav>
 
-      {/* User */}
       <div className="p-4 border-t border-emerald-100">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -101,12 +98,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:flex-col w-64 bg-white border-r border-gray-100 shadow-sm">
         <SidebarContent />
       </aside>
 
-      {/* Mobile Sidebar */}
       {sidebarOpen && (
         <>
           <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
@@ -116,9 +111,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </>
       )}
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top bar */}
         <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center gap-4">
           <button
             onClick={() => setSidebarOpen(true)}

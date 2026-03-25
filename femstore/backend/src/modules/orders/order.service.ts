@@ -1,6 +1,6 @@
 import { query, getClient } from '../../config/database';
-import { Order, OrderStatus } from '../../common/types';
-import { generateOrderNumber, paginate, Pagination } from '../../common/helpers';
+import { Order, OrderStatus, Pagination } from '../../common/types';
+import { generateOrderNumber, paginate } from '../../common/helpers';
 import { WhatsAppService } from '../whatsapp/whatsapp.service';
 
 export interface CreateOrderDto {

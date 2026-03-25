@@ -1,6 +1,6 @@
 import { query } from '../../config/database';
-import { Product } from '../../common/types';
-import { slugify, paginate, Pagination } from '../../common/helpers';
+import { Product, Pagination } from '../../common/types';
+import { slugify, paginate } from '../../common/helpers';
 
 export interface CreateProductDto {
   name: string;

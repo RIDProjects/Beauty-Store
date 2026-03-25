@@ -108,9 +108,6 @@ export default function AdminOrdersPage() {
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="font-mono font-bold text-emerald-600 text-sm">#{order.order_number}</span>
                       <span className={statusConf.class}>{statusConf.label}</span>
-                      {order.whatsapp_sent && (
-                        <span className="badge bg-green-50 text-green-600 text-xs">📱 WA enviado</span>
-                      )}
                     </div>
                     <p className="text-sm font-medium text-gray-800">{order.customer_name}</p>
                     <p className="text-xs text-gray-400">{order.customer_phone} • {new Date(order.created_at).toLocaleDateString('es-ES')}</p>

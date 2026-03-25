@@ -17,7 +17,7 @@ export default function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const { addItem, openCart } = useCartStore();
+  const { addItem } = useCartStore();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -37,7 +37,6 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (!product) return;
     for (let i = 0; i < quantity; i++) addItem(product);
-    openCart();
     toast.success(`${product.name} agregado al carrito 🛍️`);
   };
 
@@ -69,8 +68,7 @@ export default function ProductDetailPage() {
     <>
       <Header />
       <main className="min-h-screen bg-gray-50">
-        <div className="page-container py-8">
-          {/* Breadcrumb */}
+          <div className="page-container py-8">
           <button
             onClick={() => router.back()}
             className="flex items-center gap-2 text-gray-500 hover:text-emerald-500 transition-colors mb-6 text-sm"
@@ -80,7 +78,6 @@ export default function ProductDetailPage() {
           </button>
 
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
-            {/* Images */}
             <div className="space-y-3">
               <div className="relative aspect-square rounded-2xl overflow-hidden bg-emerald-50">
                 <Image
@@ -91,7 +88,6 @@ export default function ProductDetailPage() {
                   onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.jpg'; }}
                 />
 
-                {/* Navigation arrows */}
                 {images.length > 1 && (
                   <>
                     <button
@@ -110,7 +106,6 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              {/* Thumbnails */}
               {images.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto scrollbar-thin pb-1">
                   {images.map((img, idx) => (
@@ -134,7 +129,6 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Product Info */}
             <div className="space-y-6">
               {product.category_name && (
                 <span className="badge-emerald">{product.category_name}</span>
@@ -160,7 +154,6 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Quantity */}
               <div>
                 <label className="label">Cantidad</label>
                 <div className="flex items-center gap-3">
@@ -180,7 +173,6 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex gap-3">
                 <button onClick={handleAddToCart} className="btn-primary flex-1 flex items-center justify-center gap-2">
                   <ShoppingBag className="w-5 h-5" />
@@ -191,7 +183,6 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Trust badges */}
               <div className="bg-emerald-50 rounded-xl p-4 space-y-2">
                 {['Calidad garantizada en cada producto', 'Entrega a domicilio disponible', 'Atención personalizada'].map((text) => (
                   <div key={text} className="flex items-center gap-2 text-sm text-gray-700">

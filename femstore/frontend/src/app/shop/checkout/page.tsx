@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 import { CheckoutFormData, ApiResponse, Order } from '@/types';
 import api from '@/lib/api';
+import { storeConfig } from '@/lib/config';
 import toast from 'react-hot-toast';
 
 type Step = 'auth-check' | 'form' | 'success';
@@ -31,12 +32,30 @@ export default function CheckoutPage() {
   const total = getTotalPrice();
 
   useEffect(() => {
+    if (step === 'success' && placedOrder) {
+      const itemsList = placedOrder.items
+        ?.map((item) => `• ${item.product_name} x${item.quantity} = $${Number(item.subtotal).toFixed(2)}`)
+        .join('\n');
+      
+      const whatsAppMessage = `🛍️ *Nuevo Pedido - #${placedOrder.order_number}*\n\n` +
+        `👤 *Cliente:* ${placedOrder.customer_name}\n` +
+        `📱 *Teléfono:* ${placedOrder.customer_phone}\n\n` +
+        `🛒 *Productos:*\n${itemsList}\n\n` +
+        `💰 *Total: $${Number(placedOrder.total).toFixed(2)}*\n` +
+        `🚚 *Entrega:* ${placedOrder.delivery_type === 'delivery' ? `A domicilio: ${placedOrder.delivery_address}` : 'Retiro en tienda'}`;
+      
+      const whatsAppLink = `https://wa.me/${storeConfig.vendorWhatsApp}?text=${encodeURIComponent(whatsAppMessage)}`;
+      
+      window.location.href = whatsAppLink;
+    }
+  }, [step, placedOrder]);
+
+  useEffect(() => {
     if (!isInitialized) return;
     if (items.length === 0 && step !== 'success') {
       router.push('/shop/products');
       return;
     }
-    // Pre-fill form if user is logged in
     if (user) {
       setForm((f) => ({
         ...f,
@@ -76,8 +95,8 @@ export default function CheckoutPage() {
       const { data } = await api.post<ApiResponse<Order>>('/orders', payload);
       setPlacedOrder(data.data!);
       clearCart();
+      localStorage.setItem('justCompletedOrder', 'true');
       setStep('success');
-      toast.success('¡Pedido realizado con éxito! 🎉');
     } catch (error: unknown) {
       const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Error al procesar el pedido';
       toast.error(msg);
@@ -86,7 +105,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // ─── Auth Gate ─────────────────────────────────────────────
   if (step === 'auth-check') {
     return (
       <>
@@ -118,7 +136,6 @@ export default function CheckoutPage() {
     );
   }
 
-  // ─── Success ────────────────────────────────────────────────
   if (step === 'success' && placedOrder) {
     return (
       <>
@@ -129,37 +146,21 @@ export default function CheckoutPage() {
               <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Pedido confirmado! 🎉</h2>
-            <p className="text-gray-500 mb-2">Tu pedido ha sido recibido y notificado al vendedor por WhatsApp.</p>
-            <div className="bg-emerald-50 rounded-xl p-4 my-6 text-left">
-              <p className="text-sm font-semibold text-gray-700 mb-3">Resumen del pedido</p>
-              <p className="text-xs text-gray-500 mb-1">Número de orden</p>
-              <p className="font-mono font-bold text-emerald-600 text-lg mb-3">#{placedOrder.order_number}</p>
-              <div className="space-y-1">
-                {placedOrder.items?.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm text-gray-700">
-                    <span>{item.product_name} x{item.quantity}</span>
-                    <span>${item.subtotal.toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="border-t border-emerald-200 mt-3 pt-3 flex justify-between font-bold text-gray-900">
-                <span>Total</span>
-                <span className="text-emerald-600">${placedOrder.total.toFixed(2)}</span>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mb-6">
-              📱 Se ha enviado una notificación al vendedor con los detalles de tu pedido. Te contactarán pronto.
+            <p className="text-gray-500 mb-4">Redirigiendo a WhatsApp...</p>
+            <p className="text-sm text-gray-400">
+              Si no se abre WhatsApp, hacé click en el botón de abajo
             </p>
-            <Link href="/shop/products" className="btn-primary block text-center">
-              Seguir comprando
-            </Link>
+            <div className="mt-6">
+              <Link href="/shop/products" className="btn-secondary">
+                Volver a la tienda
+              </Link>
+            </div>
           </div>
         </div>
       </>
     );
   }
 
-  // ─── Checkout Form ──────────────────────────────────────────
   return (
     <>
       <Header />
@@ -168,10 +169,8 @@ export default function CheckoutPage() {
           <h1 className="section-title mb-8">Finalizar compra</h1>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Form */}
             <div className="lg:col-span-2">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Customer info */}
                 <div className="card p-6">
                   <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <User className="w-5 h-5 text-emerald-500" />
@@ -216,7 +215,6 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* Delivery */}
                 <div className="card p-6">
                   <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Package className="w-5 h-5 text-emerald-500" />
@@ -261,7 +259,6 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                {/* Notes */}
                 <div className="card p-6">
                   <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <FileText className="w-5 h-5 text-emerald-500" />
@@ -282,7 +279,6 @@ export default function CheckoutPage() {
               </form>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:col-span-1">
               <div className="card p-6 sticky top-20">
                 <h2 className="font-bold text-gray-900 mb-4">Resumen del pedido</h2>
@@ -291,10 +287,10 @@ export default function CheckoutPage() {
                     <div key={item.product_id} className="flex justify-between items-start text-sm">
                       <div className="flex-1 min-w-0 pr-2">
                         <p className="text-gray-800 font-medium truncate">{item.product_name}</p>
-                        <p className="text-gray-500 text-xs">x{item.quantity} × ${item.product_price.toFixed(2)}</p>
+                        <p className="text-gray-500 text-xs">x{item.quantity} × ${Number(item.product_price).toFixed(2)}</p>
                       </div>
                       <span className="font-medium text-gray-900 flex-shrink-0">
-                        ${(item.product_price * item.quantity).toFixed(2)}
+                        ${(Number(item.product_price) * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
