@@ -1,0 +1,15 @@
+{
+  "name": "femstore",
+  "version": "1.0.0",
+  "description": "FemStore - eCommerce Femenino Completo",
+  "private": true,
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "db:setup": "psql femstore < backend/src/database/migrations/001_initial_schema.sql",
+    "setup": "npm run install:all && echo '\\n✅ Instalación completa. Ahora ejecuta: npm run db:setup'"
+  }
+}

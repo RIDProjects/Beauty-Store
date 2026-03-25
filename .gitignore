@@ -1,0 +1,7 @@
+/femstore/backend/node_modules/
+/femstore/frontend/node_modules/
+/femstore/frontend/.next/
+/.idea/
+/.claude/
+/femstore/frontend/.env
+/femstore/backend/.env
