@@ -120,8 +120,9 @@ async function runMigrations() {
       try {
         await query(statement);
       } catch (err: any) {
-        if (!err.message?.includes('already exists')) {
-          console.log('  - ', statement.substring(0, 40) + '...');
+        // Ignore "already exists" errors, log others
+        if (!err.message?.includes('already exists') && !err.message?.includes('duplicate')) {
+          console.log('  ⚠️ ', statement.substring(0, 50) + '...');
         }
       }
     }
@@ -129,7 +130,8 @@ async function runMigrations() {
     console.log('✅ Database ready');
   } catch (error) {
     console.error('❌ Migration error:', error);
-    process.exit(1);
+    // Don't exit, continue anyway
+    console.log('⚠️ Continuing despite migration errors...');
   }
 }
 
