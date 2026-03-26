@@ -19,12 +19,46 @@ const PORT = process.env.PORT || 4000;
 
 // ─── Security & Middleware ────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow any localhost
+    if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+      callback(null, true);
+      return;
+    }
+
+    // Allow any Vercel deployment (any *.vercel.app)
+    if (origin && (origin.endsWith('.vercel.app') || origin.endsWith('.vercel.sh'))) {
+      callback(null, true);
+      return;
+    }
+
+    // Allow specific configured origins
+    const allowedOrigins = [
+      'https://beauty-store-ten.vercel.app',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    // In development, allow everything
+    if (process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'), false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
