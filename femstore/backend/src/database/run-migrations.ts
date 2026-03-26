@@ -3,7 +3,7 @@ import { query } from '../config/database';
 const MIGRATION_SQL = `
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS public.users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS public.categories (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(100) NOT NULL,
   slug VARCHAR(100) UNIQUE NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS categories (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS public.products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name VARCHAR(200) NOT NULL,
   slug VARCHAR(200) UNIQUE NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS products (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS product_images (
+CREATE TABLE IF NOT EXISTS public.product_images (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   url VARCHAR(500) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS product_images (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS orders (
+CREATE TABLE IF NOT EXISTS public.orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   order_number VARCHAR(20) UNIQUE NOT NULL,
   user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS order_items (
+CREATE TABLE IF NOT EXISTS public.order_items (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   product_id UUID REFERENCES products(id) ON DELETE SET NULL,
@@ -78,13 +78,13 @@ CREATE TABLE IF NOT EXISTS order_items (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
-CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
-CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
-CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
-CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
+CREATE INDEX IF NOT EXISTS idx_products_active ON public.products(is_active);
+CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON public.orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
+CREATE INDEX IF NOT EXISTS idx_order_items_order ON public.order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -94,44 +94,82 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
-CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories
+CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON public.categories
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
+CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON public.products
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
+CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON public.orders
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 `;
 
-async function runMigrations() {
-  console.log('🔄 Running migrations...');
-  
+// Helper to mask password in connection string
+function maskDbUrl(url: string | undefined): string {
+  if (!url) return 'undefined';
   try {
+    const match = url.match(/:\/\/([^:]+):([^@]+)@/);
+    if (match) {
+      return url.replace(match[2], '****');
+    }
+  } catch {}
+  return url;
+}
+
+async function runMigrations() {
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_DEPLOYMENT_ID;
+  
+  console.log('\n🗄️  DATABASE MIGRATION');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`📍 Environment: ${isProduction ? 'PRODUCTION (Railway)' : 'development'}`);
+  console.log(`🔗 Database URL: ${maskDbUrl(process.env.DATABASE_URL)}`);
+  console.log(`🔄 Running migrations...\n`);
+
+  try {
+    // First, test connection
+    const testResult = await query('SELECT 1 as test');
+    console.log('✅ Database connection successful\n');
+
     const statements = MIGRATION_SQL
       .split(';')
       .map(s => s.trim())
       .filter(s => s.length > 0 && !s.startsWith('--'));
-    
+
+    let successCount = 0;
+    let skipCount = 0;
+    let errorCount = 0;
+
     for (const statement of statements) {
+      const statementType = statement.match(/^(CREATE TABLE|CREATE INDEX|CREATE EXTENSION|CREATE TRIGGER|CREATE OR REPLACE)/)?.[1] || 'STATEMENT';
+      
       try {
         await query(statement);
+        console.log(`  ✅ ${statementType}: ${statement.substring(0, 45).replace(/\n/g, ' ')}...`);
+        successCount++;
       } catch (err: any) {
-        // Ignore "already exists" errors, log others
-        if (!err.message?.includes('already exists') && !err.message?.includes('duplicate')) {
-          console.log('  ⚠️ ', statement.substring(0, 50) + '...');
+        if (err.message?.includes('already exists') || err.message?.includes('duplicate')) {
+          console.log(`  ⏭️  ${statementType}: already exists, skipping`);
+          skipCount++;
+        } else {
+          console.log(`  ❌ ${statementType}: ${err.message?.substring(0, 80) || 'Unknown error'}`);
+          errorCount++;
         }
       }
     }
-    
-    console.log('✅ Database ready');
-  } catch (error) {
-    console.error('❌ Migration error:', error);
-    // Don't exit, continue anyway
-    console.log('⚠️ Continuing despite migration errors...');
+
+    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log(`📊 Migration Summary: ${successCount} created, ${skipCount} skipped, ${errorCount} errors`);
+    console.log('✅ Database ready\n');
+
+  } catch (error: any) {
+    console.error('\n❌ MIGRATION ERROR:');
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.error(`🔴 ${error.message || error}`);
+    console.error(`🔴 Code: ${error.code || 'unknown'}`);
+    console.error('\n⚠️  Continuing anyway - some tables may already exist...\n');
   }
 }
 

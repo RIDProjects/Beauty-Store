@@ -13,19 +13,19 @@ async function createAdmin() {
 
   try {
     // Verificar si ya existe
-    const existing = await query('SELECT id FROM users WHERE email = $1', [email]);
+    const existing = await query('SELECT id FROM public.users WHERE email = $1', [email]);
 
     if (existing.rows.length > 0) {
       // Actualizar password y role
       await query(
-        'UPDATE users SET password = $1, role = $2 WHERE email = $3',
+        'UPDATE public.users SET password = $1, role = $2 WHERE email = $3',
         [hashedPassword, 'admin', email]
       );
       console.log('✅ Admin actualizado');
     } else {
       // Crear nuevo
       await query(
-        `INSERT INTO users (name, email, password, role)
+        `INSERT INTO public.users (name, email, password, role)
          VALUES ($1, $2, $3, $4)`,
         [name, email, hashedPassword, 'admin']
       );
@@ -37,11 +37,11 @@ async function createAdmin() {
     const customerPassword = 'Customer123!';
     const customerHashed = await bcrypt.hash(customerPassword, 12);
 
-    const customerExisting = await query('SELECT id FROM users WHERE email = $1', [customerEmail]);
+    const customerExisting = await query('SELECT id FROM public.users WHERE email = $1', [customerEmail]);
 
     if (customerExisting.rows.length === 0) {
       await query(
-        `INSERT INTO users (name, email, password, role)
+        `INSERT INTO public.users (name, email, password, role)
          VALUES ($1, $2, $3, $4)`,
         ['Maria Rodriguez', customerEmail, customerHashed, 'customer']
       );
