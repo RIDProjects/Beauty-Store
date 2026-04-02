@@ -2,9 +2,28 @@
 
 import { useThemeStore } from '@/store/theme.store';
 import { Moon, Sun } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function ThemeToggle() {
   const { isDark, toggle } = useThemeStore();
+  const [mounted, setMounted] = useState(false);
+
+  // Solo mostrar después de hydrate para evitar hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Renderizar un placeholder invisible durante SSR/hydration
+    return (
+      <button
+        className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+        aria-label="Toggle theme"
+      >
+        <div className="w-5 h-5" />
+      </button>
+    );
+  }
 
   return (
     <button
