@@ -24,7 +24,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-hero dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -36,8 +36,8 @@ export default function LoginPage() {
               Vainy Bliss
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Iniciar sesión</h1>
-          <p className="text-gray-500 mt-1">Bienvenida de vuelta 🌸</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Iniciar sesión</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Bienvenida de vuelta 🌸</p>
         </div>
 
         <div className="card p-8">
@@ -68,7 +68,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -80,9 +80,9 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-600 mt-6">
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
             ¿No tienes cuenta?{' '}
-            <Link href="/auth/register" className="text-blush-600 font-semibold hover:underline">
+            <Link href="/auth/register" className="text-blush-600 dark:text-blush-400 font-semibold hover:underline">
               Regístrate gratis
             </Link>
           </p>
