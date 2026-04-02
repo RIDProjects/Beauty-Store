@@ -45,26 +45,34 @@ export class AuthService {
     const encryptedName = encrypt(dto.name);
 
     // Create user with encrypted fields (email y phone ya encriptados, name encriptamos)
-    const result = await query(
-      `INSERT INTO users (name, email, password, phone, role)
-       VALUES ($1, $2, $3, $4, 'customer')
-       RETURNING id, name, email, phone, role, is_active, created_at, updated_at`,
-      [encryptedName, dto.email, hashedPassword, dto.phone || null]
-    );
+    try {
+      const result = await query(
+        `INSERT INTO users (name, email, password, phone, role)
+         VALUES ($1, $2, $3, $4, 'customer')
+         RETURNING id, name, email, phone, role, is_active, created_at, updated_at`,
+        [encryptedName, dto.email, hashedPassword, dto.phone || null]
+      );
 
-    const user = result.rows[0] as Omit<User, 'password'>;
-    
-    // Desencriptar para respuesta
-    const decryptedUser = {
-      ...user,
-      name: decrypt(user.name),
-      email: decrypt(user.email),
-      phone: user.phone ? decrypt(user.phone) : undefined,
-    };
-    
-    const token = this.generateToken(user as User);
+      const user = result.rows[0] as Omit<User, 'password'>;
+      
+      // Desencriptar para respuesta
+      const decryptedUser = {
+        ...user,
+        name: decrypt(user.name),
+        email: decrypt(user.email),
+        phone: user.phone ? decrypt(user.phone) : undefined,
+      };
+      
+      const token = this.generateToken(user as User);
 
-    return { user: decryptedUser, token };
+      return { user: decryptedUser, token };
+    } catch (error: any) {
+      // PostgreSQL unique violation (error code 23505)
+      if (error.code === '23505') {
+        throw new Error('Este email ya está registrado');
+      }
+      throw error;
+    }
   }
 
   async login(dto: LoginDto): Promise<AuthResult> {
