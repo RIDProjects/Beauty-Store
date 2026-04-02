@@ -40,15 +40,15 @@ export const encryptFields = <T extends Record<string, any>>(
   data: T,
   fieldsToEncrypt: string[]
 ): T => {
-  const encrypted = { ...data };
+  const encrypted: Record<string, any> = { ...data };
   
   for (const field of fieldsToEncrypt) {
     if (encrypted[field] && typeof encrypted[field] === 'string' && encrypted[field]) {
-      encrypted[field] = encrypt(encrypted[field] as string) as T[Extract<keyof T, string>];
+      encrypted[field] = encrypt(encrypted[field] as string);
     }
   }
   
-  return encrypted;
+  return encrypted as T;
 };
 
 /**
@@ -58,15 +58,15 @@ export const decryptFields = <T extends Record<string, any>>(
   data: T,
   fieldsToDecrypt: string[]
 ): T => {
-  const decrypted = { ...data };
+  const decrypted: Record<string, any> = { ...data };
   
   for (const field of fieldsToDecrypt) {
     if (decrypted[field] && typeof decrypted[field] === 'string') {
-      decrypted[field] = decrypt(decrypted[field] as string) as T[Extract<keyof T, string>];
+      decrypted[field] = decrypt(decrypted[field] as string);
     }
   }
   
-  return decrypted;
+  return decrypted as T;
 };
 
 /**
