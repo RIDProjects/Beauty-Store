@@ -97,12 +97,18 @@ export class OrderService {
 
       const order = orderResult.rows[0] as Order;
 
-      // Create order items
+      // Create order items and update sales count
       for (const item of resolvedItems) {
         await client.query(
           `INSERT INTO order_items (order_id, product_id, product_name, product_price, quantity, subtotal)
            VALUES ($1, $2, $3, $4, $5, $6)`,
           [order.id, item.product_id, item.product_name, item.product_price, item.quantity, item.subtotal]
+        );
+        
+        // Update product sales count
+        await client.query(
+          `UPDATE products SET sales_count = sales_count + $1 WHERE id = $2`,
+          [item.quantity, item.product_id]
         );
       }
 

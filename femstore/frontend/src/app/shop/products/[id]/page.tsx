@@ -71,7 +71,7 @@ export default function ProductDetailPage() {
           <div className="page-container py-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-500 hover:text-emerald-500 transition-colors mb-6 text-sm"
+            className="flex items-center gap-2 text-gray-500 hover:text-blush-500 transition-colors mb-6 text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver
@@ -79,7 +79,7 @@ export default function ProductDetailPage() {
 
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
             <div className="space-y-3">
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-emerald-50">
+              <div className="relative aspect-square rounded-2xl overflow-hidden bg-blush-50">
                 <Image
                   src={getImageUrl(images[activeImage]?.url)}
                   alt={product.name}
@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
                       key={img.id}
                       onClick={() => setActiveImage(idx)}
                       className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                        activeImage === idx ? 'border-emerald-500' : 'border-transparent'
+                        activeImage === idx ? 'border-blush-500' : 'border-transparent'
                       }`}
                     >
                       <Image
@@ -131,7 +131,7 @@ export default function ProductDetailPage() {
 
             <div className="space-y-6">
               {product.category_name && (
-                <span className="badge-emerald">{product.category_name}</span>
+                <span className="badge-blush">{product.category_name}</span>
               )}
 
               <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
@@ -143,7 +143,7 @@ export default function ProductDetailPage() {
                 <span className="text-sm text-gray-500 ml-1">Producto destacado</span>
               </div>
 
-              <div className="text-4xl font-bold text-emerald-600">
+              <div className="text-4xl font-bold text-blush-600">
                 ${Number(product.price).toFixed(2)}
               </div>
 
@@ -159,14 +159,14 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-10 h-10 rounded-xl border-2 border-gray-200 hover:border-emerald-300 flex items-center justify-center font-bold text-gray-600 transition-colors"
+                    className="w-10 h-10 rounded-xl border-2 border-gray-200 hover:border-blush-300 flex items-center justify-center font-bold text-gray-600 transition-colors"
                   >
                     −
                   </button>
                   <span className="w-10 text-center font-bold text-lg">{quantity}</span>
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="w-10 h-10 rounded-xl border-2 border-gray-200 hover:border-emerald-300 flex items-center justify-center font-bold text-gray-600 transition-colors"
+                    className="w-10 h-10 rounded-xl border-2 border-gray-200 hover:border-blush-300 flex items-center justify-center font-bold text-gray-600 transition-colors"
                   >
                     +
                   </button>
@@ -183,11 +183,11 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              <div className="bg-emerald-50 rounded-xl p-4 space-y-2">
+              <div className="bg-blush-50 rounded-xl p-4 space-y-2">
                 {['Calidad garantizada en cada producto', 'Entrega a domicilio disponible', 'Atención personalizada'].map((text) => (
                   <div key={text} className="flex items-center gap-2 text-sm text-gray-700">
-                    <div className="w-4 h-4 rounded-full bg-emerald-200 flex items-center justify-center flex-shrink-0">
-                      <span className="text-emerald-700 text-xs">✓</span>
+                    <div className="w-4 h-4 rounded-full bg-blush-200 flex items-center justify-center flex-shrink-0">
+                      <span className="text-blush-700 text-xs">✓</span>
                     </div>
                     {text}
                   </div>

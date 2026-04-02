@@ -32,7 +32,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-sage-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-blush-400 to-sage-600 rounded-full flex items-center justify-center">
               <Heart className="w-5 h-5 text-white fill-white" />
             </div>
             <span className="text-2xl font-bold text-gradient" style={{ fontFamily: 'Playfair Display, serif' }}>
@@ -109,7 +109,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-gray-600 mt-6">
             ¿Ya tienes cuenta?{' '}
-            <Link href="/auth/login" className="text-emerald-600 font-semibold hover:underline">
+            <Link href="/auth/login" className="text-blush-600 font-semibold hover:underline">
               Inicia sesión
             </Link>
           </p>

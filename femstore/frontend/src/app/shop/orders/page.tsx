@@ -59,7 +59,7 @@ export default function MyOrdersPage() {
             <button 
               onClick={handleRefresh}
               disabled={isLoading}
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+              className="text-sm text-blush-600 hover:text-blush-700 font-medium"
             >
               {isLoading ? 'Actualizando...' : '🔄 Actualizar'}
             </button>
@@ -76,7 +76,7 @@ export default function MyOrdersPage() {
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-20">
-              <Package className="w-14 h-14 mx-auto text-emerald-200 mb-4" />
+              <Package className="w-14 h-14 mx-auto text-blush-200 mb-4" />
               <p className="text-gray-500 font-medium">Aún no tienes pedidos</p>
               <p className="text-gray-400 text-sm mt-1">¡Explora nuestra tienda y haz tu primer pedido!</p>
               <button onClick={() => router.push('/shop/products')} className="btn-primary mt-6">
@@ -98,7 +98,7 @@ export default function MyOrdersPage() {
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <p className="font-mono font-bold text-emerald-600">#{order.order_number}</p>
+                          <p className="font-mono font-bold text-blush-600">#{order.order_number}</p>
                           <p className="text-xs text-gray-400 mt-0.5">
                             {new Date(order.created_at).toLocaleDateString('es-ES', { 
                               year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
@@ -155,7 +155,7 @@ export default function MyOrdersPage() {
                             href={getWhatsAppLink(order)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors"
+                            className="flex items-center justify-center gap-2 w-full py-2.5 bg-blush-500 hover:bg-blush-600 text-white rounded-xl font-medium transition-colors"
                           >
                             <MessageCircle className="w-4 h-4" />
                             Consultar por WhatsApp

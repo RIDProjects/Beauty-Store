@@ -88,7 +88,7 @@ export default function ProductsPage() {
                   onClick={() => setSelectedCategory('')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     !selectedCategory
-                      ? 'bg-emerald-500 text-white shadow-sm'
+                      ? 'bg-blush-500 text-white shadow-sm'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -100,7 +100,7 @@ export default function ProductsPage() {
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       selectedCategory === cat.id
-                        ? 'bg-emerald-500 text-white shadow-sm'
+                        ? 'bg-blush-500 text-white shadow-sm'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -131,11 +131,11 @@ export default function ProductsPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="card animate-pulse">
-                  <div className="aspect-[3/4] bg-emerald-50" />
+                  <div className="aspect-[3/4] bg-blush-50" />
                   <div className="p-4 space-y-2">
                     <div className="h-4 bg-gray-100 rounded" />
                     <div className="h-3 bg-gray-100 rounded w-3/4" />
-                    <div className="h-5 bg-emerald-50 rounded w-1/3 mt-3" />
+                    <div className="h-5 bg-blush-50 rounded w-1/3 mt-3" />
                   </div>
                 </div>
               ))}
@@ -173,7 +173,7 @@ export default function ProductsPage() {
             </>
           ) : (
             <div className="text-center py-24 text-gray-400">
-              <Search className="w-12 h-12 mx-auto mb-3 text-emerald-200" />
+              <Search className="w-12 h-12 mx-auto mb-3 text-blush-200" />
               <p className="font-medium">No se encontraron productos</p>
               <p className="text-sm mt-1">Intenta con otros filtros</p>
               {hasFilters && (

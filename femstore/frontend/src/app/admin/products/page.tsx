@@ -167,7 +167,7 @@ export default function AdminProductsPage() {
               </select>
             </div>
             <div className="flex items-center gap-3">
-              <input type="checkbox" id="is_active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-emerald-500" />
+              <input type="checkbox" id="is_active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-blush-500" />
               <label htmlFor="is_active" className="text-sm text-gray-700 cursor-pointer">Producto activo (visible en la tienda)</label>
             </div>
           </div>
@@ -176,15 +176,15 @@ export default function AdminProductsPage() {
           {mode === 'edit' && editingProduct && (
             <div className="card p-6">
               <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-emerald-500" />
+                <ImageIcon className="w-4 h-4 text-blush-500" />
                 Imágenes
               </h3>
               <div className="grid grid-cols-3 gap-3 mb-4">
                 {editingProduct.images?.map((img) => (
-                  <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden bg-emerald-50">
+                  <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden bg-blush-50">
                     <Image src={getImageUrl(img.url)} alt="Producto" fill className="object-cover" />
                     {img.is_primary && (
-                      <div className="absolute top-1 left-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-full">Principal</div>
+                      <div className="absolute top-1 left-1 bg-blush-500 text-white text-xs px-1.5 py-0.5 rounded-full">Principal</div>
                     )}
                     <button
                       type="button"
@@ -199,7 +199,7 @@ export default function AdminProductsPage() {
                   type="button"
                   onClick={() => fileRef.current?.click()}
                   disabled={uploadingImage}
-                  className="aspect-square rounded-xl border-2 border-dashed border-emerald-200 hover:border-emerald-400 flex flex-col items-center justify-center gap-1 text-emerald-400 hover:text-emerald-600 transition-colors"
+                  className="aspect-square rounded-xl border-2 border-dashed border-blush-200 hover:border-blush-400 flex flex-col items-center justify-center gap-1 text-blush-400 hover:text-blush-600 transition-colors"
                 >
                   <Upload className="w-5 h-5" />
                   <span className="text-xs">{uploadingImage ? 'Subiendo...' : 'Añadir'}</span>
@@ -252,7 +252,7 @@ export default function AdminProductsPage() {
         </div>
       ) : products.length === 0 ? (
         <div className="text-center py-20 card">
-          <Plus className="w-10 h-10 mx-auto text-emerald-200 mb-3" />
+          <Plus className="w-10 h-10 mx-auto text-blush-200 mb-3" />
           <p className="text-gray-500">No hay productos. ¡Crea el primero!</p>
           <button onClick={openCreate} className="btn-primary mt-4 text-sm py-2.5">Crear producto</button>
         </div>
@@ -273,11 +273,11 @@ export default function AdminProductsPage() {
                 <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-emerald-50 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-10 h-10 bg-blush-50 rounded-lg overflow-hidden flex-shrink-0">
                         {product.primary_image ? (
                           <Image src={getImageUrl(product.primary_image)} alt={product.name} width={40} height={40} className="object-cover w-full h-full" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-4 h-4 text-emerald-300" /></div>
+                          <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-4 h-4 text-blush-300" /></div>
                         )}
                       </div>
                       <div className="min-w-0">
@@ -290,7 +290,7 @@ export default function AdminProductsPage() {
                     <span className="text-sm text-gray-600">{product.category_name || '—'}</span>
                   </td>
                   <td className="p-4">
-                    <span className="font-semibold text-emerald-600">${Number(product.price).toFixed(2)}</span>
+                    <span className="font-semibold text-blush-600">${Number(product.price).toFixed(2)}</span>
                   </td>
                   <td className="p-4 hidden md:table-cell">
                     <span className={product.is_active ? 'badge-green' : 'badge-gray'}>

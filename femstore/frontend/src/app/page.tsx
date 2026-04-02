@@ -3,10 +3,12 @@ import { Heart, Star, Truck, Shield, RotateCcw } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import ProductCard from '@/components/shop/ProductCard';
 import { Product, Category, ApiResponse } from '@/types';
+import LogoSVG from '@/components/layout/Logo';
 
-async function getProducts(): Promise<Product[]> {
+async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?limit=8&is_active=true`, {
+    // Obtener productos más vendidos (ordered by sales)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?limit=8&is_active=true&sort=sales`, {
       next: { revalidate: 60 },
     });
     const data: ApiResponse<Product[]> = await res.json();
@@ -29,19 +31,28 @@ async function getCategories(): Promise<Category[]> {
 }
 
 export default async function HomePage() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+  const [products, categories] = await Promise.all([getFeaturedProducts(), getCategories()]);
 
   return (
     <>
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-hero min-h-[520px] flex items-center">
-          <div className="page-container py-16">
+        <section className="relative min-h-[600px] flex items-center bg-gradient-to-br from-blush-50 via-cream-50 to-blush-100 overflow-hidden">
+          {/* Background con imagen del logo */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none">
+            <img 
+              src="/logo.png" 
+              alt="" 
+              className="max-w-4xl w-full h-full object-contain"
+            />
+          </div>
+          
+          <div className="page-container py-16 relative z-10">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 mb-4">
-                <Heart className="w-5 h-5 text-emerald-500 fill-emerald-500" />
-                <span className="text-emerald-600 font-medium text-sm">Nueva colección disponible</span>
+                <Heart className="w-5 h-5 text-blush-500 fill-blush-500" />
+                <span className="text-blush-600 font-medium text-sm">Nueva colección disponible</span>
               </div>
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
                 Tu estilo,{' '}
@@ -64,7 +75,7 @@ export default async function HomePage() {
                   <span>Calidad garantizada</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-emerald-400" />
+                  <Truck className="w-4 h-4 text-blush-400" />
                   <span>Entrega rápida</span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -87,7 +98,7 @@ export default async function HomePage() {
                   <Link
                     key={cat.id}
                     href={`/shop/products?category_id=${cat.id}`}
-                    className="px-6 py-3 bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white rounded-full font-medium transition-all duration-200 border border-emerald-200 hover:border-emerald-500 hover:shadow-md"
+                    className="px-6 py-3 bg-blush-50 hover:bg-blush-500 text-blush-700 hover:text-white rounded-full font-medium transition-all duration-200 border border-blush-200 hover:border-blush-500 hover:shadow-md"
                   >
                     {cat.name}
                   </Link>
@@ -105,7 +116,7 @@ export default async function HomePage() {
                 <h2 className="section-title mb-2">Productos destacados</h2>
                 <p className="text-gray-500">Lo más amado de nuestra colección</p>
               </div>
-              <Link href="/shop/products" className="text-emerald-500 hover:text-emerald-700 font-medium text-sm transition-colors">
+              <Link href="/shop/products" className="text-blush-500 hover:text-blush-700 font-medium text-sm transition-colors">
                 Ver todos →
               </Link>
             </div>
@@ -117,7 +128,7 @@ export default async function HomePage() {
               </div>
             ) : (
               <div className="text-center py-20 text-gray-400">
-                <Heart className="w-12 h-12 mx-auto mb-3 text-emerald-200" />
+                <Heart className="w-12 h-12 mx-auto mb-3 text-blush-200" />
                 <p>Pronto tendremos productos disponibles</p>
               </div>
             )}
@@ -133,9 +144,9 @@ export default async function HomePage() {
                 { icon: Shield, title: 'Compra segura', desc: 'Tus datos siempre protegidos' },
                 { icon: RotateCcw, title: 'Atención al cliente', desc: 'Estamos aquí para ayudarte' },
               ].map((feat) => (
-                <div key={feat.title} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-emerald-50 transition-colors">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <feat.icon className="w-6 h-6 text-emerald-500" />
+                <div key={feat.title} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-blush-50 transition-colors">
+                  <div className="w-12 h-12 bg-blush-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <feat.icon className="w-6 h-6 text-blush-500" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">{feat.title}</h3>
@@ -152,7 +163,7 @@ export default async function HomePage() {
       <footer className="bg-gray-900 text-white py-10">
         <div className="page-container text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <Heart className="w-5 h-5 text-emerald-400 fill-emerald-400" />
+            <Heart className="w-5 h-5 text-blush-400 fill-blush-400" />
             <span className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>Vainy Bliss</span>
           </div>
           <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Vainy Bliss. Todos los derechos reservados.</p>

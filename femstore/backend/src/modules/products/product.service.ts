@@ -17,6 +17,7 @@ export interface ProductFilters {
   search?: string;
   page?: number;
   limit?: number;
+  sort?: string;
 }
 
 export interface ProductsResult {
@@ -49,6 +50,12 @@ export class ProductService {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
+    // Order by - support sort=sales for most sold products
+    let orderBy = 'p.created_at DESC';
+    if (filters.sort === 'sales') {
+      orderBy = 'p.sales_count DESC NULLS LAST';
+    }
+
     const countResult = await query(
       `SELECT COUNT(*) FROM products p ${whereClause}`,
       params
@@ -72,7 +79,7 @@ export class ProductService {
        FROM products p
        LEFT JOIN categories c ON p.category_id = c.id
        ${whereClause}
-       ORDER BY p.created_at DESC
+       ORDER BY ${orderBy}
        LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
       [...params, limit, offset]
     );

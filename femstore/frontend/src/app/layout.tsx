@@ -12,6 +12,10 @@ export const metadata: Metadata = {
     description: 'Tu tienda de moda y belleza natural',
     type: 'website',
   },
+  icons: {
+    icon: '/logo-vb.svg',
+    apple: '/logo-vb.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -28,12 +32,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 background: '#fff',
                 color: '#1a1a2e',
                 borderRadius: '12px',
-                border: '1px solid #a7f3d0',
-                boxShadow: '0 4px 24px rgba(16,185,129,0.12)',
+                border: '1px solid #F5E1E1',
+                boxShadow: '0 4px 24px rgba(192,133,133,0.12)',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '14px',
               },
-              success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
+              success: { iconTheme: { primary: '#C08585', secondary: '#fff' } },
               error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
             }}
           />

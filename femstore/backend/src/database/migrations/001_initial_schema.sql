@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS public.products (
   description TEXT,
   price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
   stock INTEGER DEFAULT 0 CHECK (stock >= 0),
+  sales_count INTEGER DEFAULT 0 CHECK (sales_count >= 0),
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -103,9 +104,11 @@ CREATE TABLE IF NOT EXISTS public.order_items (
 CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_active ON public.products(is_active);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
+CREATE INDEX IF NOT EXISTS idx_products_sales ON public.products(sales_count DESC);
 CREATE INDEX IF NOT EXISTS idx_orders_user ON public.orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON public.order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_order_items_product ON public.order_items(product_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
 
 -- ==========================================

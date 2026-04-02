@@ -111,8 +111,8 @@ export default function CheckoutPage() {
         <Header />
         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
           <div className="card p-8 max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ShoppingBag className="w-8 h-8 text-emerald-500" />
+            <div className="w-16 h-16 bg-blush-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShoppingBag className="w-8 h-8 text-blush-500" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">Finalizar compra</h2>
             <p className="text-gray-500 mb-6">Para continuar necesitas iniciar sesión o puedes continuar como invitada</p>
@@ -173,7 +173,7 @@ export default function CheckoutPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="card p-6">
                   <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <User className="w-5 h-5 text-emerald-500" />
+                    <User className="w-5 h-5 text-blush-500" />
                     Información de contacto
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
 
                 <div className="card p-6">
                   <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Package className="w-5 h-5 text-emerald-500" />
+                    <Package className="w-5 h-5 text-blush-500" />
                     Método de entrega
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-3 mb-4">
@@ -231,8 +231,8 @@ export default function CheckoutPage() {
                         onClick={() => setForm({ ...form, delivery_type: opt.value as 'pickup' | 'delivery' })}
                         className={`p-4 rounded-xl border-2 text-left transition-all ${
                           form.delivery_type === opt.value
-                            ? 'border-emerald-500 bg-emerald-50'
-                            : 'border-gray-200 hover:border-emerald-200'
+                            ? 'border-blush-500 bg-blush-50'
+                            : 'border-gray-200 hover:border-blush-200'
                         }`}
                       >
                         <p className="font-semibold text-gray-900">{opt.label}</p>
@@ -261,7 +261,7 @@ export default function CheckoutPage() {
 
                 <div className="card p-6">
                   <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-emerald-500" />
+                    <FileText className="w-5 h-5 text-blush-500" />
                     Notas adicionales <span className="text-gray-400 font-normal text-sm">(opcional)</span>
                   </h2>
                   <textarea
@@ -306,7 +306,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
                     <span className="font-bold text-gray-900">Total</span>
-                    <span className="font-bold text-emerald-600 text-xl">${total.toFixed(2)}</span>
+                    <span className="font-bold text-blush-600 text-xl">${total.toFixed(2)}</span>
                   </div>
                 </div>
                 <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3">

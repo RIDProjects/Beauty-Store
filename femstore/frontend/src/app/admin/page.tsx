@@ -43,9 +43,9 @@ export default function AdminDashboard() {
   }, []);
 
   const statCards = stats ? [
-    { label: 'Total Pedidos', value: stats.total_orders, icon: ShoppingCart, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    { label: 'Total Pedidos', value: stats.total_orders, icon: ShoppingCart, color: 'text-blush-500', bg: 'bg-blush-50' },
     { label: 'Pendientes', value: stats.pending_orders, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' },
-    { label: 'Ingresos Totales', value: `$${Number(stats.total_revenue).toFixed(2)}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+    { label: 'Ingresos Totales', value: `$${Number(stats.total_revenue).toFixed(2)}`, icon: DollarSign, color: 'text-blush-500', bg: 'bg-blush-50' },
     { label: 'Pedidos Hoy', value: stats.today_orders, icon: TrendingUp, color: 'text-blue-500', bg: 'bg-blue-50' },
   ] : [];
 
@@ -84,9 +84,9 @@ export default function AdminDashboard() {
       {/* Quick actions */}
       <div className="grid sm:grid-cols-3 gap-4">
         {[
-          { href: '/admin/products', label: 'Gestionar productos', icon: Package, color: 'bg-emerald-500' },
-          { href: '/admin/orders', label: 'Ver pedidos', icon: ShoppingCart, color: 'bg-sage-600' },
-          { href: '/admin/categories', label: 'Categorías', icon: Package, color: 'bg-emerald-600' },
+          { href: '/admin/products', label: 'Gestionar productos', icon: Package, color: 'bg-blush-500' },
+          { href: '/admin/orders', label: 'Ver pedidos', icon: ShoppingCart, color: 'bg-gold-600' },
+          { href: '/admin/categories', label: 'Categorías', icon: Package, color: 'bg-blush-600' },
         ].map((action) => (
           <Link
             key={action.href}
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
       <div className="card">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <h2 className="font-bold text-gray-900">Pedidos recientes</h2>
-          <Link href="/admin/orders" className="text-sm text-emerald-500 hover:underline">Ver todos →</Link>
+          <Link href="/admin/orders" className="text-sm text-blush-500 hover:underline">Ver todos →</Link>
         </div>
         {recentOrders.length === 0 ? (
           <div className="p-10 text-center text-gray-400">
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
               return (
                 <div key={order.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                   <div>
-                    <p className="font-mono font-semibold text-sm text-emerald-600">#{order.order_number}</p>
+                    <p className="font-mono font-semibold text-sm text-blush-600">#{order.order_number}</p>
                     <p className="text-sm text-gray-700">{order.customer_name}</p>
                     <p className="text-xs text-gray-400">{new Date(order.created_at).toLocaleDateString('es-ES')}</p>
                   </div>

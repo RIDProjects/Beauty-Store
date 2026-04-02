@@ -72,8 +72,8 @@ export default function AdminOrdersPage() {
             onClick={() => setStatusFilter(opt.value)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
               statusFilter === opt.value
-                ? 'bg-emerald-500 text-white border-emerald-500'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-300'
+                ? 'bg-blush-500 text-white border-blush-500'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-blush-300'
             }`}
           >
             {opt.label}
@@ -106,7 +106,7 @@ export default function AdminOrdersPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="font-mono font-bold text-emerald-600 text-sm">#{order.order_number}</span>
+                      <span className="font-mono font-bold text-blush-600 text-sm">#{order.order_number}</span>
                       <span className={statusConf.class}>{statusConf.label}</span>
                     </div>
                     <p className="text-sm font-medium text-gray-800">{order.customer_name}</p>
@@ -161,7 +161,7 @@ export default function AdminOrdersPage() {
                               <button
                                 key={st}
                                 onClick={() => handleStatusChange(order.id, st)}
-                                className="px-4 py-1.5 bg-white border border-gray-200 hover:border-emerald-400 hover:text-emerald-600 text-gray-700 rounded-lg text-sm font-medium transition-all"
+                                className="px-4 py-1.5 bg-white border border-gray-200 hover:border-blush-400 hover:text-blush-600 text-gray-700 rounded-lg text-sm font-medium transition-all"
                               >
                                 → {conf.label}
                               </button>

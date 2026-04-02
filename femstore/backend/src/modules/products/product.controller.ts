@@ -40,7 +40,7 @@ const upload = multer({
 
 // GET /api/products - Public - with filters
 router.get('/', async (req: Request, res: Response) => {
-  const { category_id, search, page, limit } = req.query;
+  const { category_id, search, page, limit, sort } = req.query;
 
   try {
     const result = await productService.findAll({
@@ -49,6 +49,7 @@ router.get('/', async (req: Request, res: Response) => {
       is_active: true,
       page: page ? parseInt(page as string) : 1,
       limit: limit ? parseInt(limit as string) : 12,
+      sort: sort as string,
     });
 
     return sendSuccess(res, result.products, undefined, 200, result.pagination);

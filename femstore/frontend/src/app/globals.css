@@ -6,15 +6,20 @@
 
 @layer base {
   :root {
-    --primary: #10b981;
-    --primary-dark: #059669;
-    --secondary: #34d399;
-    --accent: #a7f3d0;
-    --background: #f7f9f5;
-    --surface: #ffffff;
-    --text: #1a2e22;
-    --text-muted: #5f7161;
-    --border: #d1fae5;
+    --primary: #C08585;
+    --primary-dark: #9A6B6B;
+    --primary-light: #EBCBCB;
+    --secondary: #D4A5A5;
+    --accent: #BBA67A;
+    --accent-light: #E8DCC8;
+    --background: #FDFBF9;
+    --surface: #FFFFFF;
+    --surface-elevated: #FDF8F8;
+    --text: #3D3030;
+    --text-muted: #7D5555;
+    --text-light: #5E4040;
+    --border: #F5E1E1;
+    --border-light: #FAF0F0;
   }
 
   * {
@@ -33,14 +38,14 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-xl
+    @apply bg-blush-500 hover:bg-blush-600 text-white font-semibold px-6 py-3 rounded-xl
            transition-all duration-200 shadow-md hover:shadow-lg active:scale-95
            disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
   .btn-secondary {
-    @apply bg-white hover:bg-emerald-50 text-emerald-600 font-semibold px-6 py-3 rounded-xl
-           border-2 border-emerald-300 hover:border-emerald-500 transition-all duration-200
+    @apply bg-white hover:bg-blush-50 text-blush-600 font-semibold px-6 py-3 rounded-xl
+           border-2 border-blush-300 hover:border-blush-500 transition-all duration-200
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
@@ -54,7 +59,7 @@
 
   .input {
     @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
-           focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400
+           focus:outline-none focus:ring-2 focus:ring-blush-300 focus:border-blush-400
            placeholder:text-gray-400 transition-all duration-200;
   }
 
@@ -64,6 +69,14 @@
 
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-blush {
+    @apply badge bg-blush-100 text-blush-700;
+  }
+
+  .badge-gold {
+    @apply badge bg-gold-100 text-gold-700;
   }
 
   .badge-emerald {
@@ -98,16 +111,16 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-emerald-500 to-sage-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blush-500 to-gold-500 bg-clip-text text-transparent;
   }
 
   .bg-gradient-hero {
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #f7f9f5 100%);
+    background: linear-gradient(135deg, #FDF8F8 0%, #FAF0F0 50%, #FBF9F5 100%);
   }
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #a7f3d0 transparent;
+    scrollbar-color: #EBCBCB transparent;
   }
 
   .scrollbar-thin::-webkit-scrollbar {
@@ -119,7 +132,7 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #a7f3d0;
+    background-color: #EBCBCB;
     border-radius: 999px;
   }
 }

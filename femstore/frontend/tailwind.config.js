@@ -8,7 +8,43 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        border: '#d1fae5',
+        // Rosa empolvado (color principal del logo)
+        blush: {
+          50: '#FDF8F8',
+          100: '#FAF0F0',
+          200: '#F5E1E1',
+          300: '#EBCBCB',
+          400: '#D4A5A5',
+          500: '#C08585',
+          600: '#B88383',
+          700: '#9A6B6B',
+          800: '#7D5555',
+          900: '#5E4040',
+        },
+        // Dorado suave
+        gold: {
+          50: '#FBF9F5',
+          100: '#F5F0E6',
+          200: '#E8DCC8',
+          300: '#D9C7A8',
+          400: '#C9B896',
+          500: '#BBA67A',
+          600: '#A88D63',
+          700: '#8C724F',
+          800: '#705A41',
+          900: '#524331',
+        },
+        // Crema elegante
+        cream: {
+          50: '#FDFCFB',
+          100: '#FDFBF9',
+          200: '#FAF6F0',
+          300: '#F5EDE3',
+          400: '#EDE3D4',
+          500: '#E8D5B7',
+        },
+        // Mantener colores existentes por compatibilidad
+        border: '#F5E1E1',
         emerald: {
           50: '#ecfdf5',
           100: '#d1fae5',
@@ -32,11 +68,6 @@ module.exports = {
           700: '#457851',
           800: '#3a6343',
           900: '#305238',
-        },
-        mint: {
-          50: '#f4fbf8',
-          100: '#e0f5ec',
-          200: '#c3ebdb',
         },
       },
       fontFamily: {
