@@ -14,11 +14,11 @@ const getBaseUrl = () => {
 const API_URL = getBaseUrl();
 
 // Campos sensibles a encriptar en requests según el endpoint
-// NO incluir password - debe viajar en texto plano para bcrypt en backend
+// Password se encripta para mayor seguridad
 const SENSITIVE_FIELDS_MAP: Record<string, string[]> = {
   '/orders': ['customer_phone', 'customer_email', 'delivery_address', 'notes'],
-  '/auth/register': ['name', 'email', 'phone'],
-  '/auth/login': ['email'], // Solo email, NO password
+  '/auth/register': ['name', 'email', 'phone', 'password'],
+  '/auth/login': ['email', 'password'],
 };
 
 const api = axios.create({

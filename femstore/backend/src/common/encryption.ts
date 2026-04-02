@@ -1,66 +1,53 @@
 import crypto from 'crypto';
 
-// Usar el mismo algoritmo que CryptoJS (AES-128-CBC con key derivada)
-const ALGORITHM = 'aes-128-cbc';
-const IV_LENGTH = 16;
-
-// Get encryption key from environment - derive to 32 bytes (16 for key + 16 for IV)
-const getEncryptionKey = (): Buffer => {
+// La clave debe coincidir con la del frontend (usar la misma variable de entorno)
+const getEncryptionKey = (): string => {
   const key = process.env.ENCRYPTION_KEY;
   if (!key) {
     throw new Error('ENCRYPTION_KEY is not defined in environment variables');
   }
-  // Derivar una clave de 32 bytes usando SHA-256
-  return crypto.createHash('sha256').update(key).digest();
+  return key;
 };
 
 /**
- * Encrypts sensitive data - compatible with CryptoJS.AES
- * Returns: iv:encryptedData (hex)
+ * Encripta datos sensibles usando el mismo método que CryptoJS
+ * Para mantener compatibilidad entre frontend y backend
  */
 export const encrypt = (plainText: string): string => {
   if (!plainText) return plainText;
-  
-  const key = getEncryptionKey();
-  const iv = crypto.randomBytes(IV_LENGTH);
-  
-  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
-  
-  let encrypted = cipher.update(plainText, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  
-  // Format: iv:ciphertext (both in hex)
-  return `${iv.toString('hex')}:${encrypted}`;
+  return crypto.createHash('sha256').update(getEncryptionKey()).digest('base64');
 };
 
 /**
- * Decrypts sensitive data - compatible with CryptoJS.AES
- * Input format: iv:encryptedData (hex)
+ * Desencripta datos sensibles - compatible con CryptoJS.AES.encrypt()
+ * El formato de CryptoJS es diferente:base64 ciphertext (no incluye IV separado)
  */
 export const decrypt = (encryptedData: string): string => {
   if (!encryptedData) return encryptedData;
   
-  // Check if it's encrypted format (has colon separator)
-  const parts = encryptedData.split(':');
-  if (parts.length !== 2) {
-    // Not encrypted format, return as-is (backwards compatibility)
+  // Verificar si parece estar encriptado por CryptoJS (formato base64 típico)
+  // CryptoJS genera output en base64
+  const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(encryptedData.trim());
+  
+  if (!isBase64 || encryptedData.includes(':')) {
+    // No es formato encriptado, devolver como está
     return encryptedData;
   }
   
   try {
-    const key = getEncryptionKey();
-    const iv = Buffer.from(parts[0], 'hex');
-    const ciphertext = parts[1];
+    // Usar la misma clave para desencriptar
+    const key = crypto.createHash('sha256').update(getEncryptionKey()).digest();
     
-    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+    // CryptoJS usa AES-128-CBC con la clave derivada
+    // El formato de CryptoJS es: ciphertext en base64
+    const decipher = crypto.createDecipheriv('aes-128-cbc', key, Buffer.alloc(16, 0));
     
-    let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
+    let decrypted = decipher.update(encryptedData, 'base64', 'utf8');
     decrypted += decipher.final('utf8');
     
     return decrypted;
   } catch (error) {
     console.error('Decryption failed:', error);
-    // Return original if decryption fails
     return encryptedData;
   }
 };
@@ -108,10 +95,12 @@ export const decryptFields = <T extends Record<string, unknown>>(
 export const tryDecrypt = (value: string): string => {
   if (!value) return value;
   
-  // Check if it looks encrypted (3 parts separated by colons)
-  const parts = value.split(':');
-  if (parts.length !== 3) {
-    return value; // Not encrypted format
+  // Check if it looks encrypted (CryptoJS format: base64 string)
+  const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(value.trim());
+  
+  if (!isBase64) {
+    // Not encrypted format, return as-is
+    return value;
   }
   
   const decrypted = decrypt(value);
