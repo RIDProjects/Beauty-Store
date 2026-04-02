@@ -33,10 +33,12 @@ export class AuthService {
     // Pero primero necesitamos verificar si ya existe
     // Como el email está encriptado, no podemos hacer búsqueda directa
     // Por ahora permitimos registros duplicados hasta tener índice de búsqueda
-    // En producción,可以考虑 guardar un hash del email para búsqueda
+    
+    // El password viene encriptado del frontend, necesitamos desencriptarlo antes de hashear
+    const decryptedPassword = decryptValue(dto.password) || dto.password;
     
     // Hash password
-    const hashedPassword = await bcrypt.hash(dto.password, 12);
+    const hashedPassword = await bcrypt.hash(decryptedPassword, 12);
 
     // El email y phone ya vienen encriptados del frontend
     // Solo encriptamos el name por seguridad
@@ -69,6 +71,9 @@ export class AuthService {
     // El email llega encriptado desde el frontend, lo desencriptamos para buscar
     const decryptedEmail = decryptValue(dto.email) || dto.email;
     
+    // El password también llega encriptado, desencriptarlo para comparar
+    const decryptedPassword = decryptValue(dto.password) || dto.password;
+    
     // Buscar usuario - el email en la DB está encriptado, comparamos con todos
     const result = await query(
       'SELECT * FROM users WHERE is_active = TRUE'
@@ -86,8 +91,8 @@ export class AuthService {
 
     const user = userRow as User;
 
-    // Check password
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    // Check password (usar la password desencriptada del input)
+    const isPasswordValid = await bcrypt.compare(decryptedPassword, user.password);
     if (!isPasswordValid) {
       throw new Error('Credenciales inválidas');
     }
