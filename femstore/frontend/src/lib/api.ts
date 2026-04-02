@@ -80,7 +80,7 @@ api.interceptors.response.use(
 
 // Desencripta un solo pedido
 export const decryptOrder = (order: Order): Order => {
-  return decryptFields(order, ['customer_phone', 'customer_email', 'delivery_address', 'notes']) as Order;
+  return decryptFields<Order>(order, ['customer_phone', 'customer_email', 'delivery_address', 'notes']);
 };
 
 // Desencripta un array de pedidos
