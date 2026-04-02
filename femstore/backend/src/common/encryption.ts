@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import CryptoJS from 'crypto-js';
 
 // La clave debe coincidir con la del frontend (usar la misma variable de entorno)
 const getEncryptionKey = (): string => {
@@ -10,44 +10,24 @@ const getEncryptionKey = (): string => {
 };
 
 /**
- * Encripta datos sensibles usando el mismo método que CryptoJS
- * Para mantener compatibilidad entre frontend y backend
+ * Encripta datos sensibles — compatible con CryptoJS del frontend
  */
 export const encrypt = (plainText: string): string => {
   if (!plainText) return plainText;
-  return crypto.createHash('sha256').update(getEncryptionKey()).digest('base64');
+  return CryptoJS.AES.encrypt(plainText, getEncryptionKey()).toString();
 };
 
 /**
- * Desencripta datos sensibles - compatible con CryptoJS.AES.encrypt()
- * El formato de CryptoJS es diferente:base64 ciphertext (no incluye IV separado)
+ * Desencripta datos sensibles — compatible con CryptoJS.AES.encrypt() del frontend
  */
 export const decrypt = (encryptedData: string): string => {
   if (!encryptedData) return encryptedData;
   
-  // Verificar si parece estar encriptado por CryptoJS (formato base64 típico)
-  // CryptoJS genera output en base64
-  const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(encryptedData.trim());
-  
-  if (!isBase64 || encryptedData.includes(':')) {
-    // No es formato encriptado, devolver como está
-    return encryptedData;
-  }
-  
   try {
-    // Usar la misma clave para desencriptar
-    const key = crypto.createHash('sha256').update(getEncryptionKey()).digest();
-    
-    // CryptoJS usa AES-128-CBC con la clave derivada
-    // El formato de CryptoJS es: ciphertext en base64
-    const decipher = crypto.createDecipheriv('aes-128-cbc', key, Buffer.alloc(16, 0));
-    
-    let decrypted = decipher.update(encryptedData, 'base64', 'utf8');
-    decrypted += decipher.final('utf8');
-    
-    return decrypted;
-  } catch (error) {
-    console.error('Decryption failed:', error);
+    const bytes = CryptoJS.AES.decrypt(encryptedData, getEncryptionKey());
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch {
+    // Si no se puede desencriptar, devolver el original (backwards compatibility)
     return encryptedData;
   }
 };
@@ -95,15 +75,13 @@ export const decryptFields = <T extends Record<string, unknown>>(
 export const tryDecrypt = (value: string): string => {
   if (!value) return value;
   
-  // Check if it looks encrypted (CryptoJS format: base64 string)
-  const isBase64 = /^[A-Za-z0-9+/]+=*$/.test(value.trim());
-  
-  if (!isBase64) {
+  // Check if it looks encrypted (CryptoJS format: base64 string starting with "U2FsdGVkX1")
+  if (!value.startsWith('U2FsdGVkX1')) {
     // Not encrypted format, return as-is
     return value;
   }
   
   const decrypted = decrypt(value);
-  // If decryption returns same value, it wasn't actually encrypted
-  return decrypted === value ? value : decrypted;
+  // If decryption returns empty or same value, it wasn't actually encrypted
+  return decrypted === value || decrypted === '' ? value : decrypted;
 };
