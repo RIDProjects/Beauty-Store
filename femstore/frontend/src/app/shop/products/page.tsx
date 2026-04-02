@@ -56,16 +56,16 @@ export default function ProductsPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="page-container py-8">
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="section-title">Tienda</h1>
-            <p className="text-gray-500">Descubre todos nuestros productos</p>
+            <p className="text-gray-500 dark:text-gray-400">Descubre todos nuestros productos</p>
           </div>
 
           {/* Filters Bar */}
-          <div className="bg-white rounded-2xl p-4 mb-6 shadow-sm border border-gray-100">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 shadow-sm border border-gray-100 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
               <div className="relative flex-1">
@@ -81,7 +81,7 @@ export default function ProductsPage() {
 
               {/* Category filter */}
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-1 text-gray-500 text-sm">
+                <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
                   <SlidersHorizontal className="w-4 h-4" />
                 </div>
                 <button
@@ -89,7 +89,7 @@ export default function ProductsPage() {
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     !selectedCategory
                       ? 'bg-blush-500 text-white shadow-sm'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   Todas
@@ -101,7 +101,7 @@ export default function ProductsPage() {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       selectedCategory === cat.id
                         ? 'bg-blush-500 text-white shadow-sm'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
                     {cat.name}
@@ -110,7 +110,7 @@ export default function ProductsPage() {
                 {hasFilters && (
                   <button
                     onClick={clearFilters}
-                    className="px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-50 flex items-center gap-1 transition-colors"
+                    className="px-3 py-2 rounded-lg text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-1 transition-colors"
                   >
                     <X className="w-3 h-3" /> Limpiar
                   </button>
@@ -121,7 +121,7 @@ export default function ProductsPage() {
 
           {/* Results count */}
           {pagination && (
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
               {pagination.total} {pagination.total === 1 ? 'producto encontrado' : 'productos encontrados'}
             </p>
           )}
@@ -131,11 +131,11 @@ export default function ProductsPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="card animate-pulse">
-                  <div className="aspect-[3/4] bg-blush-50" />
+                  <div className="aspect-[3/4] bg-blush-50 dark:bg-gray-700" />
                   <div className="p-4 space-y-2">
-                    <div className="h-4 bg-gray-100 rounded" />
-                    <div className="h-3 bg-gray-100 rounded w-3/4" />
-                    <div className="h-5 bg-blush-50 rounded w-1/3 mt-3" />
+                    <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded" />
+                    <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-5 bg-blush-50 dark:bg-gray-600 rounded w-1/3 mt-3" />
                   </div>
                 </div>
               ))}
@@ -158,7 +158,7 @@ export default function ProductsPage() {
                   >
                     ← Anterior
                   </button>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
                     Página {page} de {pagination.totalPages}
                   </span>
                   <button
@@ -172,7 +172,7 @@ export default function ProductsPage() {
               )}
             </>
           ) : (
-            <div className="text-center py-24 text-gray-400">
+            <div className="text-center py-24 text-gray-400 dark:text-gray-500">
               <Search className="w-12 h-12 mx-auto mb-3 text-blush-200" />
               <p className="font-medium">No se encontraron productos</p>
               <p className="text-sm mt-1">Intenta con otros filtros</p>

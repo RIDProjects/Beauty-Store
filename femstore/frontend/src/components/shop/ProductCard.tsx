@@ -22,7 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/shop/products/${product.id}`} className="group card hover:shadow-md transition-all duration-300">
-      <div className="relative aspect-[3/4] bg-blush-50 overflow-hidden">
+      <div className="relative aspect-[3/4] bg-blush-50 dark:bg-gray-700 overflow-hidden">
         <Image
           src={getImageUrl(product.primary_image)}
           alt={product.name}
@@ -33,7 +33,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <button
           onClick={(e) => e.preventDefault()}
-          className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-blush-50"
+          className="absolute top-3 right-3 w-8 h-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-blush-50 dark:hover:bg-blush-900"
           aria-label={`Agregar ${product.name} a favoritos`}
         >
           <Heart className="w-4 h-4 text-blush-400" aria-hidden="true" />
@@ -58,16 +58,16 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 group-hover:text-blush-600 transition-colors">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight line-clamp-2 group-hover:text-blush-600 transition-colors">
           {product.name}
         </h3>
         {product.description && (
-          <p className="text-gray-500 text-xs mt-1 line-clamp-1">{product.description}</p>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-1 line-clamp-1">{product.description}</p>
         )}
         <div className="flex items-center justify-between mt-3">
-          <span className="text-blush-600 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
+          <span className="text-blush-600 dark:text-blush-400 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
           {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
-            <span className="text-xs text-amber-600 font-medium">¡Últimas {product.stock}!</span>
+            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">¡Últimas {product.stock}!</span>
           )}
         </div>
       </div>
