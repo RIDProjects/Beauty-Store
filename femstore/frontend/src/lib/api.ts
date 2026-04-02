@@ -1,9 +1,19 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+// En Vercel usar ruta relativa (/api), en desarrollo usar variable de entorno
+const getBaseUrl = () => {
+  // Si hay una variable de entorno explícita, usarla (para desarrollo local)
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return `${process.env.NEXT_PUBLIC_API_URL}/api`;
+  }
+  // En Vercel, usar ruta relativa (mismo dominio)
+  return '/api';
+};
+
+const API_URL = getBaseUrl();
 
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
 });
@@ -37,7 +47,11 @@ api.interceptors.response.use(
 export const getImageUrl = (url?: string | null): string => {
   if (!url) return '/placeholder-product.jpg';
   if (url.startsWith('http')) return url;
-  return `${API_URL}${url}`;
+  // En Vercel las imágenes también vienen del mismo dominio
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+  }
+  return url;
 };
 
 export default api;
