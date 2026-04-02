@@ -49,7 +49,6 @@ async function createAdmin() {
     }
 
     console.log('\n=== CREDENCIALES ===');
-    console.log('Admin: admin@vainybliss.com / Admin123!');
     console.log('Usuario: maria@test.com / Customer123!');
 
   } catch (error) {
