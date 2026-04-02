@@ -41,11 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 },
                 success: { iconTheme: { primary: '#C08585', secondary: '#fff' } },
                 error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-                dark: {
-                  background: '#1f2937',
-                  color: '#f9fafb',
-                  border: '1px solid #374151',
-                },
               }}
             />
           </AuthProvider>

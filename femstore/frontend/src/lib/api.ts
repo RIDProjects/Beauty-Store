@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { encryptPayload, decryptResponse, encryptFields } from './encryption';
+import { encryptFields, decryptFields } from './encryption';
+import { Order } from '@/types';
 
 // En Vercel usar ruta relativa (/api), en desarrollo usar variable de entorno
 const getBaseUrl = () => {
@@ -77,13 +78,14 @@ api.interceptors.response.use(
   }
 );
 
-// Helper para desencriptar responses con datos sensibles
-export const decryptOrder = <T extends Record<string, unknown>>(order: T): T => {
-  return decryptResponse(order);
+// Desencripta un solo pedido
+export const decryptOrder = (order: Order): Order => {
+  return decryptFields(order, ['customer_phone', 'customer_email', 'delivery_address', 'notes']) as Order;
 };
 
-export const decryptOrders = <T extends Record<string, unknown>>(orders: T[]): T[] => {
-  return orders.map(order => decryptResponse(order));
+// Desencripta un array de pedidos
+export const decryptOrders = (orders: Order[]): Order[] => {
+  return orders.map(order => decryptOrder(order));
 };
 
 export const getImageUrl = (url?: string | null): string => {
