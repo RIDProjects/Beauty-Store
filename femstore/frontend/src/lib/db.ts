@@ -4,18 +4,23 @@ const getDbConfig = () => {
   const connectionString = process.env.DATABASE_URL;
   
   if (connectionString) {
-    return { connectionString };
+    // Forzar IPv4 y agregar opciones de conexión
+    return { 
+      connectionString,
+      ssl: { rejectUnauthorized: false }
+    };
   }
   
   return {
-    host: process.env.PGHOST,
-    port: Number(process.env.PGPORT) || 5432,
-    database: process.env.PGDATABASE,
-    user: process.env.PGUSER,
+    host: process.env.PGHOST || process.env.DATABASE_HOST,
+    port: Number(process.env.PGPORT || process.env.DATABASE_PORT) || 5432,
+    database: process.env.PGDATABASE || process.env.DATABASE,
+    user: process.env.PGUSER || process.env.DATABASE_USER,
     password: process.env.PGPASSWORD,
+    ssl: { rejectUnauthorized: false },
     max: 10,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+    connectionTimeoutMillis: 10000,
   };
 };
 
