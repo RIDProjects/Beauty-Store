@@ -36,7 +36,7 @@ export const decrypt = (encryptedData: string): string => {
 /**
  * Encripta campos específicos de un objeto
  */
-export const encryptFields = <T extends Record<string, unknown>>(
+export const encryptFields = <T extends Record<string, any>>(
   data: T,
   fieldsToEncrypt: string[]
 ): T => {
@@ -54,7 +54,7 @@ export const encryptFields = <T extends Record<string, unknown>>(
 /**
  * Desencripta campos específicos de un objeto
  */
-export const decryptFields = <T extends Record<string, unknown>>(
+export const decryptFields = <T extends Record<string, any>>(
   data: T,
   fieldsToDecrypt: string[]
 ): T => {
@@ -80,7 +80,7 @@ export const encryptPayload = (payload: Record<string, unknown>): Record<string,
 /**
  * Desencripta un objeto completo con campos sensibles
  */
-export const decryptResponse = <T extends Record<string, unknown>>(response: T): T => {
+export const decryptResponse = <T extends Record<string, any>>(response: T): T => {
   const sensitiveFields = ['customer_phone', 'customer_email', 'delivery_address', 'notes'];
   return decryptFields(response, sensitiveFields);
 };
