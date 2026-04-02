@@ -40,17 +40,13 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcrypt.hash(decryptedPassword, 12);
 
-    // El email y phone ya vienen encriptados del frontend
-    // Solo encriptamos el name por seguridad
-    const encryptedName = encrypt(dto.name);
-
-    // Create user with encrypted fields (email y phone ya encriptados, name encriptamos)
+    // Create user with encrypted fields (email y phone ya encriptados, name en texto plano)
     try {
       const result = await query(
         `INSERT INTO users (name, email, password, phone, role)
          VALUES ($1, $2, $3, $4, 'customer')
          RETURNING id, name, email, phone, role, is_active, created_at, updated_at`,
-        [encryptedName, dto.email, hashedPassword, dto.phone || null]
+        [dto.name, dto.email, hashedPassword, dto.phone || null]
       );
 
       const user = result.rows[0] as Omit<User, 'password'>;
@@ -58,7 +54,7 @@ export class AuthService {
       // Desencriptar para respuesta
       const decryptedUser = {
         ...user,
-        name: decrypt(user.name),
+        name: user.name,
         email: decrypt(user.email),
         phone: user.phone ? decrypt(user.phone) : undefined,
       };
@@ -109,7 +105,7 @@ export class AuthService {
     const { password: _, ...userWithoutPassword } = user;
     const decryptedUser = {
       ...userWithoutPassword,
-      name: tryDecrypt(userWithoutPassword.name) || userWithoutPassword.name,
+      name: userWithoutPassword.name,
       email: decrypt(userWithoutPassword.email),
       phone: userWithoutPassword.phone ? decrypt(userWithoutPassword.phone) : undefined,
     };
@@ -134,15 +130,14 @@ export class AuthService {
     // Desencriptar campos sensibles
     return {
       ...user,
-      name: tryDecrypt(user.name) || user.name,
+      name: user.name,
       email: decrypt(user.email),
       phone: user.phone ? decrypt(user.phone) : undefined,
     };
   }
 
   async updateProfile(userId: string, data: { name?: string; phone?: string }): Promise<Omit<User, 'password'>> {
-    // Encriptar los nuevos valores
-    const encryptedName = data.name ? encrypt(data.name) : null;
+    // Encriptar solo phone, name se guarda en texto plano
     const encryptedPhone = data.phone ? encrypt(data.phone) : null;
 
     const result = await query(
@@ -152,7 +147,7 @@ export class AuthService {
         updated_at = NOW()
        WHERE id = $3
        RETURNING id, name, email, phone, role, is_active, created_at, updated_at`,
-      [encryptedName, encryptedPhone, userId]
+      [data.name || null, encryptedPhone, userId]
     );
 
     const user = result.rows[0] as Omit<User, 'password'>;
@@ -160,7 +155,7 @@ export class AuthService {
     // Desencriptar para respuesta
     return {
       ...user,
-      name: tryDecrypt(user.name) || user.name,
+      name: user.name,
       email: decrypt(user.email),
       phone: user.phone ? decrypt(user.phone) : undefined,
     };

@@ -18,7 +18,7 @@ const API_URL = getBaseUrl();
 // Password se encripta para mayor seguridad
 const SENSITIVE_FIELDS_MAP: Record<string, string[]> = {
   '/orders': ['customer_phone', 'customer_email', 'delivery_address', 'notes'],
-  '/auth/register': ['name', 'email', 'phone', 'password'],
+  '/auth/register': ['email', 'phone', 'password'],
   '/auth/login': ['email', 'password'],
 };
 

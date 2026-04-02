@@ -9,7 +9,7 @@ const router = Router();
 const authService = new AuthService();
 
 // POST /api/auth/register
-router.post('/register', decryptBody('name', 'email', 'password', 'phone'), async (req: Request, res: Response) => {
+router.post('/register', decryptBody('email', 'password', 'phone'), async (req: Request, res: Response) => {
   const validation = validateRequestSafe(RegisterSchema, req.body);
   
   if (!validation.success) {
