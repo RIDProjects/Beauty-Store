@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { encrypt, decrypt, tryDecrypt } from '../common/encryption';
+import { encrypt, decrypt, tryDecrypt } from '../encryption';
 
 // Campos sensibles que deben ser encriptados en requests
 const SENSITIVE_FIELDS_REQUEST = ['phone', 'email', 'name', 'address', 'delivery_address'];
@@ -81,11 +81,11 @@ export const decryptResponse = <T extends Record<string, unknown>>(data: T): T =
     return data;
   }
 
-  const decrypted = { ...data };
+  const decrypted: Record<string, unknown> = { ...data };
 
   for (const field of SENSITIVE_FIELDS_RESPONSE) {
     if (decrypted[field] && typeof decrypted[field] === 'string') {
-      decrypted[field] = decrypt(decrypted[field] as string) as T[Extract<keyof T, string>];
+      decrypted[field] = decrypt(decrypted[field] as string);
     }
   }
 
@@ -95,16 +95,16 @@ export const decryptResponse = <T extends Record<string, unknown>>(data: T): T =
 /**
  * Función helper para encriptar campos en datos antes de guardar
  */
-export const encryptForStorage = <T extends Record<string, unknown>>(data: T): T => {
+export const encryptForStorage = <T extends Record<string, unknown>>(data: T): Record<string, unknown> => {
   if (!data || typeof data !== 'object') {
     return data;
   }
 
-  const encrypted = { ...data };
+  const encrypted: Record<string, unknown> = { ...data };
 
   for (const field of SENSITIVE_FIELDS_RESPONSE) {
     if (encrypted[field] && typeof encrypted[field] === 'string' && encrypted[field]) {
-      encrypted[field] = encrypt(encrypted[field] as string) as T[Extract<keyof T, string>];
+      encrypted[field] = encrypt(encrypted[field] as string);
     }
   }
 
