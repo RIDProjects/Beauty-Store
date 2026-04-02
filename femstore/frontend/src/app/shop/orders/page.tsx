@@ -5,7 +5,7 @@ import { Package, Clock, CheckCircle, Truck, XCircle, ChevronDown, MessageCircle
 import Header from '@/components/layout/Header';
 import { useAuthStore } from '@/store/auth.store';
 import { Order, OrderStatus, ApiResponse } from '@/types';
-import api from '@/lib/api';
+import api, { decryptOrders } from '@/lib/api';
 import { storeConfig } from '@/lib/config';
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; icon: typeof Clock }> = {
@@ -30,7 +30,7 @@ export default function MyOrdersPage() {
     const fetchOrders = async () => {
       try {
         const { data } = await api.get<ApiResponse<Order[]>>('/orders/my');
-        setOrders(data.data || []);
+        setOrders(decryptOrders(data.data || []));
       } catch { /* ignore */ } finally { setIsLoading(false); }
     };
     fetchOrders();
@@ -40,7 +40,7 @@ export default function MyOrdersPage() {
     setIsLoading(true);
     try {
       const { data } = await api.get<ApiResponse<Order[]>>('/orders/my');
-      setOrders(data.data || []);
+      setOrders(decryptOrders(data.data || []));
     } catch { /* ignore */ } finally { setIsLoading(false); }
   };
 

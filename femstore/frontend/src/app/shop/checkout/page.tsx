@@ -7,7 +7,7 @@ import Header from '@/components/layout/Header';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 import { CheckoutFormData, ApiResponse, Order } from '@/types';
-import api from '@/lib/api';
+import api, { decryptOrder } from '@/lib/api';
 import { storeConfig } from '@/lib/config';
 import toast from 'react-hot-toast';
 
@@ -93,7 +93,8 @@ export default function CheckoutPage() {
       };
 
       const { data } = await api.post<ApiResponse<Order>>('/orders', payload);
-      setPlacedOrder(data.data!);
+      const decryptedOrder = decryptOrder(data.data!);
+      setPlacedOrder(decryptedOrder);
       clearCart();
       localStorage.setItem('justCompletedOrder', 'true');
       setStep('success');

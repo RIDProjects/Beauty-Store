@@ -18,6 +18,14 @@ export interface CreateOrderDto {
   }[];
 }
 
+// Helper para desencriptar datos que pueden venir encriptados desde el frontend
+const tryDecrypt = (value: string | undefined): string | undefined => {
+  if (!value) return value;
+  // Intentar desencriptar - si falla, devolver el valor original
+  const decrypted = decrypt(value);
+  return decrypted === value ? value : decrypted; // Si es igual, no estaba encriptado
+};
+
 export interface OrderFilters {
   status?: OrderStatus;
   user_id?: string;
@@ -30,6 +38,12 @@ const whatsappService = new WhatsAppService();
 export class OrderService {
   async create(dto: CreateOrderDto): Promise<Order> {
     const client = await getClient();
+
+    // Desencriptar datos que vienen del frontend (si están encriptados)
+    const decryptedPhone = tryDecrypt(dto.customer_phone) || dto.customer_phone;
+    const decryptedEmail = dto.customer_email ? (tryDecrypt(dto.customer_email) || dto.customer_email) : undefined;
+    const decryptedAddress = dto.delivery_address ? (tryDecrypt(dto.delivery_address) || dto.delivery_address) : undefined;
+    const decryptedNotes = dto.notes ? (tryDecrypt(dto.notes) || dto.notes) : undefined;
 
     try {
       await client.query('BEGIN');
@@ -75,10 +89,10 @@ export class OrderService {
       const total = subtotal; // Extend here for shipping costs, discounts, etc.
       const orderNumber = generateOrderNumber();
 
-      // Create order - encrypt sensitive fields
-      const encryptedPhone = encrypt(dto.customer_phone);
-      const encryptedEmail = dto.customer_email ? encrypt(dto.customer_email) : null;
-      const encryptedAddress = dto.delivery_address ? encrypt(dto.delivery_address) : null;
+      // Create order - encrypt sensitive fields (ya desencriptados del input)
+      const encryptedPhone = encrypt(decryptedPhone);
+      const encryptedEmail = decryptedEmail ? encrypt(decryptedEmail) : null;
+      const encryptedAddress = decryptedAddress ? encrypt(decryptedAddress) : null;
 
       const orderResult = await client.query(
         `INSERT INTO orders (
@@ -94,7 +108,7 @@ export class OrderService {
           encryptedEmail,
           encryptedAddress,
           dto.delivery_type,
-          dto.notes || null,
+          decryptedNotes || null,
           subtotal,
           total,
         ]
@@ -124,12 +138,12 @@ export class OrderService {
       if (!completeOrder) throw new Error('Error al recuperar la orden');
 
       // Send WhatsApp notification (non-blocking)
-      // Note: Pass decrypted data for WhatsApp
+      // Note: Use the decrypted values from dto, not the stored encrypted ones
       const orderForWhatsapp = {
         ...completeOrder,
-        customer_phone: dto.customer_phone, // Use original unencrypted
-        customer_email: dto.customer_email,
-        delivery_address: dto.delivery_address,
+        customer_phone: decryptedPhone,
+        customer_email: decryptedEmail,
+        delivery_address: decryptedAddress,
       };
       this.sendWhatsAppNotification(orderForWhatsapp as Order);
 

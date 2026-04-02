@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { encryptPayload, decryptResponse } from './encryption';
 
 // En Vercel usar ruta relativa (/api), en desarrollo usar variable de entorno
 const getBaseUrl = () => {
@@ -18,6 +19,9 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// Campos sensibles a encriptar en requests
+const SENSITIVE_FIELDS = ['customer_phone', 'customer_email', 'delivery_address', 'notes'];
+
 // Attach token from localStorage on every request
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
@@ -26,6 +30,25 @@ api.interceptors.request.use((config) => {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }
+  
+  // Encriptar datos sensibles en el payload de requests POST/PUT/PATCH
+  if (config.data && (config.method === 'post' || config.method === 'put' || config.method === 'patch')) {
+    const sensitiveData: Record<string, unknown> = {};
+    let hasSensitiveData = false;
+    
+    for (const field of SENSITIVE_FIELDS) {
+      if (config.data[field]) {
+        sensitiveData[field] = config.data[field];
+        hasSensitiveData = true;
+      }
+    }
+    
+    if (hasSensitiveData) {
+      // Encriptar solo los campos sensibles
+      config.data = { ...config.data, ...encryptPayload(sensitiveData) };
+    }
+  }
+  
   return config;
 });
 
@@ -43,6 +66,15 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Helper para desencriptar responses con datos sensibles
+export const decryptOrder = <T extends Record<string, unknown>>(order: T): T => {
+  return decryptResponse(order);
+};
+
+export const decryptOrders = <T extends Record<string, unknown>>(orders: T[]): T[] => {
+  return orders.map(order => decryptResponse(order));
+};
 
 export const getImageUrl = (url?: string | null): string => {
   if (!url) return '/placeholder-product.jpg';

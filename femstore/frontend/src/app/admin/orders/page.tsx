@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Search, ChevronDown } from 'lucide-react';
 import { Order, OrderStatus, ApiResponse, Pagination } from '@/types';
-import api from '@/lib/api';
+import api, { decryptOrders } from '@/lib/api';
 import toast from 'react-hot-toast';
 
 const STATUS_OPTIONS: { value: string; label: string; class: string }[] = [
@@ -38,7 +38,7 @@ export default function AdminOrdersPage() {
       const params = new URLSearchParams({ page: String(page), limit: '15' });
       if (statusFilter) params.set('status', statusFilter);
       const { data } = await api.get<ApiResponse<Order[]>>(`/orders?${params.toString()}`);
-      setOrders(data.data || []);
+      setOrders(decryptOrders(data.data || []));
       if (data.pagination) setPagination(data.pagination);
     } catch { toast.error('Error cargando pedidos'); } finally { setIsLoading(false); }
   };
