@@ -2,6 +2,7 @@ import { query, getClient } from '../../config/database';
 import { Order, OrderStatus, Pagination } from '../../common/types';
 import { generateOrderNumber, paginate } from '../../common/helpers';
 import { WhatsAppService } from '../whatsapp/whatsapp.service';
+import { encrypt, decrypt } from '../../common/encryption';
 
 export interface CreateOrderDto {
   user_id?: string;
@@ -74,7 +75,11 @@ export class OrderService {
       const total = subtotal; // Extend here for shipping costs, discounts, etc.
       const orderNumber = generateOrderNumber();
 
-      // Create order
+      // Create order - encrypt sensitive fields
+      const encryptedPhone = encrypt(dto.customer_phone);
+      const encryptedEmail = dto.customer_email ? encrypt(dto.customer_email) : null;
+      const encryptedAddress = dto.delivery_address ? encrypt(dto.delivery_address) : null;
+
       const orderResult = await client.query(
         `INSERT INTO orders (
           order_number, user_id, customer_name, customer_phone, customer_email,
@@ -85,9 +90,9 @@ export class OrderService {
           orderNumber,
           dto.user_id || null,
           dto.customer_name,
-          dto.customer_phone,
-          dto.customer_email || null,
-          dto.delivery_address || null,
+          encryptedPhone,
+          encryptedEmail,
+          encryptedAddress,
           dto.delivery_type,
           dto.notes || null,
           subtotal,
@@ -119,7 +124,14 @@ export class OrderService {
       if (!completeOrder) throw new Error('Error al recuperar la orden');
 
       // Send WhatsApp notification (non-blocking)
-      this.sendWhatsAppNotification(completeOrder);
+      // Note: Pass decrypted data for WhatsApp
+      const orderForWhatsapp = {
+        ...completeOrder,
+        customer_phone: dto.customer_phone, // Use original unencrypted
+        customer_email: dto.customer_email,
+        delivery_address: dto.delivery_address,
+      };
+      this.sendWhatsAppNotification(orderForWhatsapp as Order);
 
       return completeOrder;
     } catch (error) {
@@ -172,7 +184,13 @@ export class OrderService {
       [...params, limit, offset]
     );
 
-    const orders = ordersResult.rows as Order[];
+    // Decrypt sensitive fields for each order
+    const orders = (ordersResult.rows as Order[]).map((order) => ({
+      ...order,
+      customer_phone: decrypt(order.customer_phone),
+      customer_email: order.customer_email ? decrypt(order.customer_email) : undefined,
+      delivery_address: order.delivery_address ? decrypt(order.delivery_address) : undefined,
+    }));
 
     // Fetch items for each order
     for (const order of orders) {
@@ -194,6 +212,12 @@ export class OrderService {
     if (result.rows.length === 0) return null;
 
     const order = result.rows[0] as Order;
+    
+    // Decrypt sensitive fields
+    order.customer_phone = decrypt(order.customer_phone);
+    order.customer_email = order.customer_email ? decrypt(order.customer_email) : undefined;
+    order.delivery_address = order.delivery_address ? decrypt(order.delivery_address) : undefined;
+
     const itemsResult = await query(
       'SELECT * FROM order_items WHERE order_id = $1 ORDER BY created_at ASC',
       [id]
@@ -212,6 +236,12 @@ export class OrderService {
     if (result.rows.length === 0) throw new Error('Orden no encontrada');
 
     const order = result.rows[0] as Order;
+    
+    // Decrypt sensitive fields
+    order.customer_phone = decrypt(order.customer_phone);
+    order.customer_email = order.customer_email ? decrypt(order.customer_email) : undefined;
+    order.delivery_address = order.delivery_address ? decrypt(order.delivery_address) : undefined;
+
     const itemsResult = await query('SELECT * FROM order_items WHERE order_id = $1', [id]);
     order.items = itemsResult.rows;
 
