@@ -48,13 +48,17 @@ const corsOptions = {
       return;
     }
 
-    // Allow specific configured origins
-    const allowedOrigins = [
-      'https://www.vainybliss.com/',
+    // Allow specific configured origins (with and without www, with and without trailing slash)
+    const allowedOrigins: string[] = [
+      'https://www.vainybliss.com',
+      'https://vainybliss.com',
       process.env.FRONTEND_URL,
-    ].filter(Boolean);
+    ].filter((origin): origin is string => typeof origin === 'string' && origin.length > 0);
 
-    if (allowedOrigins.includes(origin)) {
+    // Normalize origin for comparison (remove trailing slash)
+    const normalizedOrigin = origin?.replace(/\/$/, '');
+
+    if (normalizedOrigin && allowedOrigins.some(allowed => allowed.replace(/\/$/, '') === normalizedOrigin)) {
       callback(null, true);
       return;
     }
@@ -65,6 +69,7 @@ const corsOptions = {
       return;
     }
 
+    console.warn(`CORS blocked origin: ${origin}`);
     callback(new Error('Not allowed by CORS'), false);
   },
   credentials: true,
