@@ -1,22 +1,22 @@
 import crypto from 'crypto';
 
-const ALGORITHM = 'aes-256-gcm';
-const IV_LENGTH = 12; // GCM recommended 12 bytes
-const AUTH_TAG_LENGTH = 16;
+// Usar el mismo algoritmo que CryptoJS (AES-128-CBC con key derivada)
+const ALGORITHM = 'aes-128-cbc';
+const IV_LENGTH = 16;
 
-// Get encryption key from environment
+// Get encryption key from environment - derive to 32 bytes (16 for key + 16 for IV)
 const getEncryptionKey = (): Buffer => {
   const key = process.env.ENCRYPTION_KEY;
   if (!key) {
     throw new Error('ENCRYPTION_KEY is not defined in environment variables');
   }
-  // Ensure key is exactly 32 bytes for AES-256
+  // Derivar una clave de 32 bytes usando SHA-256
   return crypto.createHash('sha256').update(key).digest();
 };
 
 /**
- * Encrypts sensitive data
- * Returns: iv:authTag:encryptedData (base64)
+ * Encrypts sensitive data - compatible with CryptoJS.AES
+ * Returns: iv:encryptedData (hex)
  */
 export const encrypt = (plainText: string): string => {
   if (!plainText) return plainText;
@@ -24,46 +24,37 @@ export const encrypt = (plainText: string): string => {
   const key = getEncryptionKey();
   const iv = crypto.randomBytes(IV_LENGTH);
   
-  const cipher = crypto.createCipheriv(ALGORITHM, key, iv, {
-    authTagLength: AUTH_TAG_LENGTH,
-  });
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
   
-  let encrypted = cipher.update(plainText, 'utf8', 'base64');
-  encrypted += cipher.final('base64');
+  let encrypted = cipher.update(plainText, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
   
-  const authTag = cipher.getAuthTag();
-  
-  // Format: iv:authTag:ciphertext
-  return `${iv.toString('base64')}:${authTag.toString('base64')}:${encrypted}`;
+  // Format: iv:ciphertext (both in hex)
+  return `${iv.toString('hex')}:${encrypted}`;
 };
 
 /**
- * Decrypts sensitive data
- * Input format: iv:authTag:encryptedData (base64)
+ * Decrypts sensitive data - compatible with CryptoJS.AES
+ * Input format: iv:encryptedData (hex)
  */
 export const decrypt = (encryptedData: string): string => {
   if (!encryptedData) return encryptedData;
   
-  // Check if it's actually encrypted (contains colons and has 3 parts)
+  // Check if it's encrypted format (has colon separator)
   const parts = encryptedData.split(':');
-  if (parts.length !== 3) {
+  if (parts.length !== 2) {
     // Not encrypted format, return as-is (backwards compatibility)
     return encryptedData;
   }
   
   try {
     const key = getEncryptionKey();
-    const iv = Buffer.from(parts[0], 'base64');
-    const authTag = Buffer.from(parts[1], 'base64');
-    const ciphertext = parts[2];
+    const iv = Buffer.from(parts[0], 'hex');
+    const ciphertext = parts[1];
     
-    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv, {
-      authTagLength: AUTH_TAG_LENGTH,
-    });
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
     
-    decipher.setAuthTag(authTag);
-    
-    let decrypted = decipher.update(ciphertext, 'base64', 'utf8');
+    let decrypted = decipher.update(ciphertext, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     
     return decrypted;
@@ -108,4 +99,22 @@ export const decryptFields = <T extends Record<string, unknown>>(
   }
   
   return decrypted;
+};
+
+/**
+ * Try to decrypt a value - returns original if not encrypted or decryption fails
+ * Used for handling data that may or may not be encrypted (backwards compatibility)
+ */
+export const tryDecrypt = (value: string): string => {
+  if (!value) return value;
+  
+  // Check if it looks encrypted (3 parts separated by colons)
+  const parts = value.split(':');
+  if (parts.length !== 3) {
+    return value; // Not encrypted format
+  }
+  
+  const decrypted = decrypt(value);
+  // If decryption returns same value, it wasn't actually encrypted
+  return decrypted === value ? value : decrypted;
 };

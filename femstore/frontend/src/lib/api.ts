@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { encryptPayload, decryptResponse } from './encryption';
+import { encryptPayload, decryptResponse, encryptFields } from './encryption';
 
 // En Vercel usar ruta relativa (/api), en desarrollo usar variable de entorno
 const getBaseUrl = () => {
@@ -13,14 +13,18 @@ const getBaseUrl = () => {
 
 const API_URL = getBaseUrl();
 
+// Campos sensibles a encriptar en requests según el endpoint
+const SENSITIVE_FIELDS_MAP: Record<string, string[]> = {
+  '/orders': ['customer_phone', 'customer_email', 'delivery_address', 'notes'],
+  '/auth/register': ['name', 'email', 'phone'],
+  '/auth/login': ['email'], // Encriptar email en login también
+};
+
 const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
 });
-
-// Campos sensibles a encriptar en requests
-const SENSITIVE_FIELDS = ['customer_phone', 'customer_email', 'delivery_address', 'notes'];
 
 // Attach token from localStorage on every request
 api.interceptors.request.use((config) => {
@@ -33,19 +37,24 @@ api.interceptors.request.use((config) => {
   
   // Encriptar datos sensibles en el payload de requests POST/PUT/PATCH
   if (config.data && (config.method === 'post' || config.method === 'put' || config.method === 'patch')) {
-    const sensitiveData: Record<string, unknown> = {};
-    let hasSensitiveData = false;
+    const url = config.url || '';
+    const sensitiveFields = SENSITIVE_FIELDS_MAP[url] || [];
     
-    for (const field of SENSITIVE_FIELDS) {
-      if (config.data[field]) {
-        sensitiveData[field] = config.data[field];
-        hasSensitiveData = true;
+    if (sensitiveFields.length > 0) {
+      const sensitiveData: Record<string, unknown> = {};
+      let hasSensitiveData = false;
+      
+      for (const field of sensitiveFields) {
+        if (config.data[field]) {
+          sensitiveData[field] = config.data[field];
+          hasSensitiveData = true;
+        }
       }
-    }
-    
-    if (hasSensitiveData) {
-      // Encriptar solo los campos sensibles
-      config.data = { ...config.data, ...encryptPayload(sensitiveData) };
+      
+      if (hasSensitiveData) {
+        // Encriptar solo los campos sensibles
+        config.data = { ...config.data, ...encryptFields(sensitiveData, sensitiveFields) };
+      }
     }
   }
   

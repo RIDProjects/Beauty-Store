@@ -22,12 +22,23 @@
     --border-light: #FAF0F0;
   }
 
+  .dark {
+    --background: #111827;
+    --surface: #1F2937;
+    --surface-elevated: #374151;
+    --text: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --text-light: #D1D5DB;
+    --border: #374151;
+    --border-light: #4B5563;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
@@ -44,27 +55,27 @@
   }
 
   .btn-secondary {
-    @apply bg-white hover:bg-blush-50 text-blush-600 font-semibold px-6 py-3 rounded-xl
-           border-2 border-blush-300 hover:border-blush-500 transition-all duration-200
+    @apply bg-white dark:bg-gray-800 hover:bg-blush-50 dark:hover:bg-gray-700 text-blush-600 dark:text-blush-400 font-semibold px-6 py-3 rounded-xl
+           border-2 border-blush-300 dark:border-blush-700 hover:border-blush-500 transition-all duration-200
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-ghost {
-    @apply hover:bg-gray-100 text-gray-700 font-medium px-4 py-2 rounded-lg transition-all duration-200;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 font-medium px-4 py-2 rounded-lg transition-all duration-200;
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden;
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden;
   }
 
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
-           focus:outline-none focus:ring-2 focus:ring-blush-300 focus:border-blush-400
-           placeholder:text-gray-400 transition-all duration-200;
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800
+           focus:outline-none focus:ring-2 focus:ring-blush-300 dark:focus:ring-blush-600 focus:border-blush-400 dark:focus:border-blush-500
+           placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100 transition-all duration-200;
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-700 mb-1.5;
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5;
   }
 
   .badge {
@@ -72,31 +83,31 @@
   }
 
   .badge-blush {
-    @apply badge bg-blush-100 text-blush-700;
+    @apply badge bg-blush-100 dark:bg-blush-900 text-blush-700 dark:text-blush-300;
   }
 
   .badge-gold {
-    @apply badge bg-gold-100 text-gold-700;
+    @apply badge bg-gold-100 dark:bg-yellow-900/30 text-gold-700 dark:text-yellow-400;
   }
 
   .badge-emerald {
-    @apply badge bg-emerald-100 text-emerald-700;
+    @apply badge bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400;
   }
 
   .badge-green {
-    @apply badge bg-green-100 text-green-700;
+    @apply badge bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400;
   }
 
   .badge-yellow {
-    @apply badge bg-yellow-100 text-yellow-700;
+    @apply badge bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400;
   }
 
   .badge-blue {
-    @apply badge bg-blue-100 text-blue-700;
+    @apply badge bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400;
   }
 
   .badge-gray {
-    @apply badge bg-gray-100 text-gray-700;
+    @apply badge bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
   }
 
   .page-container {
@@ -104,7 +115,7 @@
   }
 
   .section-title {
-    @apply text-3xl font-bold text-gray-900 mb-2;
+    @apply text-3xl font-bold text-gray-900 dark:text-white mb-2;
     font-family: 'Playfair Display', serif;
   }
 }
@@ -116,6 +127,10 @@
 
   .bg-gradient-hero {
     background: linear-gradient(135deg, #FDF8F8 0%, #FAF0F0 50%, #FBF9F5 100%);
+  }
+
+  .dark .bg-gradient-hero {
+    background: linear-gradient(135deg, #1F2937 0%, #111827 50%, #1F2937 100%);
   }
 
   .scrollbar-thin {
@@ -134,5 +149,9 @@
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: #EBCBCB;
     border-radius: 999px;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #4B5563;
   }
 }
