@@ -3,10 +3,24 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+// ─── Validación de variables de entorno ────────────────────────────────────
+const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL'];
+const missingEnvVars = requiredEnvVars.filter(v => !process.env[v]);
+
+if (missingEnvVars.length > 0 && process.env.NODE_ENV === 'production') {
+  console.error(`❌ ERROR: Variables de entorno requeridas faltantes: ${missingEnvVars.join(', ')}`);
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  console.warn('⚠️  ADVERTENCIA: JWT_SECRET no definido. Usando valor por defecto (NO usar en producción)');
+}
 
 // Route imports
 import authRoutes from './modules/auth/auth.controller';
@@ -36,7 +50,7 @@ const corsOptions = {
 
     // Allow specific configured origins
     const allowedOrigins = [
-      'https://beauty-store-ten.vercel.app',
+      'https://www.vainybliss.com/',
       process.env.FRONTEND_URL,
     ].filter(Boolean);
 
@@ -62,6 +76,17 @@ app.use(cors(corsOptions));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ─── Rate Limiting ─────────────────────────────────────────────────────────
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // 100 requests por IP por ventana
+  message: { success: false, error: 'Demasiadas solicitudes. Intenta de nuevo en 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/', limiter);
 
 // ─── Static Files (uploaded images) ───────────────────────────
 const uploadDir = process.env.UPLOAD_DIR || 'uploads';

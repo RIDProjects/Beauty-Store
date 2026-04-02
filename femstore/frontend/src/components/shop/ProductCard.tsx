@@ -34,8 +34,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={(e) => e.preventDefault()}
           className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-blush-50"
+          aria-label={`Agregar ${product.name} a favoritos`}
         >
-          <Heart className="w-4 h-4 text-blush-400" />
+          <Heart className="w-4 h-4 text-blush-400" aria-hidden="true" />
         </button>
 
         {product.category_name && (
@@ -48,8 +49,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={handleAddToCart}
             className="w-full bg-blush-500 hover:bg-blush-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg"
+            aria-label={`Agregar ${product.name} al carrito`}
           >
-            <ShoppingBag className="w-4 h-4" />
+            <ShoppingBag className="w-4 h-4" aria-hidden="true" />
             Agregar al carrito
           </button>
         </div>

@@ -31,8 +31,8 @@ export default function CartDrawer() {
               <span className="badge-blush">{count} {count === 1 ? 'item' : 'items'}</span>
             )}
           </div>
-          <button onClick={closeCart} className="btn-ghost p-1.5">
-            <X className="w-5 h-5" />
+          <button onClick={closeCart} className="btn-ghost p-1.5" aria-label="Cerrar carrito">
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -71,15 +71,17 @@ export default function CartDrawer() {
                     <button
                       onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
                       className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:border-blush-300 transition-colors"
+                      aria-label={`Reducir cantidad de ${item.product_name}`}
                     >
-                      <Minus className="w-3 h-3 text-gray-600" />
+                      <Minus className="w-3 h-3 text-gray-600" aria-hidden="true" />
                     </button>
-                    <span className="text-sm font-medium w-5 text-center">{item.quantity}</span>
+                    <span className="text-sm font-medium w-5 text-center" aria-label={`Cantidad: ${item.quantity}`}>{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
                       className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:border-blush-300 transition-colors"
+                      aria-label={`Aumentar cantidad de ${item.product_name}`}
                     >
-                      <Plus className="w-3 h-3 text-gray-600" />
+                      <Plus className="w-3 h-3 text-gray-600" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
@@ -87,8 +89,9 @@ export default function CartDrawer() {
                   <button
                     onClick={() => removeItem(item.product_id)}
                     className="p-1 hover:text-red-500 text-gray-400 transition-colors"
+                    aria-label={`Eliminar ${item.product_name} del carrito`}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
                   </button>
                   <p className="text-sm font-bold text-gray-800">
                     ${(Number(item.product_price) * item.quantity).toFixed(2)}

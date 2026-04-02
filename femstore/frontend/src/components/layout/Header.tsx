@@ -49,8 +49,8 @@ export default function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              <Link href="/shop/products" className="btn-ghost p-2 hidden sm:flex">
-                <Search className="w-5 h-5 text-gray-600" />
+              <Link href="/shop/products" className="btn-ghost p-2 hidden sm:flex" aria-label="Buscar productos">
+                <Search className="w-5 h-5 text-gray-600" aria-hidden="true" />
               </Link>
 
               {/* Cart */}

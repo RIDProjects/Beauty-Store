@@ -2,26 +2,21 @@ import { Router, Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { authenticate } from '../../common/guards/auth.guard';
 import { sendSuccess, sendError } from '../../common/helpers';
+import { validateRequestSafe, RegisterSchema, LoginSchema, UpdateProfileSchema } from '../../common/validators';
 
 const router = Router();
 const authService = new AuthService();
 
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
-  const { name, email, password, phone } = req.body;
-
-  if (!name || !email || !password) {
-    return sendError(res, 'Nombre, email y contraseña son requeridos');
+  const validation = validateRequestSafe(RegisterSchema, req.body);
+  
+  if (!validation.success) {
+    const errors = validation.error.issues.map(issue => issue.message).join(', ');
+    return sendError(res, errors);
   }
 
-  if (password.length < 6) {
-    return sendError(res, 'La contraseña debe tener al menos 6 caracteres');
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return sendError(res, 'Email inválido');
-  }
+  const { name, email, password, phone } = validation.data;
 
   try {
     const result = await authService.register({ name, email, password, phone });
@@ -33,11 +28,14 @@ router.post('/register', async (req: Request, res: Response) => {
 
 // POST /api/auth/login
 router.post('/login', async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return sendError(res, 'Email y contraseña son requeridos');
+  const validation = validateRequestSafe(LoginSchema, req.body);
+  
+  if (!validation.success) {
+    const errors = validation.error.issues.map(issue => issue.message).join(', ');
+    return sendError(res, errors);
   }
+
+  const { email, password } = validation.data;
 
   try {
     const result = await authService.login({ email, password });
@@ -59,10 +57,15 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
 
 // PUT /api/auth/profile
 router.put('/profile', authenticate, async (req: Request, res: Response) => {
-  const { name, phone } = req.body;
+  const validation = validateRequestSafe(UpdateProfileSchema, req.body);
+  
+  if (!validation.success) {
+    const errors = validation.error.issues.map(issue => issue.message).join(', ');
+    return sendError(res, errors);
+  }
 
   try {
-    const user = await authService.updateProfile(req.user!.sub, { name, phone });
+    const user = await authService.updateProfile(req.user!.sub, validation.data);
     return sendSuccess(res, user, 'Perfil actualizado');
   } catch (error) {
     return sendError(res, (error as Error).message);

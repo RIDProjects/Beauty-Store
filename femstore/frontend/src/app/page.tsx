@@ -40,10 +40,10 @@ export default async function HomePage() {
         {/* Hero Section */}
         <section className="relative min-h-[600px] flex items-center bg-gradient-to-br from-blush-50 via-cream-50 to-blush-100 overflow-hidden">
           {/* Background con imagen del logo */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none" role="img" aria-label="Logo Vainy Bliss de fondo">
             <img 
               src="/logo.png" 
-              alt="" 
+              alt="Logo Vainy Bliss"
               className="max-w-4xl w-full h-full object-contain"
             />
           </div>
