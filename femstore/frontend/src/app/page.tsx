@@ -39,8 +39,8 @@ export default async function HomePage() {
       <main>
         {/* Hero Section */}
         <section className="relative min-h-[600px] flex items-center bg-gradient-to-br from-blush-50 via-cream-50 to-blush-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
-          {/* Background con imagen del logo */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none" role="img" aria-label="Logo Vainy Bliss de fondo">
+          {/* Background con imagen del logo - solo en modo claro */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-10 dark:opacity-5 pointer-events-none" role="img" aria-label="Logo Vainy Bliss de fondo">
             <img 
               src="/logo.png" 
               alt="Logo Vainy Bliss"
