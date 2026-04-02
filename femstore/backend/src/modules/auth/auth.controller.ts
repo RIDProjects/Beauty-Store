@@ -3,12 +3,13 @@ import { AuthService } from './auth.service';
 import { authenticate } from '../../common/guards/auth.guard';
 import { sendSuccess, sendError } from '../../common/helpers';
 import { validateRequestSafe, RegisterSchema, LoginSchema, UpdateProfileSchema } from '../../common/validators';
+import { decryptBody } from '../../common/middleware/decryptBody';
 
 const router = Router();
 const authService = new AuthService();
 
 // POST /api/auth/register
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', decryptBody('name', 'email', 'password', 'phone'), async (req: Request, res: Response) => {
   const validation = validateRequestSafe(RegisterSchema, req.body);
   
   if (!validation.success) {
@@ -27,7 +28,7 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 // POST /api/auth/login
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', decryptBody('email', 'password'), async (req: Request, res: Response) => {
   const validation = validateRequestSafe(LoginSchema, req.body);
   
   if (!validation.success) {
