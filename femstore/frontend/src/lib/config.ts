@@ -1,6 +1,6 @@
 export const storeConfig = {
-  vendorWhatsApp: '+5354489573',
-  vendorPhoneDisplay: '+53 5448 9573',
+  vendorWhatsApp: '+5353790537',
+  vendorPhoneDisplay: '+53 5379 0537',
   storeName: 'Vainy Bliss',
 };
 
