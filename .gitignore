@@ -5,3 +5,4 @@
 /.claude/
 /femstore/frontend/.env
 /femstore/backend/.env
+/femstore/backend/dist/
