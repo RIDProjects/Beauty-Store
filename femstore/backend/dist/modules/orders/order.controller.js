@@ -4,11 +4,12 @@ const express_1 = require("express");
 const order_service_1 = require("./order.service");
 const auth_guard_1 = require("../../common/guards/auth.guard");
 const helpers_1 = require("../../common/helpers");
+const decryptBody_1 = require("../../common/middleware/decryptBody");
 const router = (0, express_1.Router)();
 const orderService = new order_service_1.OrderService();
 const VALID_STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
 // POST /api/orders - Create order (optional auth)
-router.post('/', auth_guard_1.optionalAuth, async (req, res) => {
+router.post('/', auth_guard_1.optionalAuth, (0, decryptBody_1.decryptBody)('customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'notes'), async (req, res) => {
     const { customer_name, customer_phone, customer_email, delivery_address, delivery_type, notes, items, } = req.body;
     if (!customer_name || !customer_phone) {
         return (0, helpers_1.sendError)(res, 'Nombre y teléfono del cliente son requeridos');

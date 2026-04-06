@@ -5,10 +5,11 @@ const auth_service_1 = require("./auth.service");
 const auth_guard_1 = require("../../common/guards/auth.guard");
 const helpers_1 = require("../../common/helpers");
 const validators_1 = require("../../common/validators");
+const decryptBody_1 = require("../../common/middleware/decryptBody");
 const router = (0, express_1.Router)();
 const authService = new auth_service_1.AuthService();
 // POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', (0, decryptBody_1.decryptBody)('email', 'password', 'phone'), async (req, res) => {
     const validation = (0, validators_1.validateRequestSafe)(validators_1.RegisterSchema, req.body);
     if (!validation.success) {
         const errors = validation.error.issues.map(issue => issue.message).join(', ');
@@ -24,7 +25,7 @@ router.post('/register', async (req, res) => {
     }
 });
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', (0, decryptBody_1.decryptBody)('email', 'password'), async (req, res) => {
     const validation = (0, validators_1.validateRequestSafe)(validators_1.LoginSchema, req.body);
     if (!validation.success) {
         const errors = validation.error.issues.map(issue => issue.message).join(', ');

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { User } from '../types';
 import api from '../lib/api';
+import { useCartStore } from './cart.store';
 
 interface AuthStore {
   user: User | null;
@@ -10,8 +11,31 @@ interface AuthStore {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, phone?: string) => Promise<void>;
   logout: () => void;
-  initialize: () => void;
+  initialize: () => Promise<void>;
   updateProfile: (data: { name?: string; phone?: string }) => Promise<void>;
+}
+
+// Decodifica un JWT sin verificar la firma para leer su payload (exp).
+// La verificación real ocurre en el backend; esto es solo para no enviar
+// tokens claramente expirados.
+function isJwtExpired(token: string): boolean {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return true;
+    const decoded = JSON.parse(
+      atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+    ) as { exp?: number };
+    if (!decoded.exp) return false;
+    // exp viene en segundos
+    return decoded.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
+
+function clearAuthStorage() {
+  localStorage.removeItem('femstore_token');
+  localStorage.removeItem('femstore_user');
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
@@ -20,21 +44,45 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isLoading: false,
   isInitialized: false,
 
-  initialize: () => {
+  initialize: async () => {
     if (typeof window === 'undefined') return;
     const token = localStorage.getItem('femstore_token');
     const userStr = localStorage.getItem('femstore_user');
-    if (token && userStr) {
-      try {
-        const user = JSON.parse(userStr) as User;
-        set({ user, token, isInitialized: true });
-        return;
-      } catch {
-        localStorage.removeItem('femstore_token');
-        localStorage.removeItem('femstore_user');
-      }
+
+    if (!token || !userStr) {
+      set({ isInitialized: true });
+      return;
     }
-    set({ isInitialized: true });
+
+    // 1) Chequeo local: si el JWT está expirado, no hace falta llamar al backend.
+    if (isJwtExpired(token)) {
+      clearAuthStorage();
+      set({ user: null, token: null, isInitialized: true });
+      return;
+    }
+
+    // 2) Hidratamos optimistamente con el user en localStorage
+    let optimisticUser: User | null = null;
+    try {
+      optimisticUser = JSON.parse(userStr) as User;
+      set({ user: optimisticUser, token });
+    } catch {
+      clearAuthStorage();
+      set({ user: null, token: null, isInitialized: true });
+      return;
+    }
+
+    // 3) Validamos contra backend con /auth/me. Si falla con 401, el interceptor
+    // de axios ya limpia el storage; nosotros sincronizamos el state.
+    try {
+      const { data } = await api.get('/auth/me');
+      const user = data.data as User;
+      localStorage.setItem('femstore_user', JSON.stringify(user));
+      set({ user, token, isInitialized: true });
+    } catch {
+      clearAuthStorage();
+      set({ user: null, token: null, isInitialized: true });
+    }
   },
 
   login: async (email: string, password: string) => {
@@ -70,6 +118,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   logout: () => {
     localStorage.removeItem('femstore_token');
     localStorage.removeItem('femstore_user');
+    // Limpiar carrito para evitar que el siguiente usuario vea items del anterior
+    useCartStore.getState().clearCart();
     set({ user: null, token: null });
   },
 

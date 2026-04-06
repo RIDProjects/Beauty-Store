@@ -2,9 +2,9 @@ import bcrypt from 'bcryptjs';
 import { query } from '../config/database';
 
 async function createAdmin() {
-  const email = 'admin@vainybliss.com';
-  const password = 'Admin123!';
-  const name = 'Admin Vainy Bliss';
+  const email = 'liliana@vainybliss.com';
+  const password = 'Lili@2001';
+  const name = 'Liliana';
 
   // Generar hash
   const hashedPassword = await bcrypt.hash(password, 12);

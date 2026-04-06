@@ -24,23 +24,29 @@ class AuthService {
         const decryptedPassword = decryptValue(dto.password) || dto.password;
         // Hash password
         const hashedPassword = await bcryptjs_1.default.hash(decryptedPassword, 12);
-        // El email y phone ya vienen encriptados del frontend
-        // Solo encriptamos el name por seguridad
-        const encryptedName = (0, encryption_1.encrypt)(dto.name);
-        // Create user with encrypted fields (email y phone ya encriptados, name encriptamos)
-        const result = await (0, database_1.query)(`INSERT INTO users (name, email, password, phone, role)
-       VALUES ($1, $2, $3, $4, 'customer')
-       RETURNING id, name, email, phone, role, is_active, created_at, updated_at`, [encryptedName, dto.email, hashedPassword, dto.phone || null]);
-        const user = result.rows[0];
-        // Desencriptar para respuesta
-        const decryptedUser = {
-            ...user,
-            name: (0, encryption_1.decrypt)(user.name),
-            email: (0, encryption_1.decrypt)(user.email),
-            phone: user.phone ? (0, encryption_1.decrypt)(user.phone) : undefined,
-        };
-        const token = this.generateToken(user);
-        return { user: decryptedUser, token };
+        // Create user with encrypted fields (email y phone ya encriptados, name en texto plano)
+        try {
+            const result = await (0, database_1.query)(`INSERT INTO users (name, email, password, phone, role)
+         VALUES ($1, $2, $3, $4, 'customer')
+         RETURNING id, name, email, phone, role, is_active, created_at, updated_at`, [dto.name, dto.email, hashedPassword, dto.phone || null]);
+            const user = result.rows[0];
+            // Desencriptar para respuesta
+            const decryptedUser = {
+                ...user,
+                name: user.name,
+                email: (0, encryption_1.decrypt)(user.email),
+                phone: user.phone ? (0, encryption_1.decrypt)(user.phone) : undefined,
+            };
+            const token = this.generateToken(user);
+            return { user: decryptedUser, token };
+        }
+        catch (error) {
+            // PostgreSQL unique violation (error code 23505)
+            if (error.code === '23505') {
+                throw new Error('Este email ya está registrado');
+            }
+            throw error;
+        }
     }
     async login(dto) {
         // El email llega encriptado desde el frontend, lo desencriptamos para buscar
@@ -67,7 +73,7 @@ class AuthService {
         const { password: _, ...userWithoutPassword } = user;
         const decryptedUser = {
             ...userWithoutPassword,
-            name: (0, encryption_1.tryDecrypt)(userWithoutPassword.name) || userWithoutPassword.name,
+            name: userWithoutPassword.name,
             email: (0, encryption_1.decrypt)(userWithoutPassword.email),
             phone: userWithoutPassword.phone ? (0, encryption_1.decrypt)(userWithoutPassword.phone) : undefined,
         };
@@ -83,26 +89,25 @@ class AuthService {
         // Desencriptar campos sensibles
         return {
             ...user,
-            name: (0, encryption_1.tryDecrypt)(user.name) || user.name,
+            name: user.name,
             email: (0, encryption_1.decrypt)(user.email),
             phone: user.phone ? (0, encryption_1.decrypt)(user.phone) : undefined,
         };
     }
     async updateProfile(userId, data) {
-        // Encriptar los nuevos valores
-        const encryptedName = data.name ? (0, encryption_1.encrypt)(data.name) : null;
+        // Encriptar solo phone, name se guarda en texto plano
         const encryptedPhone = data.phone ? (0, encryption_1.encrypt)(data.phone) : null;
         const result = await (0, database_1.query)(`UPDATE users SET
         name = COALESCE($1, name),
         phone = COALESCE($2, phone),
         updated_at = NOW()
        WHERE id = $3
-       RETURNING id, name, email, phone, role, is_active, created_at, updated_at`, [encryptedName, encryptedPhone, userId]);
+       RETURNING id, name, email, phone, role, is_active, created_at, updated_at`, [data.name || null, encryptedPhone, userId]);
         const user = result.rows[0];
         // Desencriptar para respuesta
         return {
             ...user,
-            name: (0, encryption_1.tryDecrypt)(user.name) || user.name,
+            name: user.name,
             email: (0, encryption_1.decrypt)(user.email),
             phone: user.phone ? (0, encryption_1.decrypt)(user.phone) : undefined,
         };

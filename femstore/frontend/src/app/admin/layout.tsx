@@ -23,6 +23,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, logout, isInitialized } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Admin panel always uses light theme (avoids inconsistent dark styles)
+  useEffect(() => {
+    const root = document.documentElement;
+    const hadDark = root.classList.contains('dark');
+    root.classList.remove('dark');
+    return () => {
+      if (hadDark) root.classList.add('dark');
+    };
+  }, []);
+
   useEffect(() => {
     if (!isInitialized) return;
     if (!user || user.role !== 'admin') {

@@ -1,14 +1,90 @@
 'use client';
+import { memo } from 'react';
 import { X, ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 import { useCartStore } from '@/store/cart.store';
 import { getImageUrl } from '@/lib/api';
+import type { CartItem } from '@/types';
+
+interface CartItemRowProps {
+  item: CartItem;
+  onIncrement: (id: string) => void;
+  onDecrement: (id: string) => void;
+  onRemove: (id: string) => void;
+}
+
+const CartItemRow = memo(function CartItemRow({ item, onIncrement, onDecrement, onRemove }: CartItemRowProps) {
+  return (
+    <div className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-blush-50 dark:bg-gray-700">
+        <Image
+          src={getImageUrl(item.primary_image)}
+          alt={item.product_name}
+          width={64}
+          height={64}
+          className="object-cover w-full h-full"
+          onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.jpg'; }}
+        />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.product_name}</p>
+        <p className="text-blush-600 dark:text-blush-400 font-bold text-sm">${Number(item.product_price).toFixed(2)}</p>
+        <div className="flex items-center gap-2 mt-1.5">
+          <button
+            onClick={() => onDecrement(item.product_id)}
+            className="w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 transition-colors"
+            aria-label={`Reducir cantidad de ${item.product_name}`}
+          >
+            <Minus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
+          </button>
+          <span className="text-sm font-medium w-5 text-center dark:text-white" aria-label={`Cantidad: ${item.quantity}`}>{item.quantity}</span>
+          <button
+            onClick={() => onIncrement(item.product_id)}
+            disabled={item.quantity >= item.stock}
+            className="w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            aria-label={`Aumentar cantidad de ${item.product_name}`}
+          >
+            <Plus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+      <div className="flex flex-col items-end justify-between">
+        <button
+          onClick={() => onRemove(item.product_id)}
+          className="p-1 hover:text-red-500 text-gray-400 transition-colors"
+          aria-label={`Eliminar ${item.product_name} del carrito`}
+        >
+          <Trash2 className="w-4 h-4" aria-hidden="true" />
+        </button>
+        <p className="text-sm font-bold text-gray-800 dark:text-white">
+          ${(Number(item.product_price) * item.quantity).toFixed(2)}
+        </p>
+      </div>
+    </div>
+  );
+});
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
   const total = getTotalPrice();
   const count = getTotalItems();
+
+  const handleIncrement = (productId: string) => {
+    const item = items.find((i) => i.product_id === productId);
+    if (!item) return;
+    const result = updateQuantity(productId, item.quantity + 1);
+    if (result === 'out_of_stock') {
+      toast.error(`Solo hay ${item.stock} unidades disponibles`);
+    }
+  };
+
+  const handleDecrement = (productId: string) => {
+    const item = items.find((i) => i.product_id === productId);
+    if (!item) return;
+    updateQuantity(productId, item.quantity - 1);
+  };
 
   if (!isOpen) return null;
 
@@ -53,51 +129,13 @@ export default function CartDrawer() {
             </div>
           ) : (
             items.map((item) => (
-              <div key={item.product_id} className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-blush-50 dark:bg-gray-700">
-                  <Image
-                    src={getImageUrl(item.primary_image)}
-                    alt={item.product_name}
-                    width={64}
-                    height={64}
-                    className="object-cover w-full h-full"
-                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.jpg'; }}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.product_name}</p>
-                  <p className="text-blush-600 dark:text-blush-400 font-bold text-sm">${Number(item.product_price).toFixed(2)}</p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <button
-                      onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
-                      className="w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 transition-colors"
-                      aria-label={`Reducir cantidad de ${item.product_name}`}
-                    >
-                      <Minus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
-                    </button>
-                    <span className="text-sm font-medium w-5 text-center dark:text-white" aria-label={`Cantidad: ${item.quantity}`}>{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
-                      className="w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 transition-colors"
-                      aria-label={`Aumentar cantidad de ${item.product_name}`}
-                    >
-                      <Plus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end justify-between">
-                  <button
-                    onClick={() => removeItem(item.product_id)}
-                    className="p-1 hover:text-red-500 text-gray-400 transition-colors"
-                    aria-label={`Eliminar ${item.product_name} del carrito`}
-                  >
-                    <Trash2 className="w-4 h-4" aria-hidden="true" />
-                  </button>
-                  <p className="text-sm font-bold text-gray-800 dark:text-white">
-                    ${(Number(item.product_price) * item.quantity).toFixed(2)}
-                  </p>
-                </div>
-              </div>
+              <CartItemRow
+                key={item.product_id}
+                item={item}
+                onIncrement={handleIncrement}
+                onDecrement={handleDecrement}
+                onRemove={removeItem}
+              />
             ))
           )}
         </div>

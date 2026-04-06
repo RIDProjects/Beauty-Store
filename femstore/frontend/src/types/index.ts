@@ -74,6 +74,7 @@ export interface CartItem {
   product_name: string;
   product_price: number;
   quantity: number;
+  stock: number;
   primary_image?: string;
 }
 

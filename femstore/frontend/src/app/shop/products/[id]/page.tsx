@@ -6,6 +6,7 @@ import { ShoppingBag, ArrowLeft, Star, Heart, ChevronLeft, ChevronRight } from '
 import Header from '@/components/layout/Header';
 import { Product, ApiResponse } from '@/types';
 import { useCartStore } from '@/store/cart.store';
+import { useFavoritesStore } from '@/store/favorites.store';
 import { getImageUrl } from '@/lib/api';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -18,6 +19,15 @@ export default function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCartStore();
+  const isFavorite = useFavoritesStore((s) => (product ? s.ids.includes(product.id) : false));
+  const toggleFavorite = useFavoritesStore((s) => s.toggle);
+
+  const handleToggleFavorite = () => {
+    if (!product) return;
+    const nowFav = toggleFavorite(product.id);
+    if (nowFav) toast.success(`${product.name} agregado a favoritos ❤️`);
+    else toast(`${product.name} eliminado de favoritos`);
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -36,7 +46,16 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (!product) return;
-    for (let i = 0; i < quantity; i++) addItem(product);
+    const stock = Number(product.stock) || 0;
+    if (stock <= 0) {
+      toast.error('Producto sin stock');
+      return;
+    }
+    const result = addItem(product, quantity);
+    if (result === 'out_of_stock') {
+      toast.error(`Solo hay ${stock} unidades disponibles`);
+      return;
+    }
     toast.success(`${product.name} agregado al carrito 🛍️`);
   };
 
@@ -67,11 +86,11 @@ export default function ProductDetailPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50">
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <div className="page-container py-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-500 hover:text-blush-500 transition-colors mb-6 text-sm"
+            className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blush-500 transition-colors mb-6 text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver
@@ -134,23 +153,23 @@ export default function ProductDetailPage() {
                 <span className="badge-blush">{product.category_name}</span>
               )}
 
-              <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{product.name}</h1>
 
               <div className="flex items-center gap-2">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
                 ))}
-                <span className="text-sm text-gray-500 ml-1">Producto destacado</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">Producto destacado</span>
               </div>
 
-              <div className="text-4xl font-bold text-blush-600">
+              <div className="text-4xl font-bold text-blush-600 dark:text-blush-400">
                 ${Number(product.price).toFixed(2)}
               </div>
 
               {product.description && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Descripción</h3>
-                  <p className="text-gray-600 leading-relaxed">{product.description}</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Descripción</h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{product.description}</p>
                 </div>
               )}
 
@@ -159,33 +178,52 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-10 h-10 rounded-xl border-2 border-gray-200 hover:border-blush-300 flex items-center justify-center font-bold text-gray-600 transition-colors"
+                    disabled={quantity <= 1}
+                    className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 transition-colors"
                   >
                     −
                   </button>
-                  <span className="w-10 text-center font-bold text-lg">{quantity}</span>
+                  <span className="w-10 text-center font-bold text-lg dark:text-white">{quantity}</span>
                   <button
-                    onClick={() => setQuantity((q) => q + 1)}
-                    className="w-10 h-10 rounded-xl border-2 border-gray-200 hover:border-blush-300 flex items-center justify-center font-bold text-gray-600 transition-colors"
+                    onClick={() => setQuantity((q) => Math.min((Number(product.stock) || 0), q + 1))}
+                    disabled={quantity >= (Number(product.stock) || 0)}
+                    className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 transition-colors"
                   >
                     +
                   </button>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                    {(Number(product.stock) || 0) > 0
+                      ? `${product.stock} disponibles`
+                      : 'Sin stock'}
+                  </span>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <button onClick={handleAddToCart} className="btn-primary flex-1 flex items-center justify-center gap-2">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={(Number(product.stock) || 0) <= 0}
+                  className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
                   <ShoppingBag className="w-5 h-5" />
-                  Agregar al carrito
+                  {(Number(product.stock) || 0) <= 0 ? 'Sin stock' : 'Agregar al carrito'}
                 </button>
-                <button className="btn-secondary px-4 py-3">
-                  <Heart className="w-5 h-5" />
+                <button
+                  type="button"
+                  onClick={handleToggleFavorite}
+                  aria-pressed={isFavorite}
+                  aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                  className={`btn-secondary px-4 py-3 ${isFavorite ? 'bg-blush-50 dark:bg-blush-900/30 border-blush-300' : ''}`}
+                >
+                  <Heart
+                    className={`w-5 h-5 ${isFavorite ? 'text-blush-500 fill-blush-500' : ''}`}
+                  />
                 </button>
               </div>
 
-              <div className="bg-blush-50 rounded-xl p-4 space-y-2">
+              <div className="bg-blush-50 dark:bg-blush-900/20 rounded-xl p-4 space-y-2">
                 {['Calidad garantizada en cada producto', 'Entrega a domicilio disponible', 'Atención personalizada'].map((text) => (
-                  <div key={text} className="flex items-center gap-2 text-sm text-gray-700">
+                  <div key={text} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <div className="w-4 h-4 rounded-full bg-blush-200 flex items-center justify-center flex-shrink-0">
                       <span className="text-blush-700 text-xs">✓</span>
                     </div>

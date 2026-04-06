@@ -36,6 +36,15 @@ class OrderService {
                 if (!product.is_active) {
                     throw new Error(`El producto "${product.name}" no está disponible`);
                 }
+                const availableStock = parseInt(product.stock, 10) || 0;
+                if (item.quantity <= 0) {
+                    throw new Error(`Cantidad inválida para "${product.name}"`);
+                }
+                if (availableStock < item.quantity) {
+                    throw new Error(`Stock insuficiente para "${product.name}". Disponibles: ${availableStock}, solicitados: ${item.quantity}`);
+                }
+                // Decrementar stock dentro de la transacción
+                await client.query(`UPDATE products SET stock = stock - $1 WHERE id = $2`, [item.quantity, product.id]);
                 const itemSubtotal = parseFloat(product.price) * item.quantity;
                 subtotal += itemSubtotal;
                 resolvedItems.push({

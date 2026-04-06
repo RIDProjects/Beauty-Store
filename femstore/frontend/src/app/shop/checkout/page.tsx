@@ -171,7 +171,7 @@ export default function CheckoutPage() {
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
                 <div className="card p-6">
                   <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <User className="w-5 h-5 text-blush-500" />
@@ -179,9 +179,12 @@ export default function CheckoutPage() {
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
-                      <label className="label">Nombre completo *</label>
+                      <label htmlFor="customer_name" className="label">Nombre completo *</label>
                       <input
+                        id="customer_name"
+                        name="name"
                         type="text"
+                        autoComplete="name"
                         className="input"
                         placeholder="María López"
                         value={form.customer_name}
@@ -190,12 +193,16 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label className="label">
+                      <label htmlFor="customer_phone" className="label">
                         <Phone className="w-3.5 h-3.5 inline mr-1" />
                         Teléfono *
                       </label>
                       <input
+                        id="customer_phone"
+                        name="tel"
                         type="tel"
+                        autoComplete="tel"
+                        inputMode="tel"
                         className="input"
                         placeholder="+1 234 567 8900"
                         value={form.customer_phone}
@@ -204,9 +211,13 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label className="label">Email <span className="text-gray-400 font-normal">(opcional)</span></label>
+                      <label htmlFor="customer_email" className="label">Email <span className="text-gray-400 font-normal">(opcional)</span></label>
                       <input
+                        id="customer_email"
+                        name="email"
                         type="email"
+                        autoComplete="email"
+                        inputMode="email"
                         className="input"
                         placeholder="tu@email.com"
                         value={form.customer_email}
@@ -244,11 +255,14 @@ export default function CheckoutPage() {
 
                   {form.delivery_type === 'delivery' && (
                     <div>
-                      <label className="label">
+                      <label htmlFor="delivery_address" className="label">
                         <MapPin className="w-3.5 h-3.5 inline mr-1" />
                         Dirección de entrega *
                       </label>
                       <textarea
+                        id="delivery_address"
+                        name="street-address"
+                        autoComplete="street-address"
                         className="input resize-none"
                         rows={3}
                         placeholder="Calle, número, colonia, ciudad..."

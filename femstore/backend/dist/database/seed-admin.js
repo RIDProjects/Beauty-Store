@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const database_1 = require("../config/database");
 async function createAdmin() {
-    const email = 'admin@vainybliss.com';
-    const password = 'Admin123!';
-    const name = 'Admin Vainy Bliss';
+    const email = 'liliana@vainybliss.com';
+    const password = 'Lili@2001';
+    const name = 'Liliana';
     // Generar hash
     const hashedPassword = await bcryptjs_1.default.hash(password, 12);
     console.log('Creando admin...', { email, name });

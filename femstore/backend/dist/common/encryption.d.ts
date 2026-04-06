@@ -1,11 +1,9 @@
 /**
- * Encripta datos sensibles usando el mismo método que CryptoJS
- * Para mantener compatibilidad entre frontend y backend
+ * Encripta datos sensibles — compatible con CryptoJS del frontend
  */
 export declare const encrypt: (plainText: string) => string;
 /**
- * Desencripta datos sensibles - compatible con CryptoJS.AES.encrypt()
- * El formato de CryptoJS es diferente:base64 ciphertext (no incluye IV separado)
+ * Desencripta datos sensibles — compatible con CryptoJS.AES.encrypt() del frontend
  */
 export declare const decrypt: (encryptedData: string) => string;
 /**

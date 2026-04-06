@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ShoppingBag, Heart } from 'lucide-react';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cart.store';
+import { useFavoritesStore } from '@/store/favorites.store';
 import { getImageUrl } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -13,10 +14,32 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCartStore();
+  const isFavorite = useFavoritesStore((s) => s.ids.includes(product.id));
+  const toggleFavorite = useFavoritesStore((s) => s.toggle);
+  const isOutOfStock = (Number(product.stock) || 0) <= 0;
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const nowFav = toggleFavorite(product.id);
+    if (nowFav) {
+      toast.success(`${product.name} agregado a favoritos ❤️`);
+    } else {
+      toast(`${product.name} eliminado de favoritos`);
+    }
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    addItem(product);
+    if (isOutOfStock) {
+      toast.error('Producto sin stock');
+      return;
+    }
+    const result = addItem(product);
+    if (result === 'out_of_stock') {
+      toast.error(`No hay más stock disponible de ${product.name}`);
+      return;
+    }
     toast.success(`${product.name} agregado al carrito 🛍️`);
   };
 
@@ -32,27 +55,44 @@ export default function ProductCard({ product }: ProductCardProps) {
         />
 
         <button
-          onClick={(e) => e.preventDefault()}
-          className="absolute top-3 right-3 w-8 h-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-blush-50 dark:hover:bg-blush-900"
-          aria-label={`Agregar ${product.name} a favoritos`}
+          onClick={handleToggleFavorite}
+          className={`absolute top-3 right-3 z-10 w-9 h-9 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
+            isFavorite
+              ? 'bg-blush-500 hover:bg-blush-600'
+              : 'bg-white/90 dark:bg-gray-800/90 hover:bg-blush-50 dark:hover:bg-blush-900 opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+          }`}
+          aria-label={isFavorite ? `Quitar ${product.name} de favoritos` : `Agregar ${product.name} a favoritos`}
+          aria-pressed={isFavorite}
         >
-          <Heart className="w-4 h-4 text-blush-400" aria-hidden="true" />
+          <Heart
+            className={`w-4 h-4 ${isFavorite ? 'text-white fill-white' : 'text-blush-500'}`}
+            aria-hidden="true"
+          />
         </button>
 
         {product.category_name && (
-          <div className="absolute top-3 left-3">
-            <span className="badge-blush text-xs">{product.category_name}</span>
+          <div className="absolute top-3 left-3 z-10 max-w-[60%]">
+            <span className="badge-blush text-xs truncate inline-block">{product.category_name}</span>
+          </div>
+        )}
+
+        {isOutOfStock && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none">
+            <span className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-xs font-bold uppercase px-3 py-1.5 rounded-full">
+              Sin stock
+            </span>
           </div>
         )}
 
         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
             onClick={handleAddToCart}
-            className="w-full bg-blush-500 hover:bg-blush-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg"
+            disabled={isOutOfStock}
+            className="w-full bg-blush-500 hover:bg-blush-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg"
             aria-label={`Agregar ${product.name} al carrito`}
           >
             <ShoppingBag className="w-4 h-4" aria-hidden="true" />
-            Agregar al carrito
+            {isOutOfStock ? 'Sin stock' : 'Agregar al carrito'}
           </button>
         </div>
       </div>

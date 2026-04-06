@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Heart, Star, Truck, Shield, RotateCcw } from 'lucide-react';
+import { Heart, Star, Truck, Shield, RotateCcw, Phone, MessageCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import ProductCard from '@/components/shop/ProductCard';
 import { Product, Category, ApiResponse } from '@/types';
 import LogoSVG from '@/components/layout/Logo';
+import { storeConfig, formatWhatsAppLink } from '@/lib/config';
 
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
@@ -160,13 +161,68 @@ export default async function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-black text-white py-10">
-        <div className="page-container text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Heart className="w-5 h-5 text-blush-400 fill-blush-400" />
-            <span className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>Vainy Bliss</span>
+      <footer className="bg-gray-900 dark:bg-black text-white py-12">
+        <div className="page-container">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* Brand */}
+            <div className="text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+                <Heart className="w-5 h-5 text-blush-400 fill-blush-400" />
+                <span className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>Vainy Bliss</span>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Moda y belleza diseñada para mujeres como tú.
+              </p>
+            </div>
+
+            {/* Atención al cliente */}
+            <div className="text-center md:text-left">
+              <h3 className="font-semibold text-white mb-3">Atención al cliente</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href={`tel:${storeConfig.vendorWhatsApp}`}
+                    className="flex items-center justify-center md:justify-start gap-2 text-gray-400 hover:text-blush-400 transition-colors"
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span>{storeConfig.vendorPhoneDisplay}</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={formatWhatsAppLink('Hola, tengo una consulta sobre Vainy Bliss')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center md:justify-start gap-2 text-gray-400 hover:text-blush-400 transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>WhatsApp</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Enlaces */}
+            <div className="text-center md:text-left">
+              <h3 className="font-semibold text-white mb-3">Tienda</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/shop/products" className="text-gray-400 hover:text-blush-400 transition-colors">
+                    Todos los productos
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/" className="text-gray-400 hover:text-blush-400 transition-colors">
+                    Inicio
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
-          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Vainy Bliss. Todos los derechos reservados.</p>
+
+          <div className="border-t border-gray-800 pt-6 text-center">
+            <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Vainy Bliss. Todos los derechos reservados.</p>
+          </div>
         </div>
       </footer>
     </>

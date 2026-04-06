@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import ProductCard from '@/components/shop/ProductCard';
+import FilterDrawer from '@/components/shop/FilterDrawer';
 import { Product, Category, ApiResponse, Pagination } from '@/types';
 import api from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
@@ -16,6 +17,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category_id') || '');
   const [page, setPage] = useState(1);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -79,34 +81,19 @@ export default function ProductsPage() {
                 />
               </div>
 
-              {/* Category filter */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
-                  <SlidersHorizontal className="w-4 h-4" />
-                </div>
+              {/* Filter button */}
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setSelectedCategory('')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    !selectedCategory
-                      ? 'bg-blush-500 text-white shadow-sm'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  onClick={() => setIsFilterOpen(true)}
+                  className="btn-secondary flex items-center gap-2 whitespace-nowrap"
+                  aria-label="Abrir filtros"
                 >
-                  Todas
+                  <SlidersHorizontal className="w-4 h-4" />
+                  Filtros
+                  {selectedCategory && (
+                    <span className="ml-1 bg-blush-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">1</span>
+                  )}
                 </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      selectedCategory === cat.id
-                        ? 'bg-blush-500 text-white shadow-sm'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
                 {hasFilters && (
                   <button
                     onClick={clearFilters}
@@ -185,6 +172,15 @@ export default function ProductsPage() {
           )}
         </div>
       </main>
+      <FilterDrawer
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+        onClear={clearFilters}
+        hasFilters={!!hasFilters}
+      />
     </>
   );
 }

@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Save } from 'lucide-reac
 import { Category, ApiResponse } from '@/types';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
+import { revalidateStorefront } from '@/app/actions/revalidate';
 
 type Mode = 'list' | 'create' | 'edit';
 
@@ -40,6 +41,7 @@ export default function AdminCategoriesPage() {
         await api.put(`/categories/${editingCategory.id}`, form);
         toast.success('Categoría actualizada ✅');
       }
+      await revalidateStorefront();
       setMode('list');
       fetchCategories();
     } catch (error: unknown) {
@@ -50,6 +52,7 @@ export default function AdminCategoriesPage() {
   const handleToggle = async (id: string) => {
     try {
       await api.patch(`/categories/${id}/toggle`);
+      await revalidateStorefront();
       fetchCategories();
     } catch { toast.error('Error al cambiar estado'); }
   };
@@ -59,6 +62,7 @@ export default function AdminCategoriesPage() {
     try {
       await api.delete(`/categories/${id}`);
       toast.success('Categoría eliminada');
+      await revalidateStorefront();
       fetchCategories();
     } catch { toast.error('Error al eliminar'); }
   };

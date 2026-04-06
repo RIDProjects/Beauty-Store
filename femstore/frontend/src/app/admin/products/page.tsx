@@ -8,6 +8,7 @@ import {
 import { Product, Category, ApiResponse } from '@/types';
 import api, { getImageUrl } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { revalidateStorefront } from '@/app/actions/revalidate';
 
 type Mode = 'list' | 'create' | 'edit';
 
@@ -80,6 +81,7 @@ export default function AdminProductsPage() {
         await api.put(`/products/${editingProduct.id}`, payload);
         toast.success('Producto actualizado ✅');
       }
+      await revalidateStorefront();
       setMode('list');
       fetchData();
     } catch (error: unknown) {
@@ -92,6 +94,7 @@ export default function AdminProductsPage() {
     try {
       await api.delete(`/products/${id}`);
       toast.success('Producto eliminado');
+      await revalidateStorefront();
       fetchData();
     } catch { toast.error('Error al eliminar'); }
   };
@@ -99,6 +102,7 @@ export default function AdminProductsPage() {
   const handleToggle = async (id: string) => {
     try {
       await api.patch(`/products/${id}/toggle`);
+      await revalidateStorefront();
       fetchData();
     } catch { toast.error('Error al cambiar estado'); }
   };
