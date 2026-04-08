@@ -1,4 +1,4 @@
 -- Add sale price fields to products
-ALTER TABLE products
+ALTER TABLE public.products
   ADD COLUMN IF NOT EXISTS sale_price NUMERIC(10,2) DEFAULT NULL,
   ADD COLUMN IF NOT EXISTS is_on_sale BOOLEAN NOT NULL DEFAULT FALSE;
