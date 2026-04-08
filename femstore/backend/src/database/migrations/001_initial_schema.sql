@@ -151,6 +151,3 @@ CREATE TRIGGER update_products_updated_at
 CREATE TRIGGER update_orders_updated_at
     BEFORE UPDATE ON public.orders
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-
-INSERT INTO public.users (name, email, password, role) VALUES('Admin Vainy Bliss', 'admin@vainybliss.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewpbfG/zVFovOqsy', 'admin');
