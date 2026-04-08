@@ -31,26 +31,6 @@ async function createAdmin() {
       );
       console.log('✅ Admin creado');
     }
-
-    // También crear usuario de prueba
-    const customerEmail = 'maria@test.com';
-    const customerPassword = 'Customer123!';
-    const customerHashed = await bcrypt.hash(customerPassword, 12);
-
-    const customerExisting = await query('SELECT id FROM public.users WHERE email = $1', [customerEmail]);
-
-    if (customerExisting.rows.length === 0) {
-      await query(
-        `INSERT INTO public.users (name, email, password, role)
-         VALUES ($1, $2, $3, $4)`,
-        ['Maria Rodriguez', customerEmail, customerHashed, 'customer']
-      );
-      console.log('✅ Usuario de prueba creado: maria@test.com / Customer123!');
-    }
-
-    console.log('\n=== CREDENCIALES ===');
-    console.log('Usuario: maria@test.com / Customer123!');
-
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);
