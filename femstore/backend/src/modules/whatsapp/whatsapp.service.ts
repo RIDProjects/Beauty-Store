@@ -8,26 +8,8 @@ export class WhatsAppService {
   } | null = null;
 
   constructor() {
-    this.initializeClient();
   }
 
-  private initializeClient(): void {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-
-    if (accountSid && authToken && accountSid.startsWith('AC')) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const twilio = require('twilio');
-        this.client = twilio(accountSid, authToken);
-        console.log('✅ WhatsApp service initialized (Twilio)');
-      } catch (err) {
-        console.warn('⚠️ Twilio not available, WhatsApp messages will be logged only');
-      }
-    } else {
-      console.warn('⚠️ Twilio credentials not configured. WhatsApp notifications will be simulated.');
-    }
-  }
 
   formatOrderMessage(order: Order): string {
     const itemsList = order.items
@@ -76,7 +58,6 @@ export class WhatsAppService {
     console.log('─'.repeat(50));
 
     if (!this.client || !fromPhone) {
-      console.warn('📵 WhatsApp simulated (Twilio not configured)');
       return true; // Return true to not block order creation
     }
 

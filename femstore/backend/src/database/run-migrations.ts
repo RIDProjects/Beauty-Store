@@ -2,6 +2,7 @@ import { query } from '../config/database';
 
 const MIGRATION_SQL = `
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS public.users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -11,8 +12,8 @@ CREATE TABLE IF NOT EXISTS public.users (
   phone VARCHAR(20),
   role VARCHAR(20) NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
   is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS public.categories (
@@ -22,8 +23,8 @@ CREATE TABLE IF NOT EXISTS public.categories (
   description TEXT,
   image_url VARCHAR(500),
   is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS public.products (
@@ -32,11 +33,14 @@ CREATE TABLE IF NOT EXISTS public.products (
   slug VARCHAR(200) UNIQUE NOT NULL,
   description TEXT,
   price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+  sale_price DECIMAL(10,2),
+  is_on_sale BOOLEAN NOT NULL DEFAULT FALSE,
   stock INTEGER DEFAULT 0 CHECK (stock >= 0),
+  sales_count INTEGER DEFAULT 0 CHECK (sales_count >= 0),
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
   is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS public.product_images (
@@ -45,7 +49,7 @@ CREATE TABLE IF NOT EXISTS public.product_images (
   url VARCHAR(500) NOT NULL,
   is_primary BOOLEAN DEFAULT FALSE,
   sort_order INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS public.orders (
@@ -60,11 +64,12 @@ CREATE TABLE IF NOT EXISTS public.orders (
   notes TEXT,
   subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,
   total DECIMAL(10,2) NOT NULL DEFAULT 0,
-  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
+  status VARCHAR(20) DEFAULT 'pending'
+    CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
   whatsapp_sent BOOLEAN DEFAULT FALSE,
-  whatsapp_sent_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  whatsapp_sent_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS public.order_items (
@@ -75,16 +80,32 @@ CREATE TABLE IF NOT EXISTS public.order_items (
   product_price DECIMAL(10,2) NOT NULL,
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   subtotal DECIMAL(10,2) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
-CREATE INDEX IF NOT EXISTS idx_products_active ON public.products(is_active);
-CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
-CREATE INDEX IF NOT EXISTS idx_orders_user ON public.orders(user_id);
-CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
-CREATE INDEX IF NOT EXISTS idx_order_items_order ON public.order_items(order_id);
-CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
+CREATE TABLE IF NOT EXISTS public.customer_addresses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  label VARCHAR(100) NOT NULL DEFAULT 'Mi dirección',
+  address TEXT NOT NULL,
+  is_default BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
+CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
+CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
+CREATE INDEX IF NOT EXISTS idx_products_sales ON products(sales_count DESC);
+
+CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_order_items_product ON order_items(product_id);
+
+CREATE INDEX IF NOT EXISTS idx_customer_addresses_user_id ON customer_addresses(user_id);
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -92,19 +113,26 @@ BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_users_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON public.categories
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_categories_updated_at
+BEFORE UPDATE ON categories
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON public.products
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_products_updated_at
+BEFORE UPDATE ON products
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON public.orders
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_orders_updated_at
+BEFORE UPDATE ON orders
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+INSERT INTO users (name, email, password, role) VALUES
+('Admin Vainy Bliss', 'admin@vainybliss.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewpbfG/zVFovOqsy', 'admin');
 `;
 
 // Helper to mask password in connection string
@@ -121,7 +149,7 @@ function maskDbUrl(url: string | undefined): string {
 
 async function runMigrations() {
   const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_DEPLOYMENT_ID;
-  
+
   console.log('\n🗄️  DATABASE MIGRATION');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`📍 Environment: ${isProduction ? 'PRODUCTION (Railway)' : 'development'}`);
@@ -144,7 +172,7 @@ async function runMigrations() {
 
     for (const statement of statements) {
       const statementType = statement.match(/^(CREATE TABLE|CREATE INDEX|CREATE EXTENSION|CREATE TRIGGER|CREATE OR REPLACE)/)?.[1] || 'STATEMENT';
-      
+
       try {
         await query(statement);
         console.log(`  ✅ ${statementType}: ${statement.substring(0, 45).replace(/\n/g, ' ')}...`);
