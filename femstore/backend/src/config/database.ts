@@ -7,7 +7,7 @@ dotenv.config();
 const getDbConfig = () => {
   // Try Railway's DATABASE_URL first
   if (process.env.DATABASE_URL) {
-    return { connectionString: process.env.DATABASE_URL };
+    return { connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } };
   }
   
   // Fall back to individual variables (Railway uses PG* prefix)
