@@ -70,11 +70,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </button>
 
-        {product.category_name && (
-          <div className="absolute top-3 left-3 z-10 max-w-[60%]">
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1 max-w-[60%]">
+          {product.is_on_sale && (
+            <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">Oferta</span>
+          )}
+          {product.category_name && (
             <span className="badge-blush text-xs truncate inline-block">{product.category_name}</span>
-          </div>
-        )}
+          )}
+        </div>
 
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none">
@@ -105,7 +108,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           <p className="text-gray-500 dark:text-gray-400 text-xs mt-1 line-clamp-1">{product.description}</p>
         )}
         <div className="flex items-center justify-between mt-3">
-          <span className="text-blush-600 dark:text-blush-400 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
+          <div className="flex flex-col">
+            {product.is_on_sale && product.sale_price ? (
+              <>
+                <span className="text-red-500 dark:text-red-400 font-bold text-lg">${Number(product.sale_price).toFixed(2)}</span>
+                <span className="text-gray-400 dark:text-gray-500 text-xs line-through">${Number(product.price).toFixed(2)}</span>
+              </>
+            ) : (
+              <span className="text-blush-600 dark:text-blush-400 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
+            )}
+          </div>
           {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
             <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">¡Últimas {product.stock}!</span>
           )}

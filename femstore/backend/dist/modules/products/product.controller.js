@@ -89,7 +89,7 @@ router.get('/:id', async (req, res) => {
 });
 // POST /api/products - Admin
 router.post('/', auth_guard_1.authenticate, (0, auth_guard_1.authorize)('admin'), async (req, res) => {
-    const { name, description, price, stock, category_id, is_active } = req.body;
+    const { name, description, price, sale_price, is_on_sale, stock, category_id, is_active } = req.body;
     if (!name || !price) {
         return (0, helpers_1.sendError)(res, 'Nombre y precio son requeridos');
     }
@@ -101,6 +101,8 @@ router.post('/', auth_guard_1.authenticate, (0, auth_guard_1.authorize)('admin')
             name,
             description,
             price: parseFloat(price),
+            sale_price: sale_price ? parseFloat(sale_price) : null,
+            is_on_sale: is_on_sale === 'true' || is_on_sale === true,
             stock: stock ? parseInt(stock) : 0,
             category_id,
             is_active: is_active !== undefined ? is_active === 'true' || is_active === true : true,
@@ -113,7 +115,7 @@ router.post('/', auth_guard_1.authenticate, (0, auth_guard_1.authorize)('admin')
 });
 // PUT /api/products/:id - Admin
 router.put('/:id', auth_guard_1.authenticate, (0, auth_guard_1.authorize)('admin'), async (req, res) => {
-    const { name, description, price, stock, category_id, is_active } = req.body;
+    const { name, description, price, sale_price, is_on_sale, stock, category_id, is_active } = req.body;
     try {
         const updateData = {};
         if (name !== undefined)
@@ -122,6 +124,10 @@ router.put('/:id', auth_guard_1.authenticate, (0, auth_guard_1.authorize)('admin
             updateData.description = description;
         if (price !== undefined)
             updateData.price = parseFloat(price);
+        if (sale_price !== undefined)
+            updateData.sale_price = sale_price ? parseFloat(sale_price) : null;
+        if (is_on_sale !== undefined)
+            updateData.is_on_sale = is_on_sale === 'true' || is_on_sale === true;
         if (stock !== undefined)
             updateData.stock = parseInt(stock);
         if (category_id !== undefined)

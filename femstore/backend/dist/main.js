@@ -27,6 +27,7 @@ const auth_controller_1 = __importDefault(require("./modules/auth/auth.controlle
 const category_controller_1 = __importDefault(require("./modules/categories/category.controller"));
 const product_controller_1 = __importDefault(require("./modules/products/product.controller"));
 const order_controller_1 = __importDefault(require("./modules/orders/order.controller"));
+const address_controller_1 = __importDefault(require("./modules/addresses/address.controller"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 4000;
 // ─── Security & Middleware ────────────────────────────────────
@@ -97,6 +98,7 @@ app.use('/api/auth', auth_controller_1.default);
 app.use('/api/categories', category_controller_1.default);
 app.use('/api/products', product_controller_1.default);
 app.use('/api/orders', order_controller_1.default);
+app.use('/api/addresses', address_controller_1.default);
 // ─── 404 Handler ─────────────────────────────────────────────
 app.use((_req, res) => {
     res.status(404).json({ success: false, error: 'Ruta no encontrada' });

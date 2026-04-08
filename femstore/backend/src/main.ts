@@ -27,6 +27,7 @@ import authRoutes from './modules/auth/auth.controller';
 import categoryRoutes from './modules/categories/category.controller';
 import productRoutes from './modules/products/product.controller';
 import orderRoutes from './modules/orders/order.controller';
+import addressRoutes from './modules/addresses/address.controller';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -112,6 +113,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/addresses', addressRoutes);
 
 // ─── 404 Handler ─────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {

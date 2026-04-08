@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ShoppingBag, CheckCircle, MapPin, Phone, User, FileText, Package } from 'lucide-react';
+import { ShoppingBag, CheckCircle, MapPin, Phone, User, FileText, Package, Plus, Trash2 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
-import { CheckoutFormData, ApiResponse, Order } from '@/types';
+import { CheckoutFormData, ApiResponse, Order, CustomerAddress } from '@/types';
 import api, { decryptOrder } from '@/lib/api';
 import { storeConfig } from '@/lib/config';
 import toast from 'react-hot-toast';
@@ -20,6 +20,11 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<Step>('auth-check');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<CustomerAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+  const [newAddressLabel, setNewAddressLabel] = useState('');
+  const [savingAddress, setSavingAddress] = useState(false);
   const [form, setForm] = useState<CheckoutFormData>({
     customer_name: '',
     customer_phone: '',
@@ -63,11 +68,61 @@ export default function CheckoutPage() {
         customer_phone: user.phone || f.customer_phone,
         customer_email: user.email || f.customer_email,
       }));
+      // Load saved addresses
+      api.get<ApiResponse<CustomerAddress[]>>('/addresses')
+        .then(({ data }) => {
+          const addrs = data.data || [];
+          setSavedAddresses(addrs);
+          const def = addrs.find((a) => a.is_default);
+          if (def) {
+            setSelectedAddressId(def.id);
+            setForm((f) => ({ ...f, delivery_address: def.address }));
+          }
+        })
+        .catch(() => {});
       setStep('form');
     } else {
       setStep('auth-check');
     }
   }, [isInitialized, user, items.length, router, step]);
+
+  const handleSaveNewAddress = async () => {
+    if (!form.delivery_address?.trim()) {
+      toast.error('Ingresá la dirección primero');
+      return;
+    }
+    setSavingAddress(true);
+    try {
+      const { data } = await api.post<ApiResponse<CustomerAddress>>('/addresses', {
+        label: newAddressLabel.trim() || 'Mi dirección',
+        address: form.delivery_address.trim(),
+        is_default: savedAddresses.length === 0,
+      });
+      const newAddr = data.data!;
+      setSavedAddresses((prev) => [...prev, newAddr]);
+      setSelectedAddressId(newAddr.id);
+      setShowNewAddressForm(false);
+      setNewAddressLabel('');
+      toast.success('Dirección guardada');
+    } catch {
+      toast.error('No se pudo guardar la dirección');
+    } finally {
+      setSavingAddress(false);
+    }
+  };
+
+  const handleDeleteAddress = async (id: string) => {
+    try {
+      await api.delete(`/addresses/${id}`);
+      setSavedAddresses((prev) => prev.filter((a) => a.id !== id));
+      if (selectedAddressId === id) {
+        setSelectedAddressId(null);
+        setForm((f) => ({ ...f, delivery_address: '' }));
+      }
+    } catch {
+      toast.error('Error al eliminar dirección');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -254,22 +309,105 @@ export default function CheckoutPage() {
                   </div>
 
                   {form.delivery_type === 'delivery' && (
-                    <div>
-                      <label htmlFor="delivery_address" className="label">
+                    <div className="space-y-3">
+                      <label className="label">
                         <MapPin className="w-3.5 h-3.5 inline mr-1" />
                         Dirección de entrega *
                       </label>
-                      <textarea
-                        id="delivery_address"
-                        name="street-address"
-                        autoComplete="street-address"
-                        className="input resize-none"
-                        rows={3}
-                        placeholder="Calle, número, colonia, ciudad..."
-                        value={form.delivery_address}
-                        onChange={(e) => setForm({ ...form, delivery_address: e.target.value })}
-                        required
-                      />
+
+                      {/* Saved addresses (only for logged-in users) */}
+                      {user && savedAddresses.length > 0 && (
+                        <div className="space-y-2">
+                          {savedAddresses.map((addr) => (
+                            <div
+                              key={addr.id}
+                              className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                                selectedAddressId === addr.id
+                                  ? 'border-blush-500 bg-blush-50'
+                                  : 'border-gray-200 hover:border-blush-200'
+                              }`}
+                              onClick={() => {
+                                setSelectedAddressId(addr.id);
+                                setForm((f) => ({ ...f, delivery_address: addr.address }));
+                              }}
+                            >
+                              <div className="w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center border-blush-400">
+                                {selectedAddressId === addr.id && (
+                                  <div className="w-2 h-2 rounded-full bg-blush-500" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-800">{addr.label}</p>
+                                <p className="text-xs text-gray-500 truncate">{addr.address}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleDeleteAddress(addr.id); }}
+                                className="p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* New address area */}
+                      {(!user || showNewAddressForm || savedAddresses.length === 0) ? (
+                        <div className="space-y-2">
+                          <textarea
+                            id="delivery_address"
+                            name="street-address"
+                            autoComplete="street-address"
+                            className="input resize-none"
+                            rows={3}
+                            placeholder="Calle, número, colonia, ciudad..."
+                            value={form.delivery_address}
+                            onChange={(e) => {
+                              setSelectedAddressId(null);
+                              setForm({ ...form, delivery_address: e.target.value });
+                            }}
+                            required
+                          />
+                          {user && (
+                            <div className="flex gap-2 items-center">
+                              <input
+                                type="text"
+                                className="input flex-1 text-sm py-2"
+                                placeholder='Etiqueta (ej: "Casa", "Trabajo")'
+                                value={newAddressLabel}
+                                onChange={(e) => setNewAddressLabel(e.target.value)}
+                              />
+                              <button
+                                type="button"
+                                onClick={handleSaveNewAddress}
+                                disabled={savingAddress}
+                                className="btn-secondary text-sm py-2 whitespace-nowrap"
+                              >
+                                {savingAddress ? 'Guardando...' : 'Guardar'}
+                              </button>
+                              {savedAddresses.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setShowNewAddressForm(false)}
+                                  className="text-gray-400 hover:text-gray-600 text-sm"
+                                >
+                                  Cancelar
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => { setShowNewAddressForm(true); setSelectedAddressId(null); setForm((f) => ({ ...f, delivery_address: '' })); }}
+                          className="flex items-center gap-2 text-sm text-blush-600 hover:text-blush-700 font-medium transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Agregar nueva dirección
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

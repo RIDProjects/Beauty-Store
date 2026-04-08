@@ -92,7 +92,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 // POST /api/products - Admin
 router.post('/', authenticate, authorize('admin'), async (req: Request, res: Response) => {
-  const { name, description, price, stock, category_id, is_active } = req.body;
+  const { name, description, price, sale_price, is_on_sale, stock, category_id, is_active } = req.body;
 
   if (!name || !price) {
     return sendError(res, 'Nombre y precio son requeridos');
@@ -107,6 +107,8 @@ router.post('/', authenticate, authorize('admin'), async (req: Request, res: Res
       name,
       description,
       price: parseFloat(price),
+      sale_price: sale_price ? parseFloat(sale_price) : null,
+      is_on_sale: is_on_sale === 'true' || is_on_sale === true,
       stock: stock ? parseInt(stock) : 0,
       category_id,
       is_active: is_active !== undefined ? is_active === 'true' || is_active === true : true,
@@ -119,13 +121,15 @@ router.post('/', authenticate, authorize('admin'), async (req: Request, res: Res
 
 // PUT /api/products/:id - Admin
 router.put('/:id', authenticate, authorize('admin'), async (req: Request, res: Response) => {
-  const { name, description, price, stock, category_id, is_active } = req.body;
+  const { name, description, price, sale_price, is_on_sale, stock, category_id, is_active } = req.body;
 
   try {
     const updateData: Record<string, unknown> = {};
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (price !== undefined) updateData.price = parseFloat(price);
+    if (sale_price !== undefined) updateData.sale_price = sale_price ? parseFloat(sale_price) : null;
+    if (is_on_sale !== undefined) updateData.is_on_sale = is_on_sale === 'true' || is_on_sale === true;
     if (stock !== undefined) updateData.stock = parseInt(stock);
     if (category_id !== undefined) updateData.category_id = category_id;
     if (is_active !== undefined) updateData.is_active = is_active === 'true' || is_active === true;

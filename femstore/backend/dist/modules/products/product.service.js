@@ -98,13 +98,15 @@ class ProductService {
     }
     async create(dto) {
         const slug = (0, helpers_1.slugify)(dto.name);
-        const result = await (0, database_1.query)(`INSERT INTO products (name, slug, description, price, stock, category_id, is_active)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+        const result = await (0, database_1.query)(`INSERT INTO products (name, slug, description, price, sale_price, is_on_sale, stock, category_id, is_active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`, [
             dto.name,
             slug,
             dto.description || null,
             dto.price,
+            dto.sale_price ?? null,
+            dto.is_on_sale ?? false,
             dto.stock ?? 0,
             dto.category_id || null,
             dto.is_active ?? true,
@@ -119,15 +121,19 @@ class ProductService {
         name = COALESCE($1, name),
         description = COALESCE($2, description),
         price = COALESCE($3, price),
-        stock = COALESCE($4, stock),
-        category_id = COALESCE($5, category_id),
-        is_active = COALESCE($6, is_active),
+        sale_price = $4,
+        is_on_sale = COALESCE($5, is_on_sale),
+        stock = COALESCE($6, stock),
+        category_id = COALESCE($7, category_id),
+        is_active = COALESCE($8, is_active),
         updated_at = NOW()
-       WHERE id = $7
+       WHERE id = $9
        RETURNING *`, [
             dto.name || null,
             dto.description !== undefined ? dto.description : null,
             dto.price || null,
+            dto.sale_price !== undefined ? dto.sale_price : null,
+            dto.is_on_sale !== undefined ? dto.is_on_sale : null,
             dto.stock !== undefined ? dto.stock : null,
             dto.category_id || null,
             dto.is_active !== undefined ? dto.is_active : null,

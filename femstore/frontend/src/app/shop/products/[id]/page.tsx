@@ -162,8 +162,24 @@ export default function ProductDetailPage() {
                 <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">Producto destacado</span>
               </div>
 
-              <div className="text-4xl font-bold text-blush-600 dark:text-blush-400">
-                ${Number(product.price).toFixed(2)}
+              <div className="flex items-end gap-3">
+                {product.is_on_sale && product.sale_price ? (
+                  <>
+                    <span className="text-4xl font-bold text-red-500 dark:text-red-400">
+                      ${Number(product.sale_price).toFixed(2)}
+                    </span>
+                    <span className="text-xl text-gray-400 line-through mb-1">
+                      ${Number(product.price).toFixed(2)}
+                    </span>
+                    <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-full mb-1">
+                      Oferta
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-4xl font-bold text-blush-600 dark:text-blush-400">
+                    ${Number(product.price).toFixed(2)}
+                  </span>
+                )}
               </div>
 
               {product.description && (

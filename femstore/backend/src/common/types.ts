@@ -27,6 +27,8 @@ export interface Product {
   slug: string;
   description?: string;
   price: number;
+  sale_price?: number | null;
+  is_on_sale: boolean;
   stock: number;
   category_id?: string;
   is_active: boolean;

@@ -13,7 +13,7 @@ import { revalidateStorefront } from '@/app/actions/revalidate';
 type Mode = 'list' | 'create' | 'edit';
 
 const emptyForm = {
-  name: '', description: '', price: '', stock: '', category_id: '', is_active: true,
+  name: '', description: '', price: '', sale_price: '', is_on_sale: false, stock: '', category_id: '', is_active: true,
 };
 
 export default function AdminProductsPage() {
@@ -54,6 +54,8 @@ export default function AdminProductsPage() {
       name: product.name,
       description: product.description || '',
       price: String(product.price),
+      sale_price: product.sale_price ? String(product.sale_price) : '',
+      is_on_sale: product.is_on_sale ?? false,
       stock: String(product.stock),
       category_id: product.category_id || '',
       is_active: product.is_active,
@@ -70,6 +72,8 @@ export default function AdminProductsPage() {
         name: form.name,
         description: form.description || undefined,
         price: parseFloat(form.price),
+        sale_price: form.sale_price ? parseFloat(form.sale_price) : null,
+        is_on_sale: form.is_on_sale,
         stock: parseInt(form.stock) || 0,
         category_id: form.category_id || undefined,
         is_active: form.is_active,
@@ -163,6 +167,32 @@ export default function AdminProductsPage() {
                 <input type="number" min="0" className="input" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} placeholder="0" />
               </div>
             </div>
+            {/* Sale / Oferta */}
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="is_on_sale"
+                checked={form.is_on_sale}
+                onChange={(e) => setForm({ ...form, is_on_sale: e.target.checked })}
+                className="w-4 h-4 text-blush-500"
+              />
+              <label htmlFor="is_on_sale" className="text-sm text-gray-700 cursor-pointer font-medium">Producto en oferta</label>
+            </div>
+            {form.is_on_sale && (
+              <div>
+                <label className="label">Precio de oferta</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  className="input"
+                  value={form.sale_price}
+                  onChange={(e) => setForm({ ...form, sale_price: e.target.value })}
+                  placeholder="0.00"
+                />
+                <p className="text-xs text-gray-400 mt-1">Dejar vacío para mostrar solo el badge sin precio especial</p>
+              </div>
+            )}
             <div>
               <label className="label">Categoría</label>
               <select className="input" value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })}>
@@ -294,7 +324,19 @@ export default function AdminProductsPage() {
                     <span className="text-sm text-gray-600">{product.category_name || '—'}</span>
                   </td>
                   <td className="p-4">
-                    <span className="font-semibold text-blush-600">${Number(product.price).toFixed(2)}</span>
+                    <div className="flex flex-col gap-0.5">
+                      {product.is_on_sale && product.sale_price ? (
+                        <>
+                          <span className="font-semibold text-red-500">${Number(product.sale_price).toFixed(2)}</span>
+                          <span className="text-xs text-gray-400 line-through">${Number(product.price).toFixed(2)}</span>
+                        </>
+                      ) : (
+                        <span className="font-semibold text-blush-600">${Number(product.price).toFixed(2)}</span>
+                      )}
+                      {product.is_on_sale && (
+                        <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full w-fit">Oferta</span>
+                      )}
+                    </div>
                   </td>
                   <td className="p-4 hidden md:table-cell">
                     <span className={product.is_active ? 'badge-green' : 'badge-gray'}>

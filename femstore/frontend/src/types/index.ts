@@ -31,6 +31,8 @@ export interface Product {
   slug: string;
   description?: string;
   price: number;
+  sale_price?: number | null;
+  is_on_sale: boolean;
   stock: number;
   category_id?: string;
   category_name?: string;
@@ -91,6 +93,15 @@ export interface Pagination {
   limit: number;
   total: number;
   totalPages: number;
+}
+
+export interface CustomerAddress {
+  id: string;
+  user_id: string;
+  label: string;
+  address: string;
+  is_default: boolean;
+  created_at: string;
 }
 
 export interface AuthState {
