@@ -11,7 +11,7 @@ const orderService = new OrderService();
 const VALID_STATUSES: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
 
 // POST /api/orders - Create order (optional auth)
-router.post('/', optionalAuth, decryptBody('customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'notes'), async (req: Request, res: Response) => {
+router.post('/', optionalAuth, decryptBody('customer_phone', 'customer_email', 'delivery_address', 'notes'), async (req: Request, res: Response) => {
   const {
     customer_name,
     customer_phone,

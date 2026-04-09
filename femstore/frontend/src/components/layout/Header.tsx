@@ -17,7 +17,10 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const { user, logout } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+  const { user, logout, isInitialized } = useAuthStore();
   const { getTotalItems, openCart } = useCartStore();
   const totalItems = getTotalItems();
 
@@ -106,46 +109,48 @@ export default function Header() {
                 aria-label="Carrito"
               >
                 <ShoppingBag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                {totalItems > 0 && (
+                {mounted && totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-blush-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-fade-in">
                     {totalItems > 9 ? '9+' : totalItems}
                   </span>
                 )}
               </button>
 
-              {/* User */}
-              {user ? (
-                <div className="relative group hidden md:block">
-                  <button className="flex items-center gap-2 btn-ghost px-3">
-                    <div className="w-7 h-7 bg-blush-100 dark:bg-blush-900 rounded-full flex items-center justify-center">
-                      <span className="text-blush-600 dark:text-blush-400 text-xs font-bold">{user.name[0].toUpperCase()}</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user.name.split(' ')[0]}</span>
-                  </button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div className="p-2">
-                      {user.role === 'admin' && (
-                        <Link href="/admin" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
-                          Panel Admin
+              {/* User — rendered only after store hydrates to avoid SSR mismatch */}
+              {isInitialized && (
+                user ? (
+                  <div className="relative group hidden md:block">
+                    <button className="flex items-center gap-2 btn-ghost px-3">
+                      <div className="w-7 h-7 bg-blush-100 dark:bg-blush-900 rounded-full flex items-center justify-center">
+                        <span className="text-blush-600 dark:text-blush-400 text-xs font-bold">{user.name[0].toUpperCase()}</span>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user.name.split(' ')[0]}</span>
+                    </button>
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="p-2">
+                        {user.role === 'admin' && (
+                          <Link href="/admin" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
+                            Panel Admin
+                          </Link>
+                        )}
+                        <Link href="/shop/orders" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
+                          Mis Pedidos
                         </Link>
-                      )}
-                      <Link href="/shop/orders" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
-                        Mis Pedidos
-                      </Link>
-                      <button
-                        onClick={logout}
-                        className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                      >
-                        Cerrar sesión
-                      </button>
+                        <button
+                          onClick={logout}
+                          className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                        >
+                          Cerrar sesión
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <Link href="/auth/login" className="hidden md:flex btn-primary py-2 px-4 text-sm">
-                  <User className="w-4 h-4 mr-1" />
-                  Ingresar
-                </Link>
+                ) : (
+                  <Link href="/auth/login" className="btn-primary py-2 px-4 text-sm flex items-center">
+                    <User className="w-4 h-4 mr-1" />
+                    <span className="hidden sm:inline">Ingresar</span>
+                  </Link>
+                )
               )}
 
               {/* Mobile menu button */}
@@ -192,7 +197,7 @@ export default function Header() {
                 </>
               )}
               <div className="pt-2 border-t border-gray-100 dark:border-gray-800 mt-2">
-                {user ? (
+                {isInitialized && (user ? (
                   <>
                     <span className="block px-3 py-1 text-xs text-gray-500 dark:text-gray-400">Hola, {user.name}</span>
                     {user.role === 'admin' && (
@@ -207,7 +212,7 @@ export default function Header() {
                   <Link href="/auth/login" className="block px-3 py-2 text-sm text-blush-600 dark:text-blush-400 font-medium">
                     Iniciar sesión
                   </Link>
-                )}
+                ))}
               </div>
             </div>
           </div>

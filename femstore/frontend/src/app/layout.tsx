@@ -23,6 +23,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" suppressHydrationWarning>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var s=localStorage.getItem('theme-storage');if(s&&JSON.parse(s).state&&JSON.parse(s).state.isDark){document.documentElement.classList.add('dark');}}catch(e){}`,
+          }}
+        />
         <ThemeProvider>
           <AuthProvider>
             {children}

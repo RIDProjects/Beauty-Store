@@ -41,16 +41,16 @@ export default function CheckoutPage() {
       const itemsList = placedOrder.items
         ?.map((item) => `• ${item.product_name} x${item.quantity} = $${Number(item.subtotal).toFixed(2)}`)
         .join('\n');
-      
+
       const whatsAppMessage = `🛍️ *Nuevo Pedido - #${placedOrder.order_number}*\n\n` +
         `👤 *Cliente:* ${placedOrder.customer_name}\n` +
         `📱 *Teléfono:* ${placedOrder.customer_phone}\n\n` +
         `🛒 *Productos:*\n${itemsList}\n\n` +
         `💰 *Total: $${Number(placedOrder.total).toFixed(2)}*\n` +
         `🚚 *Entrega:* ${placedOrder.delivery_type === 'delivery' ? `A domicilio: ${placedOrder.delivery_address}` : 'Retiro en tienda'}`;
-      
+
       const whatsAppLink = `https://wa.me/${storeConfig.vendorWhatsApp}?text=${encodeURIComponent(whatsAppMessage)}`;
-      
+
       window.location.href = whatsAppLink;
     }
   }, [step, placedOrder]);
@@ -165,13 +165,13 @@ export default function CheckoutPage() {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
           <div className="card p-8 max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-blush-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-blush-100 dark:bg-blush-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <ShoppingBag className="w-8 h-8 text-blush-500" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Finalizar compra</h2>
-            <p className="text-gray-500 mb-6">Para continuar necesitas iniciar sesión o puedes continuar como invitada</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Finalizar compra</h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">Para continuar necesitas iniciar sesión o puedes continuar como invitada</p>
             <div className="space-y-3">
               <Link href="/auth/login?redirect=/shop/checkout" className="btn-primary w-full block text-center">
                 Iniciar sesión
@@ -181,7 +181,7 @@ export default function CheckoutPage() {
               </Link>
               <button
                 onClick={() => setStep('form')}
-                className="w-full text-sm text-gray-500 hover:text-gray-700 py-2 transition-colors"
+                className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 py-2 transition-colors"
               >
                 Continuar como invitada →
               </button>
@@ -196,14 +196,14 @@ export default function CheckoutPage() {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
           <div className="card p-8 max-w-lg w-full text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">¡Pedido confirmado! 🎉</h2>
-            <p className="text-gray-500 mb-4">Redirigiendo a WhatsApp...</p>
-            <p className="text-sm text-gray-400">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">¡Pedido confirmado! 🎉</h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">Redirigiendo a WhatsApp...</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
               Si no se abre WhatsApp, hacé click en el botón de abajo
             </p>
             <div className="mt-6">
@@ -220,7 +220,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50 py-8">
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
         <div className="page-container">
           <h1 className="section-title mb-8">Finalizar compra</h1>
 
@@ -228,7 +228,7 @@ export default function CheckoutPage() {
             <div className="lg:col-span-2">
               <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
                 <div className="card p-6">
-                  <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <User className="w-5 h-5 text-blush-500" />
                     Información de contacto
                   </h2>
@@ -266,7 +266,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="customer_email" className="label">Email <span className="text-gray-400 font-normal">(opcional)</span></label>
+                      <label htmlFor="customer_email" className="label">Email <span className="text-gray-400 dark:text-gray-500 font-normal">(opcional)</span></label>
                       <input
                         id="customer_email"
                         name="email"
@@ -283,7 +283,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="card p-6">
-                  <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <Package className="w-5 h-5 text-blush-500" />
                     Método de entrega
                   </h2>
@@ -298,12 +298,12 @@ export default function CheckoutPage() {
                         onClick={() => setForm({ ...form, delivery_type: opt.value as 'pickup' | 'delivery' })}
                         className={`p-4 rounded-xl border-2 text-left transition-all ${
                           form.delivery_type === opt.value
-                            ? 'border-blush-500 bg-blush-50'
-                            : 'border-gray-200 hover:border-blush-200'
+                            ? 'border-blush-500 bg-blush-50 dark:bg-blush-900/20'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-blush-200'
                         }`}
                       >
-                        <p className="font-semibold text-gray-900">{opt.label}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{opt.desc}</p>
+                        <p className="font-semibold text-gray-900 dark:text-white">{opt.label}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{opt.desc}</p>
                       </button>
                     ))}
                   </div>
@@ -323,8 +323,8 @@ export default function CheckoutPage() {
                               key={addr.id}
                               className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                                 selectedAddressId === addr.id
-                                  ? 'border-blush-500 bg-blush-50'
-                                  : 'border-gray-200 hover:border-blush-200'
+                                  ? 'border-blush-500 bg-blush-50 dark:bg-blush-900/20'
+                                  : 'border-gray-200 dark:border-gray-700 hover:border-blush-200'
                               }`}
                               onClick={() => {
                                 setSelectedAddressId(addr.id);
@@ -337,13 +337,13 @@ export default function CheckoutPage() {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-800">{addr.label}</p>
-                                <p className="text-xs text-gray-500 truncate">{addr.address}</p>
+                                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{addr.label}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{addr.address}</p>
                               </div>
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); handleDeleteAddress(addr.id); }}
-                                className="p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                                className="p-1 text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors flex-shrink-0"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -390,7 +390,7 @@ export default function CheckoutPage() {
                                 <button
                                   type="button"
                                   onClick={() => setShowNewAddressForm(false)}
-                                  className="text-gray-400 hover:text-gray-600 text-sm"
+                                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-sm"
                                 >
                                   Cancelar
                                 </button>
@@ -413,9 +413,9 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="card p-6">
-                  <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <FileText className="w-5 h-5 text-blush-500" />
-                    Notas adicionales <span className="text-gray-400 font-normal text-sm">(opcional)</span>
+                    Notas adicionales <span className="text-gray-400 dark:text-gray-500 font-normal text-sm">(opcional)</span>
                   </h2>
                   <textarea
                     className="input resize-none"
@@ -434,36 +434,36 @@ export default function CheckoutPage() {
 
             <div className="lg:col-span-1">
               <div className="card p-6 sticky top-20">
-                <h2 className="font-bold text-gray-900 mb-4">Resumen del pedido</h2>
+                <h2 className="font-bold text-gray-900 dark:text-white mb-4">Resumen del pedido</h2>
                 <div className="space-y-3 mb-4">
                   {items.map((item) => (
                     <div key={item.product_id} className="flex justify-between items-start text-sm">
                       <div className="flex-1 min-w-0 pr-2">
-                        <p className="text-gray-800 font-medium truncate">{item.product_name}</p>
-                        <p className="text-gray-500 text-xs">x{item.quantity} × ${Number(item.product_price).toFixed(2)}</p>
+                        <p className="text-gray-800 dark:text-gray-200 font-medium truncate">{item.product_name}</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">x{item.quantity} × ${Number(item.product_price).toFixed(2)}</p>
                       </div>
-                      <span className="font-medium text-gray-900 flex-shrink-0">
+                      <span className="font-medium text-gray-900 dark:text-gray-100 flex-shrink-0">
                         ${(Number(item.product_price) * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-gray-100 pt-4">
+                <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Subtotal</span>
+                    <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
                     <span className="font-medium">${total.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center mt-1">
-                    <span className="text-gray-600 text-sm">Envío</span>
-                    <span className="text-green-600 text-sm font-medium">A coordinar</span>
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">Envío</span>
+                    <span className="text-green-600 dark:text-green-400 text-sm font-medium">A coordinar</span>
                   </div>
-                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-                    <span className="font-bold text-gray-900">Total</span>
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                    <span className="font-bold text-gray-900 dark:text-white">Total</span>
                     <span className="font-bold text-blush-600 text-xl">${total.toFixed(2)}</span>
                   </div>
                 </div>
-                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                  <p className="text-xs text-amber-700">
+                <div className="mt-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-xl p-3">
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
                     📱 Al confirmar, el vendedor recibirá tu pedido por WhatsApp y te contactará para coordinar el pago y la entrega.
                   </p>
                 </div>

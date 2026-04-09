@@ -16,6 +16,10 @@ export default function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category_id') || '');
+
+  useEffect(() => {
+    setSelectedCategory(searchParams.get('category_id') || '');
+  }, [searchParams]);
   const [page, setPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
