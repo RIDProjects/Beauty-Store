@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ShoppingBag, CheckCircle, MapPin, Phone, User, FileText, Package, Plus, Trash2 } from 'lucide-react';
@@ -18,6 +18,7 @@ export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const { user, isInitialized } = useAuthStore();
   const [step, setStep] = useState<Step>('auth-check');
+  const stepRef = useRef<Step>('auth-check');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<CustomerAddress[]>([]);
@@ -39,10 +40,11 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     if (!isInitialized) return;
-    if (items.length === 0 && step !== 'success') {
+    if (items.length === 0 && stepRef.current !== 'success') {
       router.push('/shop/products');
       return;
     }
+    if (stepRef.current === 'success') return;
     if (user) {
       setForm((f) => ({
         ...f,
@@ -50,7 +52,6 @@ export default function CheckoutPage() {
         customer_phone: user.phone || f.customer_phone,
         customer_email: user.email || f.customer_email,
       }));
-      // Load saved addresses
       api.get<ApiResponse<CustomerAddress[]>>('/addresses')
         .then(({ data }) => {
           const addrs = data.data || [];
@@ -62,11 +63,13 @@ export default function CheckoutPage() {
           }
         })
         .catch(() => {});
+      stepRef.current = 'form';
       setStep('form');
     } else {
+      stepRef.current = 'auth-check';
       setStep('auth-check');
     }
-  }, [isInitialized, user, items.length, router, step]);
+  }, [isInitialized, user, items.length, router]);
 
   const handleSaveNewAddress = async () => {
     if (!form.delivery_address?.trim()) {
@@ -132,9 +135,9 @@ export default function CheckoutPage() {
       const { data } = await api.post<ApiResponse<Order>>('/orders', payload);
       const decryptedOrder = decryptOrder(data.data!);
       setPlacedOrder(decryptedOrder);
-      clearCart();
-      localStorage.setItem('justCompletedOrder', 'true');
+      stepRef.current = 'success';
       setStep('success');
+      clearCart();
     } catch (error: unknown) {
       const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Error al procesar el pedido';
       toast.error(msg);
@@ -179,12 +182,21 @@ export default function CheckoutPage() {
       ?.map((item) => `• ${item.product_name} x${item.quantity} = $${Number(item.subtotal).toFixed(2)}`)
       .join('\n');
 
-    const whatsAppMessage = `🛍️ *Nuevo Pedido - #${placedOrder.order_number}*\n\n` +
+    const deliveryLine = placedOrder.delivery_type === 'delivery'
+      ? `🚚 *Entrega a domicilio*\n📍 ${placedOrder.delivery_address}`
+      : `🏪 *Retiro en tienda*`;
+
+    const notesLine = placedOrder.notes ? `\n📝 *Notas:* ${placedOrder.notes}` : '';
+
+    const whatsAppMessage =
+      `🛍️ *Nuevo pedido #${placedOrder.order_number}*\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
       `👤 *Cliente:* ${placedOrder.customer_name}\n` +
       `📱 *Teléfono:* ${placedOrder.customer_phone}\n\n` +
       `🛒 *Productos:*\n${itemsList}\n\n` +
-      `💰 *Total: $${Number(placedOrder.total).toFixed(2)}*\n` +
-      `🚚 *Entrega:* ${placedOrder.delivery_type === 'delivery' ? `A domicilio: ${placedOrder.delivery_address}` : 'Retiro en tienda'}`;
+      `💰 *Total: $${Number(placedOrder.total).toFixed(2)}*\n\n` +
+      `${deliveryLine}` +
+      `${notesLine}`;
 
     const whatsAppLink = `https://wa.me/${storeConfig.vendorWhatsApp}?text=${encodeURIComponent(whatsAppMessage)}`;
 
