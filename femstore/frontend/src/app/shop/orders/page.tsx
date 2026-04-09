@@ -52,11 +52,11 @@ export default function MyOrdersPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50 py-8">
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
         <div className="page-container max-w-3xl">
           <div className="flex items-center justify-between mb-8">
             <h1 className="section-title mb-0">Mis pedidos</h1>
-            <button 
+            <button
               onClick={handleRefresh}
               disabled={isLoading}
               className="text-sm text-blush-600 hover:text-blush-700 font-medium"
@@ -69,16 +69,16 @@ export default function MyOrdersPage() {
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="card p-6 animate-pulse">
-                  <div className="h-4 bg-gray-100 rounded w-1/3 mb-3" />
-                  <div className="h-3 bg-gray-100 rounded w-1/4" />
+                  <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-1/3 mb-3" />
+                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-1/4" />
                 </div>
               ))}
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-20">
               <Package className="w-14 h-14 mx-auto text-blush-200 mb-4" />
-              <p className="text-gray-500 font-medium">Aún no tienes pedidos</p>
-              <p className="text-gray-400 text-sm mt-1">¡Explora nuestra tienda y haz tu primer pedido!</p>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">Aún no tienes pedidos</p>
+              <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">¡Explora nuestra tienda y haz tu primer pedido!</p>
               <button onClick={() => router.push('/shop/products')} className="btn-primary mt-6">
                 Ir a la tienda
               </button>
@@ -89,19 +89,19 @@ export default function MyOrdersPage() {
                 const config = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
                 const Icon = config.icon;
                 const isExpanded = expandedOrder === order.id;
-                
+
                 return (
                   <div key={order.id} className="card overflow-hidden">
-                    <div 
-                      className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
+                    <div
+                      className="p-5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                       onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <p className="font-mono font-bold text-blush-600">#{order.order_number}</p>
-                          <p className="text-xs text-gray-400 mt-0.5">
-                            {new Date(order.created_at).toLocaleDateString('es-ES', { 
-                              year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                            {new Date(order.created_at).toLocaleDateString('es-ES', {
+                              year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                             })}
                           </p>
                         </div>
@@ -110,27 +110,27 @@ export default function MyOrdersPage() {
                             <Icon className="w-3 h-3" />
                             {config.label}
                           </span>
-                          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                        <span className="text-sm text-gray-500">
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
                           {order.items?.length} producto{order.items?.length !== 1 ? 's' : ''} • {' '}
                           {order.delivery_type === 'delivery' ? '🚚 Entrega a domicilio' : '🏪 Retiro en tienda'}
                         </span>
-                        <span className="font-bold text-gray-900">${Number(order.total).toFixed(2)}</span>
+                        <span className="font-bold text-gray-900 dark:text-white">${Number(order.total).toFixed(2)}</span>
                       </div>
                     </div>
 
                     {isExpanded && (
-                      <div className="border-t border-gray-100 p-5 bg-gray-50 space-y-4">
+                      <div className="border-t border-gray-100 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-800 space-y-4">
                         <div>
-                          <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Productos</p>
+                          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Productos</p>
                           <div className="space-y-2">
                             {order.items?.map((item) => (
-                              <div key={item.id} className="flex justify-between text-sm text-gray-700">
-                                <span>{item.product_name} <span className="text-gray-400">x{item.quantity}</span></span>
+                              <div key={item.id} className="flex justify-between text-sm text-gray-700 dark:text-gray-300">
+                                <span>{item.product_name} <span className="text-gray-400 dark:text-gray-500">x{item.quantity}</span></span>
                                 <span>${Number(item.subtotal).toFixed(2)}</span>
                               </div>
                             ))}
@@ -139,18 +139,18 @@ export default function MyOrdersPage() {
 
                         {order.delivery_address && (
                           <div className="text-sm">
-                            <span className="text-gray-400">Dirección de entrega: </span>
-                            <span className="text-gray-800">{order.delivery_address}</span>
+                            <span className="text-gray-400 dark:text-gray-500">Dirección de entrega: </span>
+                            <span className="text-gray-800 dark:text-gray-200">{order.delivery_address}</span>
                           </div>
                         )}
                         {order.notes && (
                           <div className="text-sm">
-                            <span className="text-gray-400">Notas: </span>
-                            <span className="text-gray-800">{order.notes}</span>
+                            <span className="text-gray-400 dark:text-gray-500">Notas: </span>
+                            <span className="text-gray-800 dark:text-gray-200">{order.notes}</span>
                           </div>
                         )}
 
-                        <div className="pt-3 border-t border-gray-200">
+                        <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
                           <a
                             href={getWhatsAppLink(order)}
                             target="_blank"
@@ -160,7 +160,7 @@ export default function MyOrdersPage() {
                             <MessageCircle className="w-4 h-4" />
                             Consultar por WhatsApp
                           </a>
-                          <p className="text-xs text-gray-400 text-center mt-2">
+                          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-2">
                             El vendedor te notificará cuando tu pedido esté listo o en camino
                           </p>
                         </div>

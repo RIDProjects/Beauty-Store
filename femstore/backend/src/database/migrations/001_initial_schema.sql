@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
                                              order_number VARCHAR(20) UNIQUE NOT NULL,
                                              user_id UUID REFERENCES users(id) ON DELETE SET NULL,
                                              customer_name VARCHAR(100) NOT NULL,
-                                             customer_phone VARCHAR(20) NOT NULL,
+                                             customer_phone VARCHAR(100) NOT NULL,
                                              customer_email VARCHAR(255),
                                              delivery_address TEXT,
                                              delivery_type VARCHAR(20) DEFAULT 'pickup' CHECK (delivery_type IN ('pickup', 'delivery')),
