@@ -217,14 +217,21 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-3 mb-4 flex gap-2 items-start">
+              <span className="text-amber-500 text-lg leading-none mt-0.5">⚠️</span>
+              <p className="text-sm text-amber-800 dark:text-amber-300">
+                <strong>Paso importante:</strong> tocá el botón de abajo para enviarnos tu pedido por WhatsApp. Sin ese mensaje no podremos procesarlo.
+              </p>
+            </div>
+
             <div className="space-y-3">
               <a
                 href={whatsAppLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary w-full block text-center"
+                className="btn-primary w-full block text-center text-base py-4"
               >
-                Enviar pedido por WhatsApp
+                📲 Enviar pedido por WhatsApp
               </a>
               <Link href="/shop/orders" className="btn-secondary w-full block text-center">
                 Ver mis pedidos
