@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   borderRadius: '12px',
                   border: '1px solid #F5E1E1',
                   boxShadow: '0 4px 24px rgba(192,133,133,0.12)',
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: '\'Plus Jakarta Sans\', sans-serif',
                   fontSize: '14px',
                 },
                 success: { iconTheme: { primary: '#C08585', secondary: '#fff' } },

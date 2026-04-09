@@ -1,13 +1,14 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Heart, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, isLoading } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: '', password: '' });
@@ -17,7 +18,7 @@ export default function LoginPage() {
     try {
       await login(form.email, form.password);
       toast.success('¡Bienvenida de vuelta! 🌸');
-      router.push('/');
+      router.push(searchParams.get('redirect') || '/');
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -43,8 +44,9 @@ export default function LoginPage() {
         <div className="card p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="label">Email</label>
+              <label htmlFor="email" className="label">Email</label>
               <input
+                id="email"
                 type="email"
                 className="input"
                 placeholder="tu@email.com"
@@ -55,9 +57,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="label">Contraseña</label>
+              <label htmlFor="password" className="label">Contraseña</label>
               <div className="relative">
                 <input
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   className="input pr-11"
                   placeholder="••••••••"

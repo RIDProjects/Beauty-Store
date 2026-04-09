@@ -36,24 +36,6 @@ export default function CheckoutPage() {
 
   const total = getTotalPrice();
 
-  useEffect(() => {
-    if (step === 'success' && placedOrder) {
-      const itemsList = placedOrder.items
-        ?.map((item) => `• ${item.product_name} x${item.quantity} = $${Number(item.subtotal).toFixed(2)}`)
-        .join('\n');
-
-      const whatsAppMessage = `🛍️ *Nuevo Pedido - #${placedOrder.order_number}*\n\n` +
-        `👤 *Cliente:* ${placedOrder.customer_name}\n` +
-        `📱 *Teléfono:* ${placedOrder.customer_phone}\n\n` +
-        `🛒 *Productos:*\n${itemsList}\n\n` +
-        `💰 *Total: $${Number(placedOrder.total).toFixed(2)}*\n` +
-        `🚚 *Entrega:* ${placedOrder.delivery_type === 'delivery' ? `A domicilio: ${placedOrder.delivery_address}` : 'Retiro en tienda'}`;
-
-      const whatsAppLink = `https://wa.me/${storeConfig.vendorWhatsApp}?text=${encodeURIComponent(whatsAppMessage)}`;
-
-      window.location.href = whatsAppLink;
-    }
-  }, [step, placedOrder]);
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -181,9 +163,9 @@ export default function CheckoutPage() {
               </Link>
               <button
                 onClick={() => setStep('form')}
-                className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 py-2 transition-colors"
+                className="btn-secondary w-full"
               >
-                Continuar como invitada →
+                Continuar como invitada
               </button>
             </div>
           </div>
@@ -193,22 +175,59 @@ export default function CheckoutPage() {
   }
 
   if (step === 'success' && placedOrder) {
+    const itemsList = placedOrder.items
+      ?.map((item) => `• ${item.product_name} x${item.quantity} = $${Number(item.subtotal).toFixed(2)}`)
+      .join('\n');
+
+    const whatsAppMessage = `🛍️ *Nuevo Pedido - #${placedOrder.order_number}*\n\n` +
+      `👤 *Cliente:* ${placedOrder.customer_name}\n` +
+      `📱 *Teléfono:* ${placedOrder.customer_phone}\n\n` +
+      `🛒 *Productos:*\n${itemsList}\n\n` +
+      `💰 *Total: $${Number(placedOrder.total).toFixed(2)}*\n` +
+      `🚚 *Entrega:* ${placedOrder.delivery_type === 'delivery' ? `A domicilio: ${placedOrder.delivery_address}` : 'Retiro en tienda'}`;
+
+    const whatsAppLink = `https://wa.me/${storeConfig.vendorWhatsApp}?text=${encodeURIComponent(whatsAppMessage)}`;
+
     return (
       <>
         <Header />
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
-          <div className="card p-8 max-w-lg w-full text-center">
+          <div className="card p-8 max-w-lg w-full">
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">¡Pedido confirmado! 🎉</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-4">Redirigiendo a WhatsApp...</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500">
-              Si no se abre WhatsApp, hacé click en el botón de abajo
-            </p>
-            <div className="mt-6">
-              <Link href="/shop/products" className="btn-secondary">
-                Volver a la tienda
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-1 text-center">
+              #{placedOrder.order_number}
+            </h2>
+            <p className="text-center text-gray-500 dark:text-gray-400 mb-6">¡Pedido confirmado! 🎉</p>
+
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">Resumen del pedido</h3>
+              <div className="space-y-2">
+                {placedOrder.items?.map((item, idx) => (
+                  <div key={idx} className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                    <span>{item.product_name} x{item.quantity}</span>
+                    <span>${Number(item.subtotal).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 mt-3 pt-3 flex justify-between font-bold text-gray-900 dark:text-white">
+                <span>Total</span>
+                <span className="text-blush-600">${Number(placedOrder.total).toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <a
+                href={whatsAppLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary w-full block text-center"
+              >
+                Enviar pedido por WhatsApp
+              </a>
+              <Link href="/shop/orders" className="btn-secondary w-full block text-center">
+                Ver mis pedidos
               </Link>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Heart, Star, Truck, Shield, RotateCcw, Phone, MessageCircle } from 'lucide-react';
+import { Heart, Star, Truck, Shield, Phone, MessageCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import ProductCard from '@/components/shop/ProductCard';
 import { Product, Category, ApiResponse } from '@/types';
@@ -143,7 +143,7 @@ export default async function HomePage() {
               {[
                 { icon: Truck, title: 'Envío a domicilio', desc: 'Recibe tus pedidos cómodamente en casa' },
                 { icon: Shield, title: 'Compra segura', desc: 'Tus datos siempre protegidos' },
-                { icon: RotateCcw, title: 'Atención al cliente', desc: 'Estamos aquí para ayudarte' },
+                { icon: MessageCircle, title: 'Atención al cliente', desc: 'Estamos aquí para ayudarte' },
               ].map((feat) => (
                 <div key={feat.title} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-blush-50 dark:hover:bg-gray-800 transition-colors">
                   <div className="w-12 h-12 bg-blush-100 dark:bg-blush-900 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -214,6 +214,16 @@ export default async function HomePage() {
                 <li>
                   <Link href="/" className="text-gray-400 hover:text-blush-400 transition-colors">
                     Inicio
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/politica-de-privacidad" className="text-gray-400 hover:text-blush-400 transition-colors">
+                    Política de privacidad
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terminos" className="text-gray-400 hover:text-blush-400 transition-colors">
+                    Términos y condiciones
                   </Link>
                 </li>
               </ul>

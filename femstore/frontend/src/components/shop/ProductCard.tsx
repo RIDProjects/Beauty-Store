@@ -59,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           className={`absolute top-3 right-3 z-10 w-9 h-9 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
             isFavorite
               ? 'bg-blush-500 hover:bg-blush-600'
-              : 'bg-white/90 dark:bg-gray-800/90 hover:bg-blush-50 dark:hover:bg-blush-900 opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+              : 'bg-white/90 dark:bg-gray-800/90 hover:bg-blush-50 dark:hover:bg-blush-900 opacity-70 hover:opacity-100'
           }`}
           aria-label={isFavorite ? `Quitar ${product.name} de favoritos` : `Agregar ${product.name} a favoritos`}
           aria-pressed={isFavorite}
@@ -87,7 +87,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+        <div className="absolute bottom-0 left-0 right-0 p-3 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-300">
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock}

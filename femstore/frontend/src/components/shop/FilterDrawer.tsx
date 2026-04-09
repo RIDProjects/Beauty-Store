@@ -34,7 +34,7 @@ export default function FilterDrawer({
 
       {/* Drawer */}
       <aside
-        className="fixed right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col animate-slide-up border-l border-gray-200 dark:border-gray-700"
+        className="fixed right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col animate-slide-in-right border-l border-gray-200 dark:border-gray-700"
         role="dialog"
         aria-label="Filtros"
         aria-modal="true"

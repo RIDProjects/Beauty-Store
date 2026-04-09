@@ -15,12 +15,18 @@ export default function ProductsPage() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category_id') || '');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     setSelectedCategory(searchParams.get('category_id') || '');
   }, [searchParams]);
-  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchCategories = async () => {
@@ -34,7 +40,7 @@ export default function ProductsPage() {
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
-      if (search) params.set('search', search);
+      if (debouncedSearch) params.set('search', debouncedSearch);
       if (selectedCategory) params.set('category_id', selectedCategory);
       params.set('page', String(page));
       params.set('limit', '12');
@@ -45,10 +51,10 @@ export default function ProductsPage() {
     } catch { /* ignore */ } finally {
       setIsLoading(false);
     }
-  }, [search, selectedCategory, page]);
+  }, [debouncedSearch, selectedCategory, page]);
 
   useEffect(() => { fetchCategories(); }, []);
-  useEffect(() => { setPage(1); }, [search, selectedCategory]);
+  useEffect(() => { setPage(1); }, [debouncedSearch, selectedCategory]);
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 
   const clearFilters = () => {
@@ -143,7 +149,7 @@ export default function ProductsPage() {
               {pagination && pagination.totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-10">
                   <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    onClick={() => { setPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     disabled={page === 1}
                     className="btn-secondary py-2 px-4 text-sm disabled:opacity-40"
                   >
@@ -153,7 +159,7 @@ export default function ProductsPage() {
                     Página {page} de {pagination.totalPages}
                   </span>
                   <button
-                    onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                    onClick={() => { setPage((p) => Math.min(pagination.totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     disabled={page === pagination.totalPages}
                     className="btn-secondary py-2 px-4 text-sm disabled:opacity-40"
                   >

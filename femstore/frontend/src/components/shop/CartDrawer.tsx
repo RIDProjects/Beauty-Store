@@ -34,7 +34,7 @@ const CartItemRow = memo(function CartItemRow({ item, onIncrement, onDecrement, 
         <div className="flex items-center gap-2 mt-1.5">
           <button
             onClick={() => onDecrement(item.product_id)}
-            className="w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 transition-colors"
+            className="w-8 h-8 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 transition-colors"
             aria-label={`Reducir cantidad de ${item.product_name}`}
           >
             <Minus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
@@ -43,7 +43,7 @@ const CartItemRow = memo(function CartItemRow({ item, onIncrement, onDecrement, 
           <button
             onClick={() => onIncrement(item.product_id)}
             disabled={item.quantity >= item.stock}
-            className="w-6 h-6 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="w-8 h-8 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             aria-label={`Aumentar cantidad de ${item.product_name}`}
           >
             <Plus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
@@ -97,7 +97,7 @@ export default function CartDrawer() {
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col animate-slide-up border-l border-gray-200 dark:border-gray-700">
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col animate-slide-in-right border-l border-gray-200 dark:border-gray-700">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">

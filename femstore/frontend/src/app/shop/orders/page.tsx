@@ -92,9 +92,11 @@ export default function MyOrdersPage() {
 
                 return (
                   <div key={order.id} className="card overflow-hidden">
-                    <div
-                      className="p-5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    <button
+                      className="w-full text-left p-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blush-400"
                       onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
+                      aria-expanded={isExpanded}
+                      aria-label={`Pedido #${order.order_number}`}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -121,7 +123,7 @@ export default function MyOrdersPage() {
                         </span>
                         <span className="font-bold text-gray-900 dark:text-white">${Number(order.total).toFixed(2)}</span>
                       </div>
-                    </div>
+                    </button>
 
                     {isExpanded && (
                       <div className="border-t border-gray-100 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-800 space-y-4">

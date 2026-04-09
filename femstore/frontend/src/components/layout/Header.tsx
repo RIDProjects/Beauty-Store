@@ -16,6 +16,7 @@ export default function Header() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -119,31 +120,39 @@ export default function Header() {
               {/* User — rendered only after store hydrates to avoid SSR mismatch */}
               {isInitialized && (
                 user ? (
-                  <div className="relative group hidden md:block">
-                    <button className="flex items-center gap-2 btn-ghost px-3">
+                  <div className="relative hidden md:block">
+                    <button
+                      onClick={() => setUserMenuOpen((o) => !o)}
+                      onBlur={() => setTimeout(() => setUserMenuOpen(false), 150)}
+                      className="flex items-center gap-2 btn-ghost px-3"
+                      aria-expanded={userMenuOpen}
+                    >
                       <div className="w-7 h-7 bg-blush-100 dark:bg-blush-900 rounded-full flex items-center justify-center">
                         <span className="text-blush-600 dark:text-blush-400 text-xs font-bold">{user.name[0].toUpperCase()}</span>
                       </div>
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user.name.split(' ')[0]}</span>
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform text-gray-500 ${userMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                      <div className="p-2">
-                        {user.role === 'admin' && (
-                          <Link href="/admin" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
-                            Panel Admin
+                    {userMenuOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50">
+                        <div className="p-2">
+                          {user.role === 'admin' && (
+                            <Link href="/admin" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
+                              Panel Admin
+                            </Link>
+                          )}
+                          <Link href="/shop/orders" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
+                            Mis Pedidos
                           </Link>
-                        )}
-                        <Link href="/shop/orders" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
-                          Mis Pedidos
-                        </Link>
-                        <button
-                          onClick={logout}
-                          className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                        >
-                          Cerrar sesión
-                        </button>
+                          <button
+                            onClick={logout}
+                            className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                          >
+                            Cerrar sesión
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ) : (
                   <Link href="/auth/login" className="btn-primary py-2 px-4 text-sm flex items-center">

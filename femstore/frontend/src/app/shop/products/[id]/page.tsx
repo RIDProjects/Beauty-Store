@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingBag, ArrowLeft, Star, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { ShoppingBag, ArrowLeft, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { Product, ApiResponse } from '@/types';
 import { useCartStore } from '@/store/cart.store';
@@ -63,16 +64,32 @@ export default function ProductDetailPage() {
     return (
       <>
         <Header />
-        <div className="page-container py-10">
-          <div className="animate-pulse grid md:grid-cols-2 gap-10">
-            <div className="aspect-square bg-rose-50 rounded-2xl" />
-            <div className="space-y-4">
-              <div className="h-8 bg-gray-100 rounded w-3/4" />
-              <div className="h-6 bg-rose-50 rounded w-1/4" />
-              <div className="h-24 bg-gray-100 rounded" />
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+          <div className="page-container max-w-5xl">
+            <div className="animate-pulse mb-6 h-4 bg-gray-200 dark:bg-gray-700 rounded w-32" />
+            <div className="grid md:grid-cols-2 gap-10">
+              <div className="space-y-3">
+                <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl" />
+                <div className="flex gap-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-4 animate-pulse">
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+                <div className="space-y-2 pt-2">
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded" />
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/6" />
+                </div>
+                <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl mt-4" />
+              </div>
             </div>
           </div>
-        </div>
+        </main>
       </>
     );
   }
@@ -88,13 +105,13 @@ export default function ProductDetailPage() {
       <Header />
       <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <div className="page-container py-8">
-          <button
-            onClick={() => router.back()}
+          <Link
+            href="/shop/products"
             className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blush-500 transition-colors mb-6 text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver
-          </button>
+          </Link>
 
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
             <div className="space-y-3">
@@ -155,12 +172,6 @@ export default function ProductDetailPage() {
 
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{product.name}</h1>
 
-              <div className="flex items-center gap-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                ))}
-                <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">Producto destacado</span>
-              </div>
 
               <div className="flex items-end gap-3">
                 {product.is_on_sale && product.sale_price ? (
