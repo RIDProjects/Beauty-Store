@@ -172,7 +172,7 @@ export class AuthService {
     };
 
     return jwt.sign(payload, process.env.JWT_SECRET || 'secret', {
-      expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
     } as jwt.SignOptions);
   }
 }
