@@ -183,15 +183,39 @@ class OrderService {
         return order;
     }
     async getStats() {
-        const result = await (0, database_1.query)(`
-      SELECT
-        COUNT(*) AS total_orders,
-        COUNT(*) FILTER (WHERE status = 'pending') AS pending_orders,
-        COALESCE(SUM(total) FILTER (WHERE status != 'cancelled'), 0) AS total_revenue,
-        COUNT(*) FILTER (WHERE DATE(created_at) = CURRENT_DATE) AS today_orders
-      FROM orders
-    `);
-        return result.rows[0];
+        const [statsResult, outOfStockResult, chartResult] = await Promise.all([
+            (0, database_1.query)(`
+        SELECT
+          COUNT(*)                                                              AS total_orders,
+          COUNT(*) FILTER (WHERE status = 'pending')                           AS pending_orders,
+          COALESCE(SUM(total) FILTER (WHERE status != 'cancelled'), 0)         AS total_revenue,
+          COUNT(*) FILTER (WHERE DATE(created_at) = CURRENT_DATE)              AS today_orders,
+          COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW()))      AS week_orders,
+          COUNT(*) FILTER (WHERE created_at >= date_trunc('month', NOW()))     AS month_orders
+        FROM orders
+      `),
+            (0, database_1.query)(`SELECT COUNT(*) AS out_of_stock FROM products WHERE stock = 0 AND is_active = TRUE`),
+            (0, database_1.query)(`
+        SELECT
+          TO_CHAR(gs.day, 'YYYY-MM-DD') AS date,
+          COALESCE(COUNT(o.id), 0)       AS count
+        FROM generate_series(
+          CURRENT_DATE - INTERVAL '29 days',
+          CURRENT_DATE,
+          INTERVAL '1 day'
+        ) AS gs(day)
+        LEFT JOIN orders o
+          ON DATE(o.created_at) = gs.day
+          AND o.status != 'cancelled'
+        GROUP BY gs.day
+        ORDER BY gs.day ASC
+      `),
+        ]);
+        return {
+            ...statsResult.rows[0],
+            out_of_stock: parseInt(outOfStockResult.rows[0].out_of_stock),
+            chart_data: chartResult.rows.map((r) => ({ date: r.date, count: parseInt(r.count) })),
+        };
     }
 }
 exports.OrderService = OrderService;

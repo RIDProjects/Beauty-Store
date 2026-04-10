@@ -144,11 +144,11 @@ export default function AdminProductsPage() {
       <div className="space-y-6 max-w-2xl">
         <div className="flex items-center gap-3">
           <button onClick={() => setMode('list')} className="btn-ghost py-1.5 px-3 text-sm">← Volver</button>
-          <h1 className="text-xl font-bold text-gray-900">{mode === 'create' ? 'Nuevo producto' : 'Editar producto'}</h1>
+          <h1 className="text-xl font-bold text-white">{mode === 'create' ? 'Nuevo producto' : 'Editar producto'}</h1>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
-          <div className="card p-6 space-y-4">
+          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-6 space-y-4">
             <div>
               <label className="label">Nombre *</label>
               <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre del producto" required />
@@ -208,8 +208,8 @@ export default function AdminProductsPage() {
 
           {/* Images - only when editing */}
           {mode === 'edit' && editingProduct && (
-            <div className="card p-6">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-6">
+              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-blush-500" />
                 Imágenes
               </h3>
@@ -245,8 +245,8 @@ export default function AdminProductsPage() {
           )}
 
           {mode === 'create' && (
-            <div className="card p-4 bg-amber-50 border-amber-200">
-              <p className="text-xs text-amber-700">💡 Guarda el producto primero y luego podrás subir imágenes desde la opción Editar.</p>
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4">
+              <p className="text-xs text-amber-400">💡 Guarda el producto primero y luego podrás subir imágenes desde la opción Editar.</p>
             </div>
           )}
 
@@ -267,7 +267,7 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Productos</h1>
+          <h1 className="text-xl font-bold text-white">Productos</h1>
           <p className="text-sm text-gray-500">{products.length} productos</p>
         </div>
         <button onClick={openCreate} className="btn-primary flex items-center gap-2 text-sm py-2.5">
@@ -282,18 +282,18 @@ export default function AdminProductsPage() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {[...Array(5)].map((_, i) => <div key={i} className="card p-4 animate-pulse h-16" />)}
+          {[...Array(5)].map((_, i) => <div key={i} className="bg-gray-800/60 rounded-2xl p-4 animate-pulse h-16" />)}
         </div>
       ) : products.length === 0 ? (
-        <div className="text-center py-20 card">
-          <Plus className="w-10 h-10 mx-auto text-blush-200 mb-3" />
+        <div className="text-center py-20 bg-gray-800/60 border border-gray-700/50 rounded-2xl">
+          <Plus className="w-10 h-10 mx-auto text-blush-400/40 mb-3" />
           <p className="text-gray-500">No hay productos. ¡Crea el primero!</p>
           <button onClick={openCreate} className="btn-primary mt-4 text-sm py-2.5">Crear producto</button>
         </div>
       ) : (
-        <div className="card overflow-hidden">
+        <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-100">
+            <thead className="bg-gray-900/60 border-b border-gray-700/50">
               <tr>
                 <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase">Producto</th>
                 <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Categoría</th>
@@ -302,9 +302,9 @@ export default function AdminProductsPage() {
                 <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-700/30">
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={product.id} className="hover:bg-gray-700/20 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blush-50 rounded-lg overflow-hidden flex-shrink-0">
@@ -315,13 +315,13 @@ export default function AdminProductsPage() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate max-w-[140px]">{product.name}</p>
-                        <p className="text-xs text-gray-400">Stock: {product.stock}</p>
+                        <p className="text-sm font-medium text-gray-100 truncate max-w-[140px]">{product.name}</p>
+                        <p className="text-xs text-gray-500">Stock: {product.stock}</p>
                       </div>
                     </div>
                   </td>
                   <td className="p-4 hidden sm:table-cell">
-                    <span className="text-sm text-gray-600">{product.category_name || '—'}</span>
+                    <span className="text-sm text-gray-400">{product.category_name || '—'}</span>
                   </td>
                   <td className="p-4">
                     <div className="flex flex-col gap-0.5">
@@ -339,7 +339,11 @@ export default function AdminProductsPage() {
                     </div>
                   </td>
                   <td className="p-4 hidden md:table-cell">
-                    <span className={product.is_active ? 'badge-green' : 'badge-gray'}>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                      product.is_active
+                        ? 'text-green-400 bg-green-400/10'
+                        : 'text-gray-500 bg-gray-500/10'
+                    }`}>
                       {product.is_active ? 'Activo' : 'Inactivo'}
                     </span>
                   </td>

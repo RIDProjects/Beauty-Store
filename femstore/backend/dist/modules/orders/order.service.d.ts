@@ -32,6 +32,13 @@ export declare class OrderService {
         pending_orders: number;
         total_revenue: number;
         today_orders: number;
+        week_orders: number;
+        month_orders: number;
+        out_of_stock: number;
+        chart_data: {
+            date: string;
+            count: number;
+        }[];
     }>;
 }
 //# sourceMappingURL=order.service.d.ts.map
