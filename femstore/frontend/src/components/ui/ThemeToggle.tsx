@@ -8,18 +8,11 @@ export default function ThemeToggle() {
   const { isDark, toggle } = useThemeStore();
   const [mounted, setMounted] = useState(false);
 
-  // Solo mostrar después de hydrate para evitar hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) {
-    // Renderizar un placeholder invisible durante SSR/hydration
     return (
-      <button
-        className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
-        aria-label="Cambiar tema"
-      >
+      <button className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-surface-alt)' }} aria-label="Cambiar tema">
         <div className="w-5 h-5" />
       </button>
     );
@@ -28,13 +21,16 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      className="p-2 rounded-lg transition-colors"
+      style={{ backgroundColor: 'var(--color-surface-alt)' }}
+      onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-border)')}
+      onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)')}
       aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
     >
       {isDark ? (
-        <Sun className="w-5 h-5 text-yellow-500" />
+        <Sun className="w-5 h-5 text-yellow-400" />
       ) : (
-        <Moon className="w-5 h-5 text-gray-600" />
+        <Moon className="w-5 h-5" style={{ color: 'var(--color-accent)' }} />
       )}
     </button>
   );
