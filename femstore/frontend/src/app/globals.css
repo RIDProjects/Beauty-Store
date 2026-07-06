@@ -9,24 +9,24 @@
   --color-bg:           #F0EDE6;
   --color-surface:      #FAFAF7;
   --color-surface-alt:  #E6E2D8;
-  --color-text:         #1E3820;
-  --color-text-muted:   #5a7a57;
-  --color-border:       #D1E2D2;
-  --color-accent:       #2C4A2E;
-  --color-accent-hover: #3D6B40;
-  --color-accent-light: #f4f7f4;
+  --color-text:         #2D3A2E;
+  --color-text-muted:   #697A68;
+  --color-border:       #D4DDD5;
+  --color-accent:       #415548;
+  --color-accent-hover: #556E5C;
+  --color-accent-light: #F2F5F2;
 }
 
 .dark {
-  --color-bg:           #121A12;
-  --color-surface:      #1C271C;
-  --color-surface-alt:  #243526;
+  --color-bg:           #141914;
+  --color-surface:      #1F2520;
+  --color-surface-alt:  #262D28;
   --color-text:         #F0EDE6;
-  --color-text-muted:   #a8c4a8;
-  --color-border:       #2a352a;
-  --color-accent:       #3D6B40;
-  --color-accent-hover: #5E9060;
-  --color-accent-light: #1C271C;
+  --color-text-muted:   #A0B8A2;
+  --color-border:       #2D332E;
+  --color-accent:       #556E5C;
+  --color-accent-hover: #6E8A74;
+  --color-accent-light: #1F2520;
 }
 
 @layer base {

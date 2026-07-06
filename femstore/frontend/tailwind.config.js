@@ -11,16 +11,16 @@ module.exports = {
       colors: {
         // Verde bosque — reemplaza el rosa como color principal
         blush: {
-          50: '#F4F7F4',
-          100: '#E8F0E9',
-          200: '#D1E2D2',
-          300: '#A8C9AA',
-          400: '#7AAD7E',
-          500: '#3D6B40',
-          600: '#2C4A2E',
-          700: '#254025',
-          800: '#1E331F',
-          900: '#1C271C',
+          50: '#F2F5F2',
+          100: '#E4EDE6',
+          200: '#D4DDD5',
+          300: '#A8BEA8',
+          400: '#7A9E80',
+          500: '#556E5C',
+          600: '#415548',
+          700: '#344038',
+          800: '#2A3530',
+          900: '#1F2520',
         },
         // Tierra cálida — tonos neutros derivados de la paleta verde/crema
         gold: {
@@ -46,11 +46,11 @@ module.exports = {
         },
         // Brand tokens Hilo y Miel (acceso directo)
         brand: {
-          green: '#2C4A2E',
-          'green-mid': '#3D6B40',
+          green: '#415548',
+          'green-mid': '#556E5C',
           cream: '#F0EDE6',
           'cream-dark': '#E6E2D8',
-          drop: '#1E3820',
+          drop: '#2D3A2E',
           surface: '#FAFAF7',
         },
         border: '#D1E2D2',
