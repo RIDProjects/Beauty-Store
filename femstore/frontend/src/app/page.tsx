@@ -94,9 +94,8 @@ export default async function HomePage() {
                   <Link
                     key={cat.id}
                     href={`/shop/products?category_id=${cat.id}`}
-                    className="px-6 py-3 rounded-full font-medium transition-all duration-200 hover:text-white hover:shadow-md"
+                    className="px-6 py-3 rounded-full font-medium transition-all duration-200 hover:shadow-md"
                     style={{ backgroundColor: 'var(--color-accent-light)', color: 'var(--color-accent)', border: '1px solid var(--color-border)' }}
-                    onMouseEnter={undefined}
                   >
                     {cat.name}
                   </Link>
@@ -142,10 +141,7 @@ export default async function HomePage() {
                 { icon: Shield, title: 'Compra segura', desc: 'Tus datos siempre protegidos' },
                 { icon: MessageCircle, title: 'Atención al cliente', desc: 'Estamos aquí para ayudarte' },
               ].map((feat) => (
-                <div key={feat.title} className="flex items-start gap-4 p-4 rounded-2xl transition-colors" style={{ cursor: 'default' }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)')}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                >
+                <div key={feat.title} className="hover-surface flex items-start gap-4 p-4 rounded-2xl transition-colors">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-accent-light)' }}>
                     <feat.icon className="w-6 h-6" style={{ color: 'var(--color-accent)' }} />
                   </div>
