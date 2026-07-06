@@ -81,9 +81,13 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ─── Rate Limiting ─────────────────────────────────────────────────────────
+// En desarrollo el límite es holgado: el admin panel (dashboard + polling de
+// notificaciones) consume decenas de requests por sesión y 100/15min se agota.
+const isProduction = process.env.NODE_ENV === 'production';
+
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: isProduction ? 300 : 5000,
   message: { success: false, error: 'Demasiadas solicitudes. Intenta de nuevo en 15 minutos.' },
   standardHeaders: true,
   legacyHeaders: false,
