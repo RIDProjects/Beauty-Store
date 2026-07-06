@@ -144,6 +144,11 @@ const ALTER_STATEMENTS = [
   `ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'completed'))`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS email_hash VARCHAR(64)`,
   `CREATE INDEX IF NOT EXISTS idx_users_email_hash ON users(email_hash)`,
+  // Migración 005 — ciphertext AES (44+ chars) no entra en VARCHAR(20)
+  `ALTER TABLE orders ALTER COLUMN customer_phone TYPE TEXT`,
+  `ALTER TABLE orders ALTER COLUMN customer_email TYPE TEXT`,
+  `ALTER TABLE users ALTER COLUMN phone TYPE TEXT`,
+  `ALTER TABLE users ALTER COLUMN email TYPE TEXT`,
 ];
 
 function maskDbUrl(url: string | undefined): string {
