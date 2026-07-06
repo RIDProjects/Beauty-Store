@@ -36,11 +36,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               toastOptions={{
                 duration: 1000,
                 style: {
-                  background: '#FAFAF7',
-                  color: '#1E3820',
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-text)',
                   borderRadius: '12px',
-                  border: '1px solid #D1E2D2',
-                  boxShadow: '0 4px 24px rgba(44,74,46,0.12)',
+                  border: '1px solid var(--color-border)',
+                  boxShadow: '0 4px 24px rgba(18,26,18,0.2)',
                   fontFamily: '\'DM Sans\', sans-serif',
                   fontSize: '14px',
                 },
