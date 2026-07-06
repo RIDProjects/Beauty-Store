@@ -35,6 +35,10 @@ export interface OrderFilters {
 
 const whatsappService = new WhatsAppService();
 
+// Estados terminales que descuentan stock. El admin UI usa 'delivered' como
+// estado final; 'completed' se mantiene por compatibilidad.
+const TERMINAL_STATUSES: OrderStatus[] = ['delivered', 'completed'];
+
 export class OrderService {
   async create(dto: CreateOrderDto): Promise<Order> {
     const client = await getClient();
@@ -250,20 +254,26 @@ export class OrderService {
     try {
       await client.query('BEGIN');
 
-      // Atomic status update — only proceeds if not already completed (prevents double-deduct)
+      // Atomic status update — blocks terminal→terminal transitions (prevents double-deduct)
       const result = await client.query(
-        `UPDATE orders SET status = $1, updated_at = NOW()
-         WHERE id = $2 AND ($1 != 'completed' OR status != 'completed')
-         RETURNING *`,
-        [status, id]
+        `WITH prev AS (
+           SELECT status FROM orders WHERE id = $2 FOR UPDATE
+         )
+         UPDATE orders SET status = $1, updated_at = NOW()
+         WHERE id = $2 AND NOT ($1 = ANY($3) AND (SELECT status FROM prev) = ANY($3))
+         RETURNING *, (SELECT status FROM prev) AS prev_status`,
+        [status, id, TERMINAL_STATUSES]
       );
 
       if (result.rows.length === 0) {
         await client.query('ROLLBACK');
-        throw new Error('Orden no encontrada o ya está completada');
+        throw new Error('Orden no encontrada o ya está entregada/completada');
       }
 
-      if (status === 'completed') {
+      const prevStatus = result.rows[0].prev_status as OrderStatus;
+      delete result.rows[0].prev_status;
+
+      if (TERMINAL_STATUSES.includes(status) && !TERMINAL_STATUSES.includes(prevStatus)) {
         const itemsResult = await client.query(
           'SELECT * FROM order_items WHERE order_id = $1',
           [id]
@@ -362,7 +372,7 @@ export class OrderService {
       query(`
         SELECT COALESCE(SUM(o.total), 0) AS total_sold_revenue
         FROM orders o
-        WHERE o.status = 'completed'
+        WHERE o.status IN ('delivered', 'completed')
       `),
     ]);
 
