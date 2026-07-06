@@ -71,6 +71,7 @@ export class CategoryService {
   }
 
   async delete(id: string): Promise<void> {
-    await query('DELETE FROM categories WHERE id = $1', [id]);
+    const result = await query('DELETE FROM categories WHERE id = $1', [id]);
+    if (result.rowCount === 0) throw new Error('Categoría no encontrada');
   }
 }

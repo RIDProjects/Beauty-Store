@@ -57,7 +57,7 @@ router.get('/me', authenticate, async (req: Request, res: Response) => {
 });
 
 // PUT /api/auth/profile
-router.put('/profile', authenticate, async (req: Request, res: Response) => {
+router.put('/profile', authenticate, decryptBody('phone'), async (req: Request, res: Response) => {
   const validation = validateRequestSafe(UpdateProfileSchema, req.body);
   
   if (!validation.success) {

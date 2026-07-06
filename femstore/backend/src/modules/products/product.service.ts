@@ -189,7 +189,8 @@ export class ProductService {
   }
 
   async delete(id: string): Promise<void> {
-    await query('DELETE FROM products WHERE id = $1', [id]);
+    const result = await query('DELETE FROM products WHERE id = $1', [id]);
+    if (result.rowCount === 0) throw new Error('Producto no encontrado');
   }
 
   async addImage(productId: string, url: string, isPrimary = false): Promise<void> {

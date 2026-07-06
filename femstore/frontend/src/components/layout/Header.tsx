@@ -21,7 +21,12 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
-  const { user, logout, isInitialized } = useAuthStore();
+  // isInitialized is intentionally omitted: the auth store already loads the
+  // user optimistically from localStorage (synchronously) before calling /auth/me.
+  // Gating on isInitialized forces the button to wait for the network round-trip,
+  // creating the double-render "two refreshes" symptom. Gating on `mounted`
+  // instead shows the correct auth state as soon as the client has hydrated.
+  const { user, logout } = useAuthStore();
   const { getTotalItems, openCart } = useCartStore();
   const totalItems = getTotalItems();
 
@@ -121,7 +126,7 @@ export default function Header() {
                 )}
               </button>
 
-              {isInitialized && (
+              {mounted && (
                 user ? (
                   <div className="relative hidden md:block">
                     <button
@@ -208,7 +213,7 @@ export default function Header() {
                 </>
               )}
               <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--color-border)' }}>
-                {isInitialized && (user ? (
+                {mounted && (user ? (
                   <>
                     <span className="block px-3 py-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>Hola, {user.name}</span>
                     {user.role === 'admin' && (

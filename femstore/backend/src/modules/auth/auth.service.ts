@@ -54,7 +54,7 @@ export class AuthService {
         `INSERT INTO users (name, email, email_hash, password, phone, role)
          VALUES ($1, $2, $3, $4, $5, 'customer')
          RETURNING id, name, email, phone, role, is_active, created_at, updated_at`,
-        [dto.name, dto.email, emailHash, hashedPassword, dto.phone || null]
+        [dto.name, encrypt(decryptedEmail), emailHash, hashedPassword, dto.phone ? encrypt(dto.phone) : null]
       );
 
       const user = result.rows[0] as Omit<User, 'password'>;
@@ -135,6 +135,8 @@ export class AuthService {
        RETURNING id, name, email, phone, role, is_active, created_at, updated_at`,
       [data.name || null, encryptedPhone, userId]
     );
+
+    if (result.rows.length === 0) throw new Error('Usuario no encontrado');
 
     const user = result.rows[0] as Omit<User, 'password'>;
     return {

@@ -78,6 +78,10 @@ export class OrderService {
           throw new Error(`Cantidad inválida para "${product.name}"`);
         }
 
+        if (product.stock < item.quantity) {
+          throw new Error(`Stock insuficiente para "${product.name}". Disponible: ${product.stock}`);
+        }
+
         const itemSubtotal = parseFloat(product.price) * item.quantity;
         subtotal += itemSubtotal;
 
