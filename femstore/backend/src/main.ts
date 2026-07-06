@@ -107,8 +107,10 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
 // ─── Static Files (uploaded images) ───────────────────────────
+// path.resolve respeta rutas absolutas (UPLOAD_DIR=/data/uploads en Railway);
+// path.join las concatenaba y servía la carpeta equivocada
 const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-app.use('/uploads', express.static(path.join(process.cwd(), uploadDir)));
+app.use('/uploads', express.static(path.resolve(process.cwd(), uploadDir)));
 
 // ─── Health Check ─────────────────────────────────────────────
 app.get('/health', (_req, res) => {
