@@ -9,7 +9,7 @@ async function createAdmin() {
   // Generar hash
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  console.log('Creando admin...', { email, name });
+  console.log('🌱 Seeding admin user...');
 
   try {
     // Verificar si ya existe
@@ -21,7 +21,7 @@ async function createAdmin() {
         'UPDATE public.users SET password = $1, role = $2 WHERE email = $3',
         [hashedPassword, 'admin', email]
       );
-      console.log('✅ Admin actualizado');
+      console.log('✅ Admin ready');
     } else {
       // Crear nuevo
       await query(
@@ -29,7 +29,7 @@ async function createAdmin() {
          VALUES ($1, $2, $3, $4)`,
         [name, email, hashedPassword, 'admin']
       );
-      console.log('✅ Admin creado');
+      console.log('✅ Admin ready');
     }
   } catch (error) {
     console.error('Error:', error);

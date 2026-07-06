@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
   subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,
   total DECIMAL(10,2) NOT NULL DEFAULT 0,
   status VARCHAR(20) DEFAULT 'pending'
-    CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
+    CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'completed')),
   whatsapp_sent BOOLEAN DEFAULT FALSE,
   whatsapp_sent_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -93,55 +93,118 @@ CREATE TABLE IF NOT EXISTS public.customer_addresses (
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
 CREATE INDEX IF NOT EXISTS idx_products_sales ON products(sales_count DESC);
-
 CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_product ON order_items(product_id);
-
 CREATE INDEX IF NOT EXISTS idx_customer_addresses_user_id ON customer_addresses(user_id);
+`;
 
+// Statements with dollar-quoting that can't be split by semicolon
+const FUNCTION_SQL = `
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_users_updated_at
-BEFORE UPDATE ON users
-FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_categories_updated_at
-BEFORE UPDATE ON categories
-FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_products_updated_at
-BEFORE UPDATE ON products
-FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_orders_updated_at
-BEFORE UPDATE ON orders
-FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+$$ LANGUAGE plpgsql
 `;
 
-// Helper to mask password in connection string
+const TRIGGER_STATEMENTS = [
+  `DROP TRIGGER IF EXISTS update_users_updated_at ON users`,
+  `CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()`,
+  `DROP TRIGGER IF EXISTS update_categories_updated_at ON categories`,
+  `CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()`,
+  `DROP TRIGGER IF EXISTS update_products_updated_at ON products`,
+  `CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()`,
+  `DROP TRIGGER IF EXISTS update_orders_updated_at ON orders`,
+  `CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()`,
+];
+
+// Alter statements for columns/constraints added after initial deploy
+const ALTER_STATEMENTS = [
+  `ALTER TABLE products ADD COLUMN IF NOT EXISTS sales_count INTEGER DEFAULT 0`,
+  `ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check`,
+  `ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'completed'))`,
+];
+
 function maskDbUrl(url: string | undefined): string {
   if (!url) return 'undefined';
   try {
     const match = url.match(/:\/\/([^:]+):([^@]+)@/);
-    if (match) {
-      return url.replace(match[2], '****');
-    }
+    if (match) return url.replace(match[2], '****');
   } catch {}
   return url;
+}
+
+// Split SQL by semicolons but NOT inside $$...$$ dollar-quoted blocks
+function splitStatements(sql: string): string[] {
+  const statements: string[] = [];
+  let current = '';
+  let inDollarQuote = false;
+  let dollarTag = '';
+  let i = 0;
+
+  while (i < sql.length) {
+    if (!inDollarQuote && sql[i] === '$') {
+      const tagMatch = sql.slice(i).match(/^\$([^$]*)\$/);
+      if (tagMatch) {
+        inDollarQuote = true;
+        dollarTag = tagMatch[0];
+        current += dollarTag;
+        i += dollarTag.length;
+        continue;
+      }
+    }
+
+    if (inDollarQuote && sql[i] === '$') {
+      const tagMatch = sql.slice(i).match(/^\$([^$]*)\$/);
+      if (tagMatch && tagMatch[0] === dollarTag) {
+        inDollarQuote = false;
+        dollarTag = '';
+        current += tagMatch[0];
+        i += tagMatch[0].length;
+        continue;
+      }
+    }
+
+    if (sql[i] === ';' && !inDollarQuote) {
+      const trimmed = current.trim();
+      if (trimmed && !trimmed.startsWith('--')) statements.push(trimmed);
+      current = '';
+      i++;
+      continue;
+    }
+
+    current += sql[i];
+    i++;
+  }
+
+  const trimmed = current.trim();
+  if (trimmed && !trimmed.startsWith('--')) statements.push(trimmed);
+  return statements;
+}
+
+async function runStatement(stmt: string, label?: string): Promise<'ok' | 'skip' | 'error'> {
+  const type = stmt.match(/^(CREATE TABLE|CREATE INDEX|CREATE EXTENSION|CREATE TRIGGER|DROP TRIGGER|CREATE OR REPLACE|ALTER TABLE)/i)?.[1]?.toUpperCase() || 'STMT';
+  const display = label || `${stmt.substring(0, 50).replace(/\n/g, ' ')}...`;
+  try {
+    await query(stmt);
+    console.log(`  ✅ ${type}: ${display}`);
+    return 'ok';
+  } catch (err: any) {
+    if (err.message?.includes('already exists') || err.message?.includes('duplicate')) {
+      console.log(`  ⏭️  ${type}: already exists`);
+      return 'skip';
+    }
+    console.log(`  ❌ ${type}: ${err.message?.substring(0, 100) || 'Unknown error'}`);
+    return 'error';
+  }
 }
 
 async function runMigrations() {
@@ -153,49 +216,40 @@ async function runMigrations() {
   console.log(`🔗 Database URL: ${maskDbUrl(process.env.DATABASE_URL)}`);
   console.log(`🔄 Running migrations...\n`);
 
-  try {
-    // First, test connection
-    const testResult = await query('SELECT 1 as test');
-    console.log('✅ Database connection successful\n');
+  let ok = 0, skip = 0, err = 0;
 
-    const statements = MIGRATION_SQL
-      .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'));
+  const track = (r: 'ok' | 'skip' | 'error') => {
+    if (r === 'ok') ok++;
+    else if (r === 'skip') skip++;
+    else err++;
+  };
 
-    let successCount = 0;
-    let skipCount = 0;
-    let errorCount = 0;
+  await query('SELECT 1');
+  console.log('✅ Database connection successful\n');
 
-    for (const statement of statements) {
-      const statementType = statement.match(/^(CREATE TABLE|CREATE INDEX|CREATE EXTENSION|CREATE TRIGGER|CREATE OR REPLACE)/)?.[1] || 'STATEMENT';
-
-      try {
-        await query(statement);
-        console.log(`  ✅ ${statementType}: ${statement.substring(0, 45).replace(/\n/g, ' ')}...`);
-        successCount++;
-      } catch (err: any) {
-        if (err.message?.includes('already exists') || err.message?.includes('duplicate')) {
-          console.log(`  ⏭️  ${statementType}: already exists, skipping`);
-          skipCount++;
-        } else {
-          console.log(`  ❌ ${statementType}: ${err.message?.substring(0, 80) || 'Unknown error'}`);
-          errorCount++;
-        }
-      }
-    }
-
-    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`📊 Migration Summary: ${successCount} created, ${skipCount} skipped, ${errorCount} errors`);
-    console.log('✅ Database ready\n');
-
-  } catch (error: any) {
-    console.error('\n❌ MIGRATION ERROR:');
-    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.error(`🔴 ${error.message || error}`);
-    console.error(`🔴 Code: ${error.code || 'unknown'}`);
-    console.error('\n⚠️  Continuing anyway - some tables may already exist...\n');
+  // Main DDL statements
+  for (const stmt of splitStatements(MIGRATION_SQL)) {
+    track(await runStatement(stmt));
   }
+
+  // Alter statements (idempotent column/constraint additions)
+  console.log('\n  📦 Applying schema updates...');
+  for (const stmt of ALTER_STATEMENTS) {
+    track(await runStatement(stmt));
+  }
+
+  // Function (dollar-quoted, kept separate)
+  track(await runStatement(FUNCTION_SQL, 'update_updated_at_column()'));
+
+  // Triggers (idempotent via DROP IF EXISTS)
+  for (const stmt of TRIGGER_STATEMENTS) {
+    track(await runStatement(stmt));
+  }
+
+  console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`📊 Migration Summary: ${ok} ok, ${skip} skipped, ${err} errors`);
+  if (err > 0) console.log('⚠️  Some statements failed — check above for details');
+  console.log('✅ Database ready\n');
 }
 
-runMigrations().then(() => process.exit(0));
+runMigrations().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
