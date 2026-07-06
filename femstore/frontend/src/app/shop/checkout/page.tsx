@@ -223,7 +223,7 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-              <div className="border-t border-gray-200 dark:border-[#2a352a] mt-3 pt-3 flex justify-between font-bold text-gray-900 dark:text-white">
+              <div className="border-t mt-3 pt-3 flex justify-between font-bold text-gray-900 dark:text-white" style={{ borderColor: 'var(--color-border)' }}>
                 <span>Total</span>
                 <span className="text-blush-600">${Number(placedOrder.total).toFixed(2)}</span>
               </div>
@@ -337,7 +337,7 @@ export default function CheckoutPage() {
                         className={`p-4 rounded-xl border-2 text-left transition-all ${
                           form.delivery_type === opt.value
                             ? 'border-blush-500 bg-blush-50 dark:bg-blush-900/20'
-                            : 'border-gray-200 dark:border-[#2a352a] hover:border-blush-200'
+                            : 'border-[var(--color-border)] hover:border-blush-200'
                         }`}
                       >
                         <p className="font-semibold text-gray-900 dark:text-white">{opt.label}</p>
@@ -362,7 +362,7 @@ export default function CheckoutPage() {
                               className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                                 selectedAddressId === addr.id
                                   ? 'border-blush-500 bg-blush-50 dark:bg-blush-900/20'
-                                  : 'border-gray-200 dark:border-[#2a352a] hover:border-blush-200'
+                                  : 'border-[var(--color-border)] hover:border-blush-200'
                               }`}
                               onClick={() => {
                                 setSelectedAddressId(addr.id);
@@ -486,7 +486,7 @@ export default function CheckoutPage() {
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-gray-100 dark:border-[#2a352a] pt-4">
+                <div className="border-t border-[var(--color-border)] pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
                     <span className="font-medium">${total.toFixed(2)}</span>
@@ -495,7 +495,7 @@ export default function CheckoutPage() {
                     <span className="text-gray-600 dark:text-gray-400 text-sm">Envío</span>
                     <span className="text-green-600 dark:text-green-400 text-sm font-medium">A coordinar</span>
                   </div>
-                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-[#2a352a]">
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-[var(--color-border)]">
                     <span className="font-bold text-gray-900 dark:text-white">Total</span>
                     <span className="font-bold text-blush-600 text-xl">${total.toFixed(2)}</span>
                   </div>

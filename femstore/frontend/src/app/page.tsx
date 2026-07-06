@@ -157,16 +157,16 @@ export default async function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 text-white" style={{ backgroundColor: '#0D1208' }}>
+      <footer className="py-12 text-white" style={{ backgroundColor: 'var(--color-bg)' }}>
         <div className="page-container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* Brand */}
             <div className="text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                <Heart className="w-5 h-5" style={{ color: '#5E9060', fill: '#5E9060' }} />
+                <Heart className="w-5 h-5" style={{ color: 'var(--color-accent-hover)', fill: 'var(--color-accent-hover)' }} />
                 <span className="text-xl font-bold" style={{ fontFamily: 'Cormorant, Georgia, serif', color: '#F0EDE6' }}>Vainy Bliss</span>
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: '#a8c4a8' }}>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 Moda y belleza diseñada para mujeres como tú.
               </p>
             </div>
@@ -178,8 +178,8 @@ export default async function HomePage() {
                 <li>
                   <a
                     href={`tel:${storeConfig.vendorWhatsApp}`}
-                    className="flex items-center justify-center md:justify-start gap-2 transition-colors hover:text-[#5E9060]"
-                    style={{ color: '#a8c4a8' }}
+                    className="flex items-center justify-center md:justify-start gap-2 transition-colors hover:text-[var(--color-accent-hover)]"
+                    style={{ color: 'var(--color-text-muted)' }}
                   >
                     <Phone className="w-4 h-4" />
                     <span>{storeConfig.vendorPhoneDisplay}</span>
@@ -190,8 +190,8 @@ export default async function HomePage() {
                     href={formatWhatsAppLink('Hola, tengo una consulta sobre Vainy Bliss')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center md:justify-start gap-2 transition-colors hover:text-[#5E9060]"
-                    style={{ color: '#a8c4a8' }}
+                    className="flex items-center justify-center md:justify-start gap-2 transition-colors hover:text-[var(--color-accent-hover)]"
+                    style={{ color: 'var(--color-text-muted)' }}
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>WhatsApp</span>
@@ -211,7 +211,7 @@ export default async function HomePage() {
                   { href: '/terminos', label: 'Términos y condiciones' },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="transition-colors hover:text-[#5E9060]" style={{ color: '#a8c4a8' }}>
+                    <Link href={link.href} className="transition-colors hover:text-[var(--color-accent-hover)]" style={{ color: 'var(--color-text-muted)' }}>
                       {link.label}
                     </Link>
                   </li>
@@ -220,8 +220,8 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="border-t pt-6 text-center" style={{ borderColor: '#2a352a' }}>
-            <p className="text-sm" style={{ color: '#5a7a57' }}>© {new Date().getFullYear()} Vainy Bliss. Todos los derechos reservados.</p>
+          <div className="border-t pt-6 text-center" style={{ borderColor: 'var(--color-border)' }}>
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>© {new Date().getFullYear()} Vainy Bliss. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

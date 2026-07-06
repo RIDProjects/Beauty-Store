@@ -42,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="p-6 border-b border-[#2a352a]/70">
+      <div className="p-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
         <Link href="/" className="flex flex-col gap-1">
           <LogoSVG className="h-10 w-auto" />
           <p className="text-xs text-gray-400 pl-1">Panel Admin</p>
@@ -61,7 +61,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 active
                   ? 'bg-blush-500 text-white shadow-lg shadow-blush-500/20'
-                  : 'text-gray-400 hover:bg-[#243526]/80 hover:text-white'
+                  : 'text-gray-400 hover:bg-[var(--color-surface-alt)] hover:text-white'
               }`}
             >
               <item.icon className="w-4 h-4 flex-shrink-0" />
@@ -73,7 +73,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </nav>
 
       {/* User + logout */}
-      <div className="p-4 border-t border-[#2a352a]/70">
+      <div className="p-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 bg-blush-500/20 rounded-full flex items-center justify-center flex-shrink-0">
             <span className="text-blush-400 text-sm font-bold">{user.name[0].toUpperCase()}</span>
@@ -95,9 +95,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <div className="flex h-screen bg-[#0D1208]">
+    <div className="flex h-screen bg-[var(--color-bg)]">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-64 bg-[#121A12] border-r border-[#2a352a]/70 flex-shrink-0">
+      <aside className="hidden lg:flex lg:flex-col w-64 bg-[var(--color-bg)] border-r flex-shrink-0" style={{ borderColor: 'var(--color-border)' }}>
         <SidebarContent />
       </aside>
 
@@ -105,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {sidebarOpen && (
         <>
           <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
-          <aside className="fixed left-0 top-0 h-full w-64 bg-[#121A12] z-50 lg:hidden shadow-2xl">
+          <aside className="fixed left-0 top-0 h-full w-64 bg-[var(--color-bg)] z-50 lg:hidden shadow-2xl">
             <SidebarContent />
           </aside>
         </>
@@ -114,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="bg-[#121A12] border-b border-[#2a352a]/70 px-6 py-4 flex items-center gap-4">
+        <header className="bg-[var(--color-bg)] border-b px-6 py-4 flex items-center gap-4" style={{ borderColor: 'var(--color-border)' }}>
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden text-gray-400 hover:text-white transition-colors"
@@ -129,7 +129,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6 bg-[#0D1208]">
+        <main className="flex-1 overflow-y-auto p-6 bg-[var(--color-bg)]">
           {children}
         </main>
       </div>

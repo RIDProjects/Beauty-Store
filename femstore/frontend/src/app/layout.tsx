@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   fontFamily: '\'DM Sans\', sans-serif',
                   fontSize: '14px',
                 },
-                success: { iconTheme: { primary: '#3D6B40', secondary: '#FAFAF7' } },
+                success: { iconTheme: { primary: 'var(--color-accent)', secondary: '#FAFAF7' } },
                 error: { iconTheme: { primary: '#ef4444', secondary: '#FAFAF7' } },
               }}
             />

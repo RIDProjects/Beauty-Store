@@ -18,7 +18,7 @@ interface CartItemRowProps {
 const CartItemRow = memo(function CartItemRow({ item, onIncrement, onDecrement, onRemove }: CartItemRowProps) {
   return (
     <div className="flex gap-3 p-3 bg-[var(--color-surface-alt)] rounded-xl">
-      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-blush-50 dark:bg-[#243526]">
+      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-[var(--color-surface-alt)]">
         <Image
           src={getImageUrl(item.primary_image)}
           alt={item.product_name}
@@ -34,7 +34,7 @@ const CartItemRow = memo(function CartItemRow({ item, onIncrement, onDecrement, 
         <div className="flex items-center gap-2 mt-1.5">
           <button
             onClick={() => onDecrement(item.product_id)}
-            className="w-8 h-8 rounded-full bg-white dark:bg-[#243526] border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 transition-colors"
+            className="w-8 h-8 rounded-full bg-[var(--color-surface-alt)] border border-[var(--color-border)] flex items-center justify-center hover:border-blush-300 transition-colors"
             aria-label={`Reducir cantidad de ${item.product_name}`}
           >
             <Minus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
@@ -43,7 +43,7 @@ const CartItemRow = memo(function CartItemRow({ item, onIncrement, onDecrement, 
           <button
             onClick={() => onIncrement(item.product_id)}
             disabled={item.quantity >= item.stock}
-            className="w-8 h-8 rounded-full bg-white dark:bg-[#243526] border border-gray-200 dark:border-gray-600 flex items-center justify-center hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="w-8 h-8 rounded-full bg-[var(--color-surface-alt)] border border-[var(--color-border)] flex items-center justify-center hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             aria-label={`Aumentar cantidad de ${item.product_name}`}
           >
             <Plus className="w-3 h-3 text-gray-600 dark:text-gray-300" aria-hidden="true" />
@@ -97,9 +97,9 @@ export default function CartDrawer() {
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-[#121A12] z-50 shadow-2xl flex flex-col animate-slide-in-right border-l border-gray-200 dark:border-[#2a352a]">
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-[var(--color-bg)] z-50 shadow-2xl flex flex-col animate-slide-in-right border-l border-[var(--color-border)]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-[#2a352a]">
+        <div className="flex items-center justify-between p-5 border-b border-[var(--color-border)]">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-blush-500" />
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">Mi Carrito</h2>
@@ -142,7 +142,7 @@ export default function CartDrawer() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-gray-100 dark:border-[#2a352a] p-5 space-y-4">
+          <div className="border-t border-[var(--color-border)] p-5 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
               <span className="text-xl font-bold text-gray-900 dark:text-white">${total.toFixed(2)}</span>

@@ -69,8 +69,8 @@ export default function MyOrdersPage() {
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="card p-6 animate-pulse">
-                  <div className="h-4 bg-gray-100 dark:bg-[#243526] rounded w-1/3 mb-3" />
-                  <div className="h-3 bg-gray-100 dark:bg-[#243526] rounded w-1/4" />
+                  <div className="h-4 bg-[var(--color-surface-alt)] rounded w-1/3 mb-3" />
+                  <div className="h-3 bg-[var(--color-surface-alt)] rounded w-1/4" />
                 </div>
               ))}
             </div>
@@ -116,7 +116,7 @@ export default function MyOrdersPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-[#2a352a]">
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--color-border)]">
                         <span className="text-sm text-gray-500 dark:text-gray-400">
                           {order.items?.length} producto{order.items?.length !== 1 ? 's' : ''} • {' '}
                           {order.delivery_type === 'delivery' ? '🚚 Entrega a domicilio' : '🏪 Retiro en tienda'}
@@ -126,7 +126,7 @@ export default function MyOrdersPage() {
                     </button>
 
                     {isExpanded && (
-                      <div className="border-t border-gray-100 dark:border-[#2a352a] p-5 bg-[var(--color-surface-alt)] space-y-4">
+                      <div className="border-t border-[var(--color-border)] p-5 bg-[var(--color-surface-alt)] space-y-4">
                         <div>
                           <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Productos</p>
                           <div className="space-y-2">
@@ -152,7 +152,7 @@ export default function MyOrdersPage() {
                           </div>
                         )}
 
-                        <div className="pt-3 border-t border-gray-200 dark:border-[#2a352a]">
+                        <div className="pt-3 border-t border-[var(--color-border)]">
                           <a
                             href={getWhatsAppLink(order)}
                             target="_blank"

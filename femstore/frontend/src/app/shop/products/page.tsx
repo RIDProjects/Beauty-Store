@@ -77,7 +77,7 @@ export default function ProductsPage() {
           </div>
 
           {/* Filters Bar */}
-          <div className="bg-[var(--color-surface)] rounded-2xl p-4 mb-6 shadow-sm border border-gray-100 dark:border-[#2a352a]">
+          <div className="bg-[var(--color-surface)] rounded-2xl p-4 mb-6 shadow-sm border border-[var(--color-border)]">
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
               <div className="relative flex-1">
@@ -130,8 +130,8 @@ export default function ProductsPage() {
                 <div key={i} className="card animate-pulse">
                   <div className="aspect-[3/4] bg-[var(--color-surface-alt)]" />
                   <div className="p-4 space-y-2">
-                    <div className="h-4 bg-gray-100 dark:bg-[#243526] rounded" />
-                    <div className="h-3 bg-gray-100 dark:bg-[#243526] rounded w-3/4" />
+                    <div className="h-4 bg-[var(--color-surface-alt)] rounded" />
+                    <div className="h-3 bg-[var(--color-surface-alt)] rounded w-3/4" />
                     <div className="h-5 bg-[var(--color-surface-alt)] rounded w-1/3 mt-3" />
                   </div>
                 </div>
