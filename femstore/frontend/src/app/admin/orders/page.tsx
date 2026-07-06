@@ -105,7 +105,7 @@ export default function AdminOrdersPage() {
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
               statusFilter === opt.value
                 ? 'bg-blush-500 text-white border-blush-500'
-                : 'bg-gray-800/60 text-gray-400 border-gray-700 hover:border-blush-500/50 hover:text-white'
+                : 'bg-[var(--color-surface)] text-gray-400 border-[var(--color-border)] hover:border-blush-500/50 hover:text-white'
             }`}
           >
             {opt.label}
@@ -115,10 +115,10 @@ export default function AdminOrdersPage() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {[...Array(5)].map((_, i) => <div key={i} className="bg-gray-800/60 rounded-2xl p-5 animate-pulse h-20" />)}
+          {[...Array(5)].map((_, i) => <div key={i} className="bg-[var(--color-surface)] rounded-2xl p-5 animate-pulse h-20" />)}
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-16 text-center text-gray-600">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-16 text-center text-gray-600">
           <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
           <p>No hay pedidos con este filtro</p>
         </div>
@@ -130,10 +130,10 @@ export default function AdminOrdersPage() {
             const isExpanded = expandedOrder === order.id;
 
             return (
-              <div key={order.id} className="bg-gray-800/60 border border-gray-700/50 rounded-2xl overflow-hidden">
+              <div key={order.id} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden">
                 {/* Header */}
                 <div
-                  className="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-700/30 transition-colors"
+                  className="p-4 flex items-center gap-4 cursor-pointer hover:bg-[var(--color-surface-alt)] transition-colors"
                   onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                 >
                   <div className="flex-1 min-w-0">
@@ -155,7 +155,7 @@ export default function AdminOrdersPage() {
 
                 {/* Expanded detail */}
                 {isExpanded && (
-                  <div className="border-t border-gray-700/50 p-4 bg-gray-900/50 space-y-4">
+                  <div className="border-t border-[var(--color-border)] p-4 bg-[var(--color-surface-alt)] space-y-4">
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Productos</p>
                       <div className="space-y-1">
@@ -190,7 +190,7 @@ export default function AdminOrdersPage() {
                               <button
                                 key={st}
                                 onClick={() => handleStatusChange(order.id, st)}
-                                className="px-4 py-1.5 bg-gray-800 border border-gray-600 hover:border-blush-400 hover:text-blush-400 text-gray-300 rounded-lg text-sm font-medium transition-all"
+                                className="px-4 py-1.5 bg-[var(--color-surface)] border border-gray-600 hover:border-blush-400 hover:text-blush-400 text-gray-300 rounded-lg text-sm font-medium transition-all"
                               >
                                 → {conf.label}
                               </button>
@@ -209,11 +209,11 @@ export default function AdminOrdersPage() {
 
       {pagination && pagination.totalPages > 1 && (
         <div className="flex justify-center items-center gap-3">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-gray-800 border border-gray-700 hover:border-blush-500 text-gray-300 py-2 px-4 rounded-xl text-sm disabled:opacity-40 transition-colors">
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-blush-500 text-gray-300 py-2 px-4 rounded-xl text-sm disabled:opacity-40 transition-colors">
             ← Anterior
           </button>
           <span className="text-sm text-gray-500">Página {page} de {pagination.totalPages}</span>
-          <button onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))} disabled={page === pagination.totalPages} className="bg-gray-800 border border-gray-700 hover:border-blush-500 text-gray-300 py-2 px-4 rounded-xl text-sm disabled:opacity-40 transition-colors">
+          <button onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))} disabled={page === pagination.totalPages} className="bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-blush-500 text-gray-300 py-2 px-4 rounded-xl text-sm disabled:opacity-40 transition-colors">
             Siguiente →
           </button>
         </div>

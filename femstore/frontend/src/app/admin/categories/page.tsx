@@ -78,7 +78,7 @@ export default function AdminCategoriesPage() {
           <button onClick={() => setMode('list')} className="btn-ghost py-1.5 px-3 text-sm">← Volver</button>
           <h1 className="text-xl font-bold text-white">{mode === 'create' ? 'Nueva categoría' : 'Editar categoría'}</h1>
         </div>
-        <form onSubmit={handleSave} className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-6 space-y-4">
+        <form onSubmit={handleSave} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 space-y-4">
           <div>
             <label className="label">Nombre *</label>
             <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ej: Ropa, Accesorios..." required />
@@ -112,17 +112,17 @@ export default function AdminCategoriesPage() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">{[...Array(4)].map((_, i) => <div key={i} className="bg-gray-800/60 rounded-2xl p-4 animate-pulse h-14" />)}</div>
+        <div className="space-y-3">{[...Array(4)].map((_, i) => <div key={i} className="bg-[var(--color-surface)] rounded-2xl p-4 animate-pulse h-14" />)}</div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-20 bg-gray-800/60 border border-gray-700/50 rounded-2xl">
+        <div className="text-center py-20 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl">
           <Plus className="w-10 h-10 mx-auto text-blush-400/40 mb-3" />
           <p className="text-gray-500">No hay categorías aún.</p>
           <button onClick={openCreate} className="btn-primary mt-4 text-sm py-2.5">Crear primera categoría</button>
         </div>
       ) : (
-        <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl overflow-hidden">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-900/60 border-b border-gray-700/50">
+            <thead className="bg-[var(--color-surface-alt)] border-b border-[var(--color-border)]">
               <tr>
                 <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase">Nombre</th>
                 <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Descripción</th>
@@ -130,9 +130,9 @@ export default function AdminCategoriesPage() {
                 <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700/30">
+            <tbody className="divide-y divide-[var(--color-border)]">
               {categories.map((cat) => (
-                <tr key={cat.id} className="hover:bg-gray-700/20 transition-colors">
+                <tr key={cat.id} className="hover:bg-[var(--color-surface-alt)] transition-colors">
                   <td className="p-4">
                     <p className="text-sm font-medium text-gray-100">{cat.name}</p>
                     <p className="text-xs text-gray-500 font-mono">{cat.slug}</p>
@@ -151,7 +151,7 @@ export default function AdminCategoriesPage() {
                   </td>
                   <td className="p-4">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => handleToggle(cat.id)} title={cat.is_active ? 'Desactivar' : 'Activar'} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button onClick={() => handleToggle(cat.id)} title={cat.is_active ? 'Desactivar' : 'Activar'} className="p-1.5 hover:bg-[var(--color-surface-alt)] rounded-lg transition-colors">
                         {cat.is_active ? <EyeOff className="w-4 h-4 text-gray-500" /> : <Eye className="w-4 h-4 text-gray-500" />}
                       </button>
                       <button onClick={() => openEdit(cat)} className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors">

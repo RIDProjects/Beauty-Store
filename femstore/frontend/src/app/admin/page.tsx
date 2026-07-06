@@ -42,7 +42,7 @@ function formatChartDate(dateStr: string) {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 shadow-xl text-sm">
+    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 shadow-xl text-sm">
       <p className="text-gray-400 mb-1">{label}</p>
       <p className="text-white font-bold">{payload[0].value} pedidos</p>
     </div>
@@ -88,13 +88,13 @@ export default function AdminDashboard() {
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-gray-800/50 rounded-2xl p-5 animate-pulse h-28" />
+            <div key={i} className="bg-[var(--color-surface)] rounded-2xl p-5 animate-pulse h-28" />
           ))}
         </div>
       ) : stats && (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Pedidos hoy */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Pedidos hoy</p>
               <ShoppingCart className="w-5 h-5 text-blush-400 opacity-60" />
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Pedidos semana */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Pedidos esta semana</p>
               <Calendar className="w-5 h-5 text-blush-400 opacity-60" />
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Pedidos mes */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Pedidos este mes</p>
               <Clock className="w-5 h-5 text-blush-400 opacity-60" />
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Pendientes */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Pedidos pendientes</p>
               <AlertCircle className="w-5 h-5 text-amber-400 opacity-60" />
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Sin stock */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Productos sin stock</p>
               <Package className="w-5 h-5 text-red-400 opacity-60" />
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Total productos */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Total productos</p>
               <Package className="w-5 h-5 text-blush-400 opacity-60" />
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Unidades vendidas */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Unidades vendidas</p>
               <TrendingUp className="w-5 h-5 text-green-400 opacity-60" />
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Ganancias confirmadas */}
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
               <p className="text-sm text-gray-400">Ganancias confirmadas</p>
               <DollarSign className="w-5 h-5 text-green-400 opacity-60" />
@@ -184,8 +184,8 @@ export default function AdminDashboard() {
       {/* ── Chart + Table row ── */}
       <div className="grid lg:grid-cols-5 gap-6">
         {/* Últimos pedidos */}
-        <div className="lg:col-span-3 bg-gray-800/60 border border-gray-700/50 rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-700/50 flex items-center justify-between">
+        <div className="lg:col-span-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
             <h2 className="font-semibold text-white">Últimos Pedidos</h2>
             <Link href="/admin/orders" className="text-xs text-blush-400 hover:text-blush-300 transition-colors">
               Ver todos →
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-gray-500 uppercase border-b border-gray-700/50">
+                <tr className="text-xs text-gray-500 uppercase border-b border-[var(--color-border)]">
                   <th className="text-left px-5 py-3">ID</th>
                   <th className="text-left px-5 py-3 hidden sm:table-cell">Cliente</th>
                   <th className="text-left px-5 py-3 hidden md:table-cell">Tipo</th>
@@ -208,11 +208,11 @@ export default function AdminDashboard() {
                   <th className="text-right px-5 py-3">Total</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700/30">
+              <tbody className="divide-y divide-[var(--color-border)]">
                 {recentOrders.map((order) => {
                   const s = STATUS_LABELS[order.status] ?? STATUS_LABELS.pending;
                   return (
-                    <tr key={order.id} className="hover:bg-gray-700/20 transition-colors">
+                    <tr key={order.id} className="hover:bg-[var(--color-surface-alt)] transition-colors">
                       <td className="px-5 py-3">
                         <span className="font-mono text-blush-400 font-semibold text-xs">
                           #{order.order_number}
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Chart */}
-        <div className="lg:col-span-2 bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+        <div className="lg:col-span-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
           <h2 className="font-semibold text-white mb-4">Pedidos últimos 30 días</h2>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
