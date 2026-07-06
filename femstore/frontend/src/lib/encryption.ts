@@ -69,18 +69,3 @@ export const decryptFields = <T extends Record<string, any>>(
   return decrypted as T;
 };
 
-/**
- * Encripta el payload completo antes de enviar al backend
- */
-export const encryptPayload = (payload: Record<string, unknown>): Record<string, unknown> => {
-  const sensitiveFields = ['customer_phone', 'customer_email', 'delivery_address', 'notes'];
-  return encryptFields(payload, sensitiveFields);
-};
-
-/**
- * Desencripta un objeto completo con campos sensibles
- */
-export const decryptResponse = <T extends Record<string, any>>(response: T): T => {
-  const sensitiveFields = ['customer_phone', 'customer_email', 'delivery_address', 'notes'];
-  return decryptFields(response, sensitiveFields);
-};

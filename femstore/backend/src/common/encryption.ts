@@ -33,42 +33,6 @@ export const decrypt = (encryptedData: string): string => {
 };
 
 /**
- * Encrypt an object with specific sensitive fields
- */
-export const encryptFields = <T extends Record<string, unknown>>(
-  data: T,
-  fieldsToEncrypt: string[]
-): Record<string, unknown> => {
-  const encrypted: Record<string, unknown> = { ...data };
-  
-  for (const field of fieldsToEncrypt) {
-    if (encrypted[field] && typeof encrypted[field] === 'string') {
-      encrypted[field] = encrypt(encrypted[field] as string);
-    }
-  }
-  
-  return encrypted;
-};
-
-/**
- * Decrypt an object with specific sensitive fields
- */
-export const decryptFields = <T extends Record<string, unknown>>(
-  data: T,
-  fieldsToDecrypt: string[]
-): Record<string, unknown> => {
-  const decrypted: Record<string, unknown> = { ...data };
-  
-  for (const field of fieldsToDecrypt) {
-    if (decrypted[field] && typeof decrypted[field] === 'string') {
-      decrypted[field] = decrypt(decrypted[field] as string);
-    }
-  }
-  
-  return decrypted;
-};
-
-/**
  * Try to decrypt a value - returns original if not encrypted or decryption fails
  * Used for handling data that may or may not be encrypted (backwards compatibility)
  */

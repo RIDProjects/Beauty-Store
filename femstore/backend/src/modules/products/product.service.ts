@@ -121,30 +121,6 @@ export class ProductService {
     return result.rows[0] || null;
   }
 
-  async findBySlug(slug: string): Promise<Product | null> {
-    const result = await query(
-      `SELECT 
-        p.*,
-        c.name AS category_name,
-        (
-          SELECT json_agg(pi ORDER BY pi.sort_order ASC)
-          FROM product_images pi
-          WHERE pi.product_id = p.id
-        ) AS images,
-        (
-          SELECT pi.url FROM product_images pi
-          WHERE pi.product_id = p.id AND pi.is_primary = TRUE
-          LIMIT 1
-        ) AS primary_image
-       FROM products p
-       LEFT JOIN categories c ON p.category_id = c.id
-       WHERE p.slug = $1 AND p.is_active = TRUE`,
-      [slug]
-    );
-
-    return result.rows[0] || null;
-  }
-
   async create(dto: CreateProductDto): Promise<Product> {
     const slug = slugify(dto.name);
 

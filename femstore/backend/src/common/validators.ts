@@ -54,10 +54,6 @@ export const CreateCategorySchema = z.object({
 });
 
 // ─── Validation Helper ───────────────────────────────────────────────────────
-export const validateRequest = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
-  return schema.parse(data);
-};
-
 export const validateRequestSafe = <T>(schema: z.ZodSchema<T>, data: unknown) => {
   return schema.safeParse(data);
 };

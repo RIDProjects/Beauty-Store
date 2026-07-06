@@ -104,12 +104,6 @@ export interface CustomerAddress {
   created_at: string;
 }
 
-export interface AuthState {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-}
-
 export interface CheckoutFormData {
   customer_name: string;
   customer_phone: string;
