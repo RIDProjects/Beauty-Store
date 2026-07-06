@@ -137,7 +137,7 @@ export default function ProductDetailPage() {
 
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
             <div className="space-y-3">
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-blush-50">
+              <div className="relative aspect-square rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
                 <Image
                   src={getImageUrl(images[activeImage]?.url)}
                   alt={product.name}
@@ -274,10 +274,10 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              <div className="bg-blush-50 dark:bg-blush-900/20 rounded-xl p-4 space-y-2">
+              <div className="rounded-xl p-4 space-y-2" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
                 {['Calidad garantizada en cada producto', 'Entrega a domicilio disponible', 'Atención personalizada'].map((text) => (
                   <div key={text} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <div className="w-4 h-4 rounded-full bg-blush-200 flex items-center justify-center flex-shrink-0">
+                    <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-accent-light)' }}>
                       <span className="text-blush-700 text-xs">✓</span>
                     </div>
                     {text}

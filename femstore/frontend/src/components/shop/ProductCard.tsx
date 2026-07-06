@@ -45,7 +45,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/shop/products/${product.id}`} className="group card hover:shadow-md transition-all duration-300">
-      <div className="relative aspect-[3/4] bg-blush-50 dark:bg-gray-700 overflow-hidden">
+      <div className="relative aspect-[3/4] overflow-hidden" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
         <Image
           src={getImageUrl(product.primary_image)}
           alt={product.name}
