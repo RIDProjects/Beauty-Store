@@ -73,7 +73,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev', {
+  skip: (req) => !req.path.startsWith('/api') && !req.path.startsWith('/health') && !req.path.startsWith('/uploads'),
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
