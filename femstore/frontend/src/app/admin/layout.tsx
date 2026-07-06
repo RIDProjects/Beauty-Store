@@ -4,16 +4,19 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard, Package, ShoppingCart, Tag,
-  LogOut, ChevronRight, Menu,
+  LogOut, ChevronRight, Menu, Bell,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import LogoSVG from '@/components/layout/Logo';
+import api from '@/lib/api';
+import { ApiResponse } from '@/types';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/products', label: 'Productos', icon: Package },
   { href: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
   { href: '/admin/categories', label: 'Categorías', icon: Tag },
+  { href: '/admin/notifications', label: 'Notificaciones', icon: Bell },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -21,6 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const { user, logout, isInitialized } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -28,6 +32,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace('/auth/login');
     }
   }, [user, isInitialized, router]);
+
+  // Contador de notificaciones sin leer — refresca al navegar y cada 60s
+  useEffect(() => {
+    if (!user || user.role !== 'admin') return;
+    const fetchCount = async () => {
+      try {
+        const { data } = await api.get<ApiResponse<{ count: number }>>('/notifications/unread-count');
+        setUnreadCount(data.data?.count ?? 0);
+      } catch { /* silencioso — el badge no es crítico */ }
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 60000);
+    return () => clearInterval(interval);
+  }, [user, pathname]);
 
   if (!user || user.role !== 'admin') return null;
 
@@ -66,7 +84,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <item.icon className="w-4 h-4 flex-shrink-0" />
               {item.label}
-              {active && <ChevronRight className="w-3 h-3 ml-auto" />}
+              {item.href === '/admin/notifications' && unreadCount > 0 && (
+                <span className="ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+              {active && item.href !== '/admin/notifications' && <ChevronRight className="w-3 h-3 ml-auto" />}
             </Link>
           );
         })}

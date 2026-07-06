@@ -72,6 +72,18 @@ export interface Order {
   out_of_stock_products?: { id: string; name: string }[];
 }
 
+export type NotificationType = 'new_order' | 'out_of_stock' | 'system';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  metadata?: Record<string, unknown>;
+  is_read: boolean;
+  created_at: string;
+}
+
 export interface CartItem {
   product_id: string;
   product_name: string;

@@ -2,6 +2,7 @@ import { query, getClient } from '../../config/database';
 import { Order, OrderStatus, Pagination } from '../../common/types';
 import { generateOrderNumber, paginate } from '../../common/helpers';
 import { WhatsAppService } from '../whatsapp/whatsapp.service';
+import { NotificationService } from '../notifications/notification.service';
 import { encrypt, tryDecrypt } from '../../common/encryption';
 
 export interface CreateOrderDto {
@@ -26,6 +27,7 @@ export interface OrderFilters {
 }
 
 const whatsappService = new WhatsAppService();
+const notificationService = new NotificationService();
 
 // Estados terminales que descuentan stock. El admin UI usa 'delivered' como
 // estado final; 'completed' se mantiene por compatibilidad.
@@ -144,6 +146,14 @@ export class OrderService {
         delivery_address: decryptedAddress,
       };
       this.sendWhatsAppNotification(orderForWhatsapp as Order);
+
+      // Notificación del sistema para el panel admin (non-blocking)
+      notificationService.create(
+        'new_order',
+        `Nuevo pedido #${orderNumber}`,
+        `${dto.customer_name} — $${total.toFixed(2)} (${resolvedItems.length} producto${resolvedItems.length === 1 ? '' : 's'})`,
+        { order_id: order.id, order_number: orderNumber }
+      ).catch(() => {});
 
       return completeOrder;
     } catch (error) {
@@ -302,6 +312,12 @@ export class OrderService {
       if (outOfStockProducts.length > 0) {
         order.out_of_stock_products = outOfStockProducts;
         whatsappService.sendOutOfStockNotification(outOfStockProducts).catch(() => {});
+        notificationService.create(
+          'out_of_stock',
+          'Producto agotado',
+          `Sin stock: ${outOfStockProducts.map((p) => p.name).join(', ')}`,
+          { product_ids: outOfStockProducts.map((p) => p.id), order_id: id }
+        ).catch(() => {});
       }
 
       return order;
