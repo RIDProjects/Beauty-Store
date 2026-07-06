@@ -17,12 +17,17 @@ async function createAdmin() {
   console.log('🌱 Seeding admin user...');
 
   try {
-    const existing = await query('SELECT id FROM public.users WHERE email_hash = $1', [emailHash]);
+    // Look up by email (plaintext) OR by email_hash — handles both old and new records
+    const existing = await query(
+      'SELECT id FROM public.users WHERE email = $1 OR email_hash = $2',
+      [email, emailHash]
+    );
 
     if (existing.rows.length > 0) {
+      // Always refresh password, role, and email_hash (backfills NULL email_hash for old records)
       await query(
-        'UPDATE public.users SET password = $1, role = $2, email_hash = $3 WHERE email_hash = $4',
-        [hashedPassword, 'admin', emailHash, emailHash]
+        'UPDATE public.users SET password = $1, role = $2, email_hash = $3 WHERE email = $4 OR email_hash = $5',
+        [hashedPassword, 'admin', emailHash, email, emailHash]
       );
     } else {
       await query(
