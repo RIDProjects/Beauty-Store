@@ -28,7 +28,10 @@ export default function AdminProductsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  // Imágenes elegidas en modo crear — se suben automáticamente al guardar
+  const [pendingImages, setPendingImages] = useState<File[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const pendingFileRef = useRef<HTMLInputElement>(null);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -47,6 +50,7 @@ export default function AdminProductsPage() {
   const openCreate = () => {
     setForm({ ...emptyForm });
     setEditingProduct(null);
+    setPendingImages([]);
     setMode('create');
   };
 
@@ -81,7 +85,27 @@ export default function AdminProductsPage() {
         is_active: form.is_active,
       };
       if (mode === 'create') {
-        await api.post('/products', payload);
+        const { data } = await api.post<ApiResponse<Product>>('/products', payload);
+        const newId = data.data?.id;
+
+        // Subir las imágenes elegidas antes de guardar
+        if (newId && pendingImages.length > 0) {
+          let uploaded = 0;
+          for (const file of pendingImages) {
+            const fd = new FormData();
+            fd.append('image', file);
+            try {
+              await api.post(`/products/${newId}/images`, fd, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+              });
+              uploaded++;
+            } catch { /* continuar con las demás */ }
+          }
+          if (uploaded < pendingImages.length) {
+            toast.error(`${pendingImages.length - uploaded} imagen(es) no se pudieron subir`);
+          }
+        }
+        setPendingImages([]);
         toast.success('Producto creado ✅');
       } else if (editingProduct) {
         await api.put(`/products/${editingProduct.id}`, payload);
@@ -159,7 +183,7 @@ export default function AdminProductsPage() {
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
-          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-6 space-y-4">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 space-y-4">
             <div>
               <label className="label">Nombre *</label>
               <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre del producto" required />
@@ -219,7 +243,7 @@ export default function AdminProductsPage() {
 
           {/* Images - only when editing */}
           {mode === 'edit' && editingProduct && (
-            <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-6">
+            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
               <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-blush-500" />
                 Imágenes
@@ -256,8 +280,50 @@ export default function AdminProductsPage() {
           )}
 
           {mode === 'create' && (
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4">
-              <p className="text-xs text-amber-400">💡 Guarda el producto primero y luego podrás subir imágenes desde la opción Editar.</p>
+            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
+              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-blush-500" />
+                Imágenes
+              </h3>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {pendingImages.map((file, idx) => (
+                  <div key={`${file.name}-${idx}`} className="relative group aspect-square rounded-xl overflow-hidden bg-blush-50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={URL.createObjectURL(file)} alt={file.name} className="object-cover w-full h-full" />
+                    {idx === 0 && (
+                      <div className="absolute top-1 left-1 bg-blush-500 text-white text-xs px-1.5 py-0.5 rounded-full">Principal</div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setPendingImages(pendingImages.filter((_, i) => i !== idx))}
+                      className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => pendingFileRef.current?.click()}
+                  className="aspect-square rounded-xl border-2 border-dashed border-blush-200 hover:border-blush-400 flex flex-col items-center justify-center gap-1 text-blush-400 hover:text-blush-600 transition-colors"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span className="text-xs">Añadir</span>
+                </button>
+              </div>
+              <input
+                ref={pendingFileRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  if (files.length) setPendingImages([...pendingImages, ...files]);
+                  if (pendingFileRef.current) pendingFileRef.current.value = '';
+                }}
+              />
+              <p className="text-xs text-gray-400">JPG, PNG, WebP • Máx 5MB por imagen • Se suben al guardar el producto</p>
             </div>
           )}
 
@@ -293,18 +359,18 @@ export default function AdminProductsPage() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {[...Array(5)].map((_, i) => <div key={i} className="bg-gray-800/60 rounded-2xl p-4 animate-pulse h-16" />)}
+          {[...Array(5)].map((_, i) => <div key={i} className="bg-[var(--color-surface)] rounded-2xl p-4 animate-pulse h-16" />)}
         </div>
       ) : products.length === 0 ? (
-        <div className="text-center py-20 bg-gray-800/60 border border-gray-700/50 rounded-2xl">
+        <div className="text-center py-20 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl">
           <Plus className="w-10 h-10 mx-auto text-blush-400/40 mb-3" />
           <p className="text-gray-500">No hay productos. ¡Crea el primero!</p>
           <button onClick={openCreate} className="btn-primary mt-4 text-sm py-2.5">Crear producto</button>
         </div>
       ) : (
-        <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl overflow-hidden">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-900/60 border-b border-gray-700/50">
+            <thead className="bg-[var(--color-surface-alt)] border-b border-[var(--color-border)]">
               <tr>
                 <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase">Producto</th>
                 <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Categoría</th>
@@ -313,9 +379,9 @@ export default function AdminProductsPage() {
                 <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700/30">
+            <tbody className="divide-y divide-[var(--color-border)]">
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-700/20 transition-colors">
+                <tr key={product.id} className="hover:bg-[var(--color-surface-alt)] transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blush-50 rounded-lg overflow-hidden flex-shrink-0">
@@ -360,7 +426,7 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="p-4">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => handleToggle(product.id)} title={product.is_active ? 'Desactivar' : 'Activar'} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button onClick={() => handleToggle(product.id)} title={product.is_active ? 'Desactivar' : 'Activar'} className="p-1.5 hover:bg-[var(--color-surface-alt)] rounded-lg transition-colors">
                         {product.is_active ? <EyeOff className="w-4 h-4 text-gray-500" /> : <Eye className="w-4 h-4 text-gray-500" />}
                       </button>
                       <button onClick={() => openEdit(product)} className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors">
