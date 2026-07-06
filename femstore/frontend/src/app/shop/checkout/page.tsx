@@ -149,7 +149,7 @@ export default function CheckoutPage() {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-transparent flex items-center justify-center px-4">
           <div className="card p-8 max-w-md w-full text-center">
             <div className="w-16 h-16 bg-blush-100 dark:bg-blush-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <ShoppingBag className="w-8 h-8 text-blush-500" />
@@ -203,7 +203,7 @@ export default function CheckoutPage() {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-transparent flex items-center justify-center px-4">
           <div className="card p-8 max-w-lg w-full">
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-green-500" />
@@ -213,7 +213,7 @@ export default function CheckoutPage() {
             </h2>
             <p className="text-center text-gray-500 dark:text-gray-400 mb-6">¡Pedido confirmado! 🎉</p>
 
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6">
+            <div className="bg-[var(--color-surface-alt)] rounded-xl p-4 mb-6">
               <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">Resumen del pedido</h3>
               <div className="space-y-2">
                 {placedOrder.items?.map((item, idx) => (
@@ -223,7 +223,7 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-              <div className="border-t border-gray-200 dark:border-gray-700 mt-3 pt-3 flex justify-between font-bold text-gray-900 dark:text-white">
+              <div className="border-t border-gray-200 dark:border-[#2a352a] mt-3 pt-3 flex justify-between font-bold text-gray-900 dark:text-white">
                 <span>Total</span>
                 <span className="text-blush-600">${Number(placedOrder.total).toFixed(2)}</span>
               </div>
@@ -258,7 +258,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <main className="min-h-screen bg-transparent py-8">
         <div className="page-container">
           <h1 className="section-title mb-8">Finalizar compra</h1>
 
@@ -337,7 +337,7 @@ export default function CheckoutPage() {
                         className={`p-4 rounded-xl border-2 text-left transition-all ${
                           form.delivery_type === opt.value
                             ? 'border-blush-500 bg-blush-50 dark:bg-blush-900/20'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-blush-200'
+                            : 'border-gray-200 dark:border-[#2a352a] hover:border-blush-200'
                         }`}
                       >
                         <p className="font-semibold text-gray-900 dark:text-white">{opt.label}</p>
@@ -362,7 +362,7 @@ export default function CheckoutPage() {
                               className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                                 selectedAddressId === addr.id
                                   ? 'border-blush-500 bg-blush-50 dark:bg-blush-900/20'
-                                  : 'border-gray-200 dark:border-gray-700 hover:border-blush-200'
+                                  : 'border-gray-200 dark:border-[#2a352a] hover:border-blush-200'
                               }`}
                               onClick={() => {
                                 setSelectedAddressId(addr.id);
@@ -486,7 +486,7 @@ export default function CheckoutPage() {
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
+                <div className="border-t border-gray-100 dark:border-[#2a352a] pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
                     <span className="font-medium">${total.toFixed(2)}</span>
@@ -495,7 +495,7 @@ export default function CheckoutPage() {
                     <span className="text-gray-600 dark:text-gray-400 text-sm">Envío</span>
                     <span className="text-green-600 dark:text-green-400 text-sm font-medium">A coordinar</span>
                   </div>
-                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-[#2a352a]">
                     <span className="font-bold text-gray-900 dark:text-white">Total</span>
                     <span className="font-bold text-blush-600 text-xl">${total.toFixed(2)}</span>
                   </div>

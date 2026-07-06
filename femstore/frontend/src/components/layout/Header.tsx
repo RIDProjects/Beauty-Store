@@ -35,7 +35,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-blush-100 dark:border-gray-800 shadow-sm">
+      <header className="sticky top-0 z-40 backdrop-blur-sm shadow-sm" style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
         <div className="page-container">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -47,16 +47,16 @@ export default function Header() {
             <nav className="hidden md:flex items-center gap-6">
               <Link
                 href="/"
-                className={`text-sm font-medium transition-colors duration-200 hover:text-blush-500 ${
-                  pathname === '/' ? 'text-blush-500' : 'text-gray-600 dark:text-gray-300'
+                className={`text-sm font-medium transition-colors duration-200 ${
+                  pathname === '/' ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-accent)]'
                 }`}
               >
                 Inicio
               </Link>
               <Link
                 href="/shop/products"
-                className={`text-sm font-medium transition-colors duration-200 hover:text-blush-500 ${
-                  pathname === '/shop/products' ? 'text-blush-500' : 'text-gray-600 dark:text-gray-300'
+                className={`text-sm font-medium transition-colors duration-200 ${
+                  pathname === '/shop/products' ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-accent)]'
                 }`}
               >
                 Tienda
@@ -67,27 +67,33 @@ export default function Header() {
                   <button
                     onClick={() => setCategoriesOpen((o) => !o)}
                     onBlur={() => setTimeout(() => setCategoriesOpen(false), 150)}
-                    className={`flex items-center gap-1 text-sm font-medium transition-colors duration-200 hover:text-blush-500 ${
-                      categoriesOpen ? 'text-blush-500' : 'text-gray-600 dark:text-gray-300'
+                    className={`flex items-center gap-1 text-sm font-medium transition-colors duration-200 ${
+                      categoriesOpen ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-accent)]'
                     }`}
                   >
                     Categorías
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${categoriesOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {categoriesOpen && (
-                    <div className="absolute left-0 top-full mt-2 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50 py-1.5">
+                    <div className="absolute left-0 top-full mt-2 w-52 rounded-xl shadow-lg z-50 py-1.5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                       <button
                         onClick={() => { router.push('/shop/products'); setCategoriesOpen(false); }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 transition-colors"
+                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:text-[var(--color-accent)]"
+                        style={{ color: 'var(--color-text)' }}
+                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-accent-light)')}
+                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                       >
                         Todos los productos
                       </button>
-                      <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
+                      <div style={{ borderTop: '1px solid var(--color-border)', margin: '4px 0' }} />
                       {categories.map((cat) => (
                         <button
                           key={cat.id}
                           onClick={() => { router.push(`/shop/products?category_id=${cat.id}`); setCategoriesOpen(false); }}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 transition-colors"
+                          className="w-full text-left px-4 py-2 text-sm transition-colors hover:text-[var(--color-accent)]"
+                          style={{ color: 'var(--color-text)' }}
+                          onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-accent-light)')}
+                          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                         >
                           {cat.name}
                         </button>
@@ -100,24 +106,21 @@ export default function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {/* Theme Toggle */}
               <ThemeToggle />
 
-              {/* Cart */}
               <button
                 onClick={openCart}
                 className="btn-ghost p-2 relative"
                 aria-label="Carrito"
               >
-                <ShoppingBag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <ShoppingBag className="w-5 h-5" style={{ color: 'var(--color-text-muted)' }} />
                 {mounted && totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-blush-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-fade-in">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center font-bold animate-fade-in" style={{ backgroundColor: 'var(--color-accent)' }}>
                     {totalItems > 9 ? '9+' : totalItems}
                   </span>
                 )}
               </button>
 
-              {/* User — rendered only after store hydrates to avoid SSR mismatch */}
               {isInitialized && (
                 user ? (
                   <div className="relative hidden md:block">
@@ -127,21 +130,21 @@ export default function Header() {
                       className="flex items-center gap-2 btn-ghost px-3"
                       aria-expanded={userMenuOpen}
                     >
-                      <div className="w-7 h-7 bg-blush-100 dark:bg-blush-900 rounded-full flex items-center justify-center">
-                        <span className="text-blush-600 dark:text-blush-400 text-xs font-bold">{user.name[0].toUpperCase()}</span>
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-accent-light)' }}>
+                        <span className="text-xs font-bold" style={{ color: 'var(--color-accent)' }}>{user.name[0].toUpperCase()}</span>
                       </div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user.name.split(' ')[0]}</span>
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform text-gray-500 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                      <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{user.name.split(' ')[0]}</span>
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform`} style={{ color: 'var(--color-text-muted)' }} />
                     </button>
                     {userMenuOpen && (
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50">
+                      <div className="absolute right-0 top-full mt-1 w-48 rounded-xl shadow-lg z-50" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                         <div className="p-2">
                           {user.role === 'admin' && (
-                            <Link href="/admin" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
+                            <Link href="/admin" className="block px-3 py-2 text-sm rounded-lg transition-colors hover:text-[var(--color-accent)]" style={{ color: 'var(--color-text)' }}>
                               Panel Admin
                             </Link>
                           )}
-                          <Link href="/shop/orders" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blush-50 dark:hover:bg-gray-700 hover:text-blush-600 rounded-lg">
+                          <Link href="/shop/orders" className="block px-3 py-2 text-sm rounded-lg transition-colors hover:text-[var(--color-accent)]" style={{ color: 'var(--color-text)' }}>
                             Mis Pedidos
                           </Link>
                           <button
@@ -162,7 +165,6 @@ export default function Header() {
                 )
               )}
 
-              {/* Mobile menu button */}
               <button
                 className="md:hidden btn-ghost p-2"
                 onClick={() => setMobileOpen(!mobileOpen)}
@@ -175,17 +177,16 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-blush-100 dark:border-gray-800 bg-white dark:bg-gray-900 animate-slide-up">
+          <div className="md:hidden animate-slide-up" style={{ borderTop: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
             <div className="page-container py-4 space-y-1">
               {[{ href: '/', label: 'Inicio' }, { href: '/shop/products', label: 'Tienda' }].map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    pathname === link.href
-                      ? 'bg-blush-50 dark:bg-blush-900/30 text-blush-600 dark:text-blush-400'
-                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
+                    pathname === link.href ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-muted)]'
                   }`}
+                  style={pathname === link.href ? { backgroundColor: 'var(--color-accent-light)' } : {}}
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
@@ -193,32 +194,33 @@ export default function Header() {
               ))}
               {categories.length > 0 && (
                 <>
-                  <p className="px-3 pt-2 text-xs text-gray-400 dark:text-gray-500 uppercase font-semibold">Categorías</p>
+                  <p className="px-3 pt-2 text-xs uppercase font-semibold" style={{ color: 'var(--color-text-muted)' }}>Categorías</p>
                   {categories.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => { router.push(`/shop/products?category_id=${cat.id}`); setMobileOpen(false); }}
-                      className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors hover:text-[var(--color-accent)]"
+                      style={{ color: 'var(--color-text-muted)' }}
                     >
                       {cat.name}
                     </button>
                   ))}
                 </>
               )}
-              <div className="pt-2 border-t border-gray-100 dark:border-gray-800 mt-2">
+              <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--color-border)' }}>
                 {isInitialized && (user ? (
                   <>
-                    <span className="block px-3 py-1 text-xs text-gray-500 dark:text-gray-400">Hola, {user.name}</span>
+                    <span className="block px-3 py-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>Hola, {user.name}</span>
                     {user.role === 'admin' && (
-                      <Link href="/admin" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200">Panel Admin</Link>
+                      <Link href="/admin" className="block px-3 py-2 text-sm" style={{ color: 'var(--color-text)' }}>Panel Admin</Link>
                     )}
-                    <Link href="/shop/orders" className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-200">Mis Pedidos</Link>
+                    <Link href="/shop/orders" className="block px-3 py-2 text-sm" style={{ color: 'var(--color-text)' }}>Mis Pedidos</Link>
                     <button onClick={logout} className="block w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400">
                       Cerrar sesión
                     </button>
                   </>
                 ) : (
-                  <Link href="/auth/login" className="block px-3 py-2 text-sm text-blush-600 dark:text-blush-400 font-medium">
+                  <Link href="/auth/login" className="block px-3 py-2 text-sm font-medium" style={{ color: 'var(--color-accent)' }}>
                     Iniciar sesión
                   </Link>
                 ))}

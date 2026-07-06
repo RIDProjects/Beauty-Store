@@ -68,7 +68,7 @@ export default function ProductsPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <main className="min-h-screen bg-transparent">
         <div className="page-container py-8">
           {/* Page Header */}
           <div className="mb-8">
@@ -77,7 +77,7 @@ export default function ProductsPage() {
           </div>
 
           {/* Filters Bar */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 shadow-sm border border-gray-100 dark:border-gray-700">
+          <div className="bg-[var(--color-surface)] rounded-2xl p-4 mb-6 shadow-sm border border-gray-100 dark:border-[#2a352a]">
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
               <div className="relative flex-1">
@@ -128,10 +128,10 @@ export default function ProductsPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="card animate-pulse">
-                  <div className="aspect-[3/4] bg-blush-50 dark:bg-gray-700" />
+                  <div className="aspect-[3/4] bg-blush-50 dark:bg-[#243526]" />
                   <div className="p-4 space-y-2">
-                    <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded" />
-                    <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-3/4" />
+                    <div className="h-4 bg-gray-100 dark:bg-[#243526] rounded" />
+                    <div className="h-3 bg-gray-100 dark:bg-[#243526] rounded w-3/4" />
                     <div className="h-5 bg-blush-50 dark:bg-gray-600 rounded w-1/3 mt-3" />
                   </div>
                 </div>

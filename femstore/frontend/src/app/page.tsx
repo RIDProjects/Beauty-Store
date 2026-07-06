@@ -90,7 +90,7 @@ export default async function HomePage() {
 
         {/* Categories */}
         {categories.length > 0 && (
-          <section className="py-14 bg-white dark:bg-gray-900">
+          <section className="py-14 bg-white dark:bg-[#121A12]">
             <div className="page-container">
               <h2 className="section-title text-center mb-3">Categorías</h2>
               <p className="text-center text-gray-500 dark:text-gray-400 mb-10">Encuentra exactamente lo que buscas</p>
@@ -110,7 +110,7 @@ export default async function HomePage() {
         )}
 
         {/* Featured Products */}
-        <section className="py-14 bg-gray-50 dark:bg-gray-800">
+        <section className="py-14 bg-[var(--color-surface-alt)]">
           <div className="page-container">
             <div className="flex items-end justify-between mb-10">
               <div>
@@ -137,7 +137,7 @@ export default async function HomePage() {
         </section>
 
         {/* Features banner */}
-        <section className="py-12 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+        <section className="py-12 bg-white dark:bg-[#121A12] border-t border-gray-100 dark:border-[#2a352a]">
           <div className="page-container">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               {[

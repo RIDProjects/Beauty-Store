@@ -52,7 +52,7 @@ export default function MyOrdersPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <main className="min-h-screen bg-transparent py-8">
         <div className="page-container max-w-3xl">
           <div className="flex items-center justify-between mb-8">
             <h1 className="section-title mb-0">Mis pedidos</h1>
@@ -69,8 +69,8 @@ export default function MyOrdersPage() {
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="card p-6 animate-pulse">
-                  <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-1/3 mb-3" />
-                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-1/4" />
+                  <div className="h-4 bg-gray-100 dark:bg-[#243526] rounded w-1/3 mb-3" />
+                  <div className="h-3 bg-gray-100 dark:bg-[#243526] rounded w-1/4" />
                 </div>
               ))}
             </div>
@@ -116,7 +116,7 @@ export default function MyOrdersPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-[#2a352a]">
                         <span className="text-sm text-gray-500 dark:text-gray-400">
                           {order.items?.length} producto{order.items?.length !== 1 ? 's' : ''} • {' '}
                           {order.delivery_type === 'delivery' ? '🚚 Entrega a domicilio' : '🏪 Retiro en tienda'}
@@ -126,7 +126,7 @@ export default function MyOrdersPage() {
                     </button>
 
                     {isExpanded && (
-                      <div className="border-t border-gray-100 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-800 space-y-4">
+                      <div className="border-t border-gray-100 dark:border-[#2a352a] p-5 bg-[var(--color-surface-alt)] space-y-4">
                         <div>
                           <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Productos</p>
                           <div className="space-y-2">
@@ -152,7 +152,7 @@ export default function MyOrdersPage() {
                           </div>
                         )}
 
-                        <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <div className="pt-3 border-t border-gray-200 dark:border-[#2a352a]">
                           <a
                             href={getWhatsAppLink(order)}
                             target="_blank"
