@@ -143,7 +143,7 @@ export default function ProductDetailPage() {
                   alt={product.name}
                   fill
                   className="object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.jpg'; }}
+                  onError={(e) => { const img = e.target as HTMLImageElement; img.onerror = null; img.src = '/placeholder-product.svg'; }}
                 />
 
                 {images.length > 1 && (

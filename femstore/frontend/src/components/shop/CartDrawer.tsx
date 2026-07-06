@@ -25,7 +25,7 @@ const CartItemRow = memo(function CartItemRow({ item, onIncrement, onDecrement, 
           width={64}
           height={64}
           className="object-cover w-full h-full"
-          onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.jpg'; }}
+          onError={(e) => { const img = e.target as HTMLImageElement; img.onerror = null; img.src = '/placeholder-product.svg'; }}
         />
       </div>
       <div className="flex-1 min-w-0">

@@ -89,7 +89,7 @@ export const decryptOrders = (orders: Order[]): Order[] => {
 };
 
 export const getImageUrl = (url?: string | null): string => {
-  if (!url) return '/placeholder-product.jpg';
+  if (!url) return '/placeholder-product.svg';
   if (url.startsWith('http')) return url;
   // En Vercel las imágenes también vienen del mismo dominio
   if (process.env.NEXT_PUBLIC_API_URL) {
