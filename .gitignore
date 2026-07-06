@@ -10,3 +10,4 @@ CLAUDE.md
 
 # Runtime image uploads
 femstore/backend/uploads/
+*.tsbuildinfo

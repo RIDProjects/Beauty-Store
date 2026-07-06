@@ -9,6 +9,7 @@ import { Product, Category, ApiResponse } from '@/types';
 import api, { getImageUrl } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { revalidateStorefront } from '@/app/actions/revalidate';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 type Mode = 'list' | 'create' | 'edit';
 
@@ -26,6 +27,7 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchData = async () => {
@@ -93,8 +95,10 @@ export default function AdminProductsPage() {
     } finally { setIsSaving(false); }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    const { id } = deleteTarget;
+    setDeleteTarget(null);
     try {
       await api.delete(`/products/${id}`);
       toast.success('Producto eliminado');
@@ -362,7 +366,7 @@ export default function AdminProductsPage() {
                       <button onClick={() => openEdit(product)} className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors">
                         <Pencil className="w-4 h-4 text-blue-500" />
                       </button>
-                      <button onClick={() => handleDelete(product.id, product.name)} className="p-1.5 hover:bg-red-50 rounded-lg transition-colors">
+                      <button onClick={() => setDeleteTarget({ id: product.id, name: product.name })} className="p-1.5 hover:bg-red-50 rounded-lg transition-colors">
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </button>
                     </div>
@@ -373,6 +377,14 @@ export default function AdminProductsPage() {
           </table>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Eliminar producto"
+        message={`¿Eliminar "${deleteTarget?.name}"? Esta acción no se puede deshacer.`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
