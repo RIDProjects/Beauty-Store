@@ -3,11 +3,9 @@ import CryptoJS from 'crypto-js';
 // La clave debe coincidir con la del backend (usar variable de entorno)
 // Para desarrollo: mismo valor que ENCRYPTION_KEY en backend
 const getEncryptionKey = (): string => {
-  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENCRYPTION_KEY) {
-    return process.env.NEXT_PUBLIC_ENCRYPTION_KEY;
-  }
-  // Fallback para desarrollo - debe coincidir con backend
-  return process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'femstore-dev-key-change-in-prod';
+  const key = process.env.NEXT_PUBLIC_ENCRYPTION_KEY;
+  if (!key) throw new Error('NEXT_PUBLIC_ENCRYPTION_KEY is not set');
+  return key;
 };
 
 /**

@@ -1,38 +1,39 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { query } from '../config/database';
+
+const hashEmail = (email: string): string => {
+  const key = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET || 'fallback-dev-key';
+  return crypto.createHmac('sha256', key).update(email.toLowerCase().trim()).digest('hex');
+};
 
 async function createAdmin() {
   const email = 'liliana@vainybliss.com';
   const password = 'Lili@2001';
   const name = 'Liliana';
-
-  // Generar hash
+  const emailHash = hashEmail(email);
   const hashedPassword = await bcrypt.hash(password, 12);
 
   console.log('🌱 Seeding admin user...');
 
   try {
-    // Verificar si ya existe
-    const existing = await query('SELECT id FROM public.users WHERE email = $1', [email]);
+    const existing = await query('SELECT id FROM public.users WHERE email_hash = $1', [emailHash]);
 
     if (existing.rows.length > 0) {
-      // Actualizar password y role
       await query(
-        'UPDATE public.users SET password = $1, role = $2 WHERE email = $3',
-        [hashedPassword, 'admin', email]
+        'UPDATE public.users SET password = $1, role = $2, email_hash = $3 WHERE email_hash = $4',
+        [hashedPassword, 'admin', emailHash, emailHash]
       );
-      console.log('✅ Admin ready');
     } else {
-      // Crear nuevo
       await query(
-        `INSERT INTO public.users (name, email, password, role)
-         VALUES ($1, $2, $3, $4)`,
-        [name, email, hashedPassword, 'admin']
+        `INSERT INTO public.users (name, email, email_hash, password, role)
+         VALUES ($1, $2, $3, $4, 'admin')`,
+        [name, email, emailHash, hashedPassword]
       );
-      console.log('✅ Admin ready');
     }
+    console.log('✅ Admin ready');
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Seed error:', error);
     process.exit(1);
   }
 

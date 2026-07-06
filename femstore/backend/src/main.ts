@@ -10,7 +10,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // ─── Validación de variables de entorno ────────────────────────────────────
-const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL'];
+const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL', 'ENCRYPTION_KEY'];
 const missingEnvVars = requiredEnvVars.filter(v => !process.env[v]);
 
 if (missingEnvVars.length > 0 && process.env.NODE_ENV === 'production') {
@@ -39,12 +39,6 @@ const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow any localhost
     if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
-      callback(null, true);
-      return;
-    }
-
-    // Allow any Vercel deployment (any *.vercel.app)
-    if (origin && (origin.endsWith('.vercel.app') || origin.endsWith('.vercel.sh'))) {
       callback(null, true);
       return;
     }
@@ -84,15 +78,26 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ─── Rate Limiting ─────────────────────────────────────────────────────────
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // 100 requests por IP por ventana
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: { success: false, error: 'Demasiadas solicitudes. Intenta de nuevo en 15 minutos.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-app.use('/api/', limiter);
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, error: 'Demasiados intentos de acceso. Intenta de nuevo en 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+});
+
+app.use('/api/', globalLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // ─── Static Files (uploaded images) ───────────────────────────
 const uploadDir = process.env.UPLOAD_DIR || 'uploads';

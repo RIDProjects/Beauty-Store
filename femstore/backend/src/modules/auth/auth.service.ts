@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { query } from '../../config/database';
 import { User, JwtPayload } from '../../common/types';
 import { encrypt, decrypt, tryDecrypt } from '../../common/encryption';
@@ -21,7 +22,21 @@ export interface AuthResult {
   token: string;
 }
 
-// Helper para desencriptar valores que pueden estar encriptados o no
+// Deterministic hash of email for indexed lookup — never stored in plaintext
+const hashEmail = (email: string): string => {
+  const key = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET || 'fallback-dev-key';
+  return crypto.createHmac('sha256', key).update(email.toLowerCase().trim()).digest('hex');
+};
+
+const getJwtSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') throw new Error('JWT_SECRET not set');
+    return 'dev-secret-key-do-not-use-in-production';
+  }
+  return secret;
+};
+
 const decryptValue = (value: string | undefined): string | undefined => {
   if (!value) return value;
   return tryDecrypt(value);
@@ -29,42 +44,32 @@ const decryptValue = (value: string | undefined): string | undefined => {
 
 export class AuthService {
   async register(dto: RegisterDto): Promise<AuthResult> {
-    // El email ya viene encriptado del frontend, lo guardamos directamente encriptado
-    // Pero primero necesitamos verificar si ya existe
-    // Como el email está encriptado, no podemos hacer búsqueda directa
-    // Por ahora permitimos registros duplicados hasta tener índice de búsqueda
-    
-    // El password viene encriptado del frontend, necesitamos desencriptarlo antes de hashear
     const decryptedPassword = decryptValue(dto.password) || dto.password;
-    
-    // Hash password
+    const decryptedEmail = decryptValue(dto.email) || dto.email;
+    const emailHash = hashEmail(decryptedEmail);
     const hashedPassword = await bcrypt.hash(decryptedPassword, 12);
 
-    // Create user with encrypted fields (email y phone ya encriptados, name en texto plano)
     try {
       const result = await query(
-        `INSERT INTO users (name, email, password, phone, role)
-         VALUES ($1, $2, $3, $4, 'customer')
+        `INSERT INTO users (name, email, email_hash, password, phone, role)
+         VALUES ($1, $2, $3, $4, $5, 'customer')
          RETURNING id, name, email, phone, role, is_active, created_at, updated_at`,
-        [dto.name, dto.email, hashedPassword, dto.phone || null]
+        [dto.name, dto.email, emailHash, hashedPassword, dto.phone || null]
       );
 
       const user = result.rows[0] as Omit<User, 'password'>;
-      
-      // Desencriptar para respuesta
-      const decryptedUser = {
-        ...user,
-        name: user.name,
-        email: decrypt(user.email),
-        phone: user.phone ? decrypt(user.phone) : undefined,
-      };
-      
-      const token = this.generateToken(user as User);
+      const token = this.generateToken(user as User, decryptedEmail);
 
-      return { user: decryptedUser, token };
-    } catch (error: any) {
-      // PostgreSQL unique violation (error code 23505)
-      if (error.code === '23505') {
+      return {
+        user: {
+          ...user,
+          email: decrypt(user.email),
+          phone: user.phone ? decrypt(user.phone) : undefined,
+        },
+        token,
+      };
+    } catch (error: unknown) {
+      if ((error as { code?: string }).code === '23505') {
         throw new Error('Este email ya está registrado');
       }
       throw error;
@@ -72,47 +77,34 @@ export class AuthService {
   }
 
   async login(dto: LoginDto): Promise<AuthResult> {
-    // El email llega encriptado desde el frontend, lo desencriptamos para buscar
     const decryptedEmail = decryptValue(dto.email) || dto.email;
-    
-    // El password también llega encriptado, desencriptarlo para comparar
     const decryptedPassword = decryptValue(dto.password) || dto.password;
-    
-    // Buscar usuario - el email en la DB está encriptado, comparamos con todos
+    const emailHash = hashEmail(decryptedEmail);
+
+    // O(1) indexed lookup — no full table scan
     const result = await query(
-      'SELECT * FROM users WHERE is_active = TRUE'
+      'SELECT * FROM users WHERE email_hash = $1 AND is_active = TRUE',
+      [emailHash]
     );
 
-    // Encontrar usuario comparando email desencriptado
-    const userRow = result.rows.find((row) => {
-      const storedEmail = tryDecrypt(row.email);
-      return storedEmail.toLowerCase() === decryptedEmail.toLowerCase();
-    });
+    if (result.rows.length === 0) throw new Error('Credenciales inválidas');
 
-    if (!userRow) {
-      throw new Error('Credenciales inválidas');
-    }
+    const user = result.rows[0] as User;
 
-    const user = userRow as User;
-
-    // Check password (usar la password desencriptada del input)
     const isPasswordValid = await bcrypt.compare(decryptedPassword, user.password);
-    if (!isPasswordValid) {
-      throw new Error('Credenciales inválidas');
-    }
+    if (!isPasswordValid) throw new Error('Credenciales inválidas');
 
-    // Desencriptar campos sensibles para respuesta
     const { password: _, ...userWithoutPassword } = user;
-    const decryptedUser = {
-      ...userWithoutPassword,
-      name: userWithoutPassword.name,
-      email: decrypt(userWithoutPassword.email),
-      phone: userWithoutPassword.phone ? decrypt(userWithoutPassword.phone) : undefined,
-    };
-    
-    const token = this.generateToken(user);
+    const token = this.generateToken(user, decryptedEmail);
 
-    return { user: decryptedUser, token };
+    return {
+      user: {
+        ...userWithoutPassword,
+        email: decrypt(userWithoutPassword.email),
+        phone: userWithoutPassword.phone ? decrypt(userWithoutPassword.phone) : undefined,
+      },
+      token,
+    };
   }
 
   async getProfile(userId: string): Promise<Omit<User, 'password'>> {
@@ -121,23 +113,17 @@ export class AuthService {
       [userId]
     );
 
-    if (result.rows.length === 0) {
-      throw new Error('Usuario no encontrado');
-    }
+    if (result.rows.length === 0) throw new Error('Usuario no encontrado');
 
     const user = result.rows[0] as Omit<User, 'password'>;
-    
-    // Desencriptar campos sensibles
     return {
       ...user,
-      name: user.name,
       email: decrypt(user.email),
       phone: user.phone ? decrypt(user.phone) : undefined,
     };
   }
 
   async updateProfile(userId: string, data: { name?: string; phone?: string }): Promise<Omit<User, 'password'>> {
-    // Encriptar solo phone, name se guarda en texto plano
     const encryptedPhone = data.phone ? encrypt(data.phone) : null;
 
     const result = await query(
@@ -151,28 +137,22 @@ export class AuthService {
     );
 
     const user = result.rows[0] as Omit<User, 'password'>;
-    
-    // Desencriptar para respuesta
     return {
       ...user,
-      name: user.name,
       email: decrypt(user.email),
       phone: user.phone ? decrypt(user.phone) : undefined,
     };
   }
 
-  private generateToken(user: User): string {
-    // Usar email desencriptado para el token
-    const emailInToken = tryDecrypt(user.email) || user.email;
-    
+  private generateToken(user: Omit<User, 'password'>, plainEmail: string): string {
     const payload: JwtPayload = {
       sub: user.id,
-      email: emailInToken,
+      email: plainEmail,
       role: user.role,
     };
 
-    return jwt.sign(payload, process.env.JWT_SECRET || 'secret', {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
-    } as jwt.SignOptions);
+    return jwt.sign(payload, getJwtSecret(), {
+      expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as jwt.SignOptions['expiresIn'],
+    });
   }
 }

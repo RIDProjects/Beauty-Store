@@ -240,54 +240,70 @@ export class OrderService {
   }
 
   async updateStatus(id: string, status: OrderStatus): Promise<Order> {
-    const result = await query(
-      `UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-      [status, id]
-    );
+    const client = await getClient();
+    const outOfStockProducts: { name: string; id: string }[] = [];
 
-    if (result.rows.length === 0) throw new Error('Orden no encontrada');
+    try {
+      await client.query('BEGIN');
 
-    // If marking as completed, deduct stock and update sales
-    if (status === 'completed') {
-      const completedItemsResult = await query('SELECT * FROM order_items WHERE order_id = $1', [id]);
-      const completedItems = completedItemsResult.rows;
+      // Atomic status update — only proceeds if not already completed (prevents double-deduct)
+      const result = await client.query(
+        `UPDATE orders SET status = $1, updated_at = NOW()
+         WHERE id = $2 AND ($1 != 'completed' OR status != 'completed')
+         RETURNING *`,
+        [status, id]
+      );
 
-      const outOfStockProducts: { name: string; id: string }[] = [];
+      if (result.rows.length === 0) {
+        await client.query('ROLLBACK');
+        throw new Error('Orden no encontrada o ya está completada');
+      }
 
-      for (const item of completedItems) {
-        // Deduct stock (floor at 0) and increment sales_count atomically
-        const stockResult = await query(
-          `UPDATE products SET
-            stock = GREATEST(0, stock - $1),
-            sales_count = sales_count + $1
-           WHERE id = $2
-           RETURNING name, stock`,
-          [item.quantity, item.product_id]
+      if (status === 'completed') {
+        const itemsResult = await client.query(
+          'SELECT * FROM order_items WHERE order_id = $1',
+          [id]
         );
 
-        const updatedProduct = stockResult.rows[0];
-        if (updatedProduct && parseInt(updatedProduct.stock, 10) === 0) {
-          outOfStockProducts.push({ name: updatedProduct.name, id: item.product_id });
+        for (const item of itemsResult.rows) {
+          const stockResult = await client.query(
+            `UPDATE products SET
+              stock = GREATEST(0, stock - $1),
+              sales_count = sales_count + $1
+             WHERE id = $2
+             RETURNING name, stock`,
+            [item.quantity, item.product_id]
+          );
+
+          const updated = stockResult.rows[0];
+          if (updated && parseInt(updated.stock, 10) === 0) {
+            outOfStockProducts.push({ name: updated.name, id: item.product_id });
+          }
         }
       }
 
-      // Notify admin via WhatsApp for out-of-stock products (non-blocking)
+      await client.query('COMMIT');
+
+      const order = result.rows[0] as Order;
+      order.customer_phone = decrypt(order.customer_phone);
+      order.customer_email = order.customer_email ? decrypt(order.customer_email) : undefined;
+      order.delivery_address = order.delivery_address ? decrypt(order.delivery_address) : undefined;
+
+      const itemsResult = await query('SELECT * FROM order_items WHERE order_id = $1', [id]);
+      order.items = itemsResult.rows;
+
+      // Non-blocking WhatsApp notification after commit
       if (outOfStockProducts.length > 0) {
         whatsappService.sendOutOfStockNotification(outOfStockProducts).catch(() => {});
       }
+
+      return order;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
     }
-
-    const order = result.rows[0] as Order;
-
-    // Decrypt sensitive fields
-    order.customer_phone = decrypt(order.customer_phone);
-    order.customer_email = order.customer_email ? decrypt(order.customer_email) : undefined;
-    order.delivery_address = order.delivery_address ? decrypt(order.delivery_address) : undefined;
-
-    const itemsResult = await query('SELECT * FROM order_items WHERE order_id = $1', [id]);
-    order.items = itemsResult.rows;
-
-    return order;
   }
 
   async getStats(): Promise<{
