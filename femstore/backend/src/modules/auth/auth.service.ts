@@ -63,8 +63,8 @@ export class AuthService {
       return {
         user: {
           ...user,
-          email: decrypt(user.email),
-          phone: user.phone ? decrypt(user.phone) : undefined,
+          email: tryDecrypt(user.email),
+          phone: user.phone ? tryDecrypt(user.phone) : undefined,
         },
         token,
       };
@@ -100,8 +100,8 @@ export class AuthService {
     return {
       user: {
         ...userWithoutPassword,
-        email: decrypt(userWithoutPassword.email),
-        phone: userWithoutPassword.phone ? decrypt(userWithoutPassword.phone) : undefined,
+        email: tryDecrypt(userWithoutPassword.email),
+        phone: userWithoutPassword.phone ? tryDecrypt(userWithoutPassword.phone) : undefined,
       },
       token,
     };
@@ -118,8 +118,8 @@ export class AuthService {
     const user = result.rows[0] as Omit<User, 'password'>;
     return {
       ...user,
-      email: decrypt(user.email),
-      phone: user.phone ? decrypt(user.phone) : undefined,
+      email: tryDecrypt(user.email),
+      phone: user.phone ? tryDecrypt(user.phone) : undefined,
     };
   }
 
@@ -141,8 +141,8 @@ export class AuthService {
     const user = result.rows[0] as Omit<User, 'password'>;
     return {
       ...user,
-      email: decrypt(user.email),
-      phone: user.phone ? decrypt(user.phone) : undefined,
+      email: tryDecrypt(user.email),
+      phone: user.phone ? tryDecrypt(user.phone) : undefined,
     };
   }
 
