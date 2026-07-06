@@ -346,12 +346,12 @@ export class OrderService {
     const [statsResult, outOfStockResult, chartResult, productStatsResult, soldRevenueResult] = await Promise.all([
       query(`
         SELECT
-          COUNT(*)                                                              AS total_orders,
-          COUNT(*) FILTER (WHERE status = 'pending')                           AS pending_orders,
-          COALESCE(SUM(total) FILTER (WHERE status != 'cancelled'), 0)         AS total_revenue,
-          COUNT(*) FILTER (WHERE DATE(created_at) = CURRENT_DATE)              AS today_orders,
-          COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW()))      AS week_orders,
-          COUNT(*) FILTER (WHERE created_at >= date_trunc('month', NOW()))     AS month_orders
+          COUNT(*) FILTER (WHERE status != 'cancelled')                                                      AS total_orders,
+          COUNT(*) FILTER (WHERE status = 'pending')                                                         AS pending_orders,
+          COALESCE(SUM(total) FILTER (WHERE status != 'cancelled'), 0)                                       AS total_revenue,
+          COUNT(*) FILTER (WHERE DATE(created_at) = CURRENT_DATE AND status != 'cancelled')                  AS today_orders,
+          COUNT(*) FILTER (WHERE created_at >= date_trunc('week', NOW()) AND status != 'cancelled')          AS week_orders,
+          COUNT(*) FILTER (WHERE created_at >= date_trunc('month', NOW()) AND status != 'cancelled')         AS month_orders
         FROM orders
       `),
       query(`SELECT COUNT(*) AS out_of_stock FROM products WHERE stock = 0 AND is_active = TRUE`),
