@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Calendar, Clock, AlertCircle, Package } from 'lucide-react';
+import { ShoppingCart, Calendar, Clock, AlertCircle, Package, TrendingUp, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip,
@@ -17,6 +17,10 @@ interface Stats {
   week_orders: number;
   month_orders: number;
   out_of_stock: number;
+  total_products: number;
+  total_products_value: number;
+  total_units_sold: number;
+  total_sold_revenue: number;
   chart_data: { date: string; count: number }[];
 }
 
@@ -142,6 +146,37 @@ export default function AdminDashboard() {
                 Ver productos →
               </Link>
             )}
+          </div>
+
+          {/* Total productos */}
+          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-sm text-gray-400">Total productos</p>
+              <Package className="w-5 h-5 text-blush-400 opacity-60" />
+            </div>
+            <p className="text-3xl font-bold text-white">{stats.total_products}</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Valor inventario: ${Number(stats.total_products_value).toFixed(2)}
+            </p>
+          </div>
+
+          {/* Unidades vendidas */}
+          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-sm text-gray-400">Unidades vendidas</p>
+              <TrendingUp className="w-5 h-5 text-green-400 opacity-60" />
+            </div>
+            <p className="text-3xl font-bold text-white">{stats.total_units_sold}</p>
+          </div>
+
+          {/* Ganancias confirmadas */}
+          <div className="bg-gray-800/60 border border-gray-700/50 rounded-2xl p-5">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-sm text-gray-400">Ganancias confirmadas</p>
+              <DollarSign className="w-5 h-5 text-green-400 opacity-60" />
+            </div>
+            <p className="text-3xl font-bold text-white">${Number(stats.total_sold_revenue).toFixed(2)}</p>
+            <p className="text-xs text-gray-500 mt-1">Pedidos completados</p>
           </div>
         </div>
       )}

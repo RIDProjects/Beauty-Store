@@ -77,6 +77,17 @@ router.get('/admin', authenticate, authorize('admin'), async (req: Request, res:
   }
 });
 
+// GET /api/products/admin/:id - Admin - get any product including inactive
+router.get('/admin/:id', authenticate, authorize('admin'), async (req: Request, res: Response) => {
+  try {
+    const product = await productService.findById(req.params.id);
+    if (!product) return sendError(res, 'Producto no encontrado', 404);
+    return sendSuccess(res, product);
+  } catch (error) {
+    return sendError(res, (error as Error).message, 500);
+  }
+});
+
 // GET /api/products/:id - Public
 router.get('/:id', async (req: Request, res: Response) => {
   try {

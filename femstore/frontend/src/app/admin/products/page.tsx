@@ -100,7 +100,14 @@ export default function AdminProductsPage() {
       toast.success('Producto eliminado');
       await revalidateStorefront();
       fetchData();
-    } catch { toast.error('Error al eliminar'); }
+    } catch (error: unknown) {
+      const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Error al eliminar';
+      if (msg.toLowerCase().includes('foreign') || msg.toLowerCase().includes('constraint') || msg.toLowerCase().includes('pedido')) {
+        toast.error('No se puede eliminar: el producto tiene pedidos asociados. Podés desactivarlo en su lugar.', { duration: 5000 });
+      } else {
+        toast.error(msg);
+      }
+    }
   };
 
   const handleToggle = async (id: string) => {
@@ -123,7 +130,7 @@ export default function AdminProductsPage() {
       });
       toast.success('Imagen subida ✅');
       // Refresh product
-      const { data } = await api.get<ApiResponse<Product>>(`/products/${editingProduct.id}`);
+      const { data } = await api.get<ApiResponse<Product>>(`/products/admin/${editingProduct.id}`);
       setEditingProduct(data.data!);
     } catch { toast.error('Error al subir imagen'); } finally { setUploadingImage(false); if (fileRef.current) fileRef.current.value = ''; }
   };
@@ -132,7 +139,7 @@ export default function AdminProductsPage() {
     if (!editingProduct) return;
     try {
       await api.delete(`/products/${editingProduct.id}/images/${imageId}`);
-      const { data } = await api.get<ApiResponse<Product>>(`/products/${editingProduct.id}`);
+      const { data } = await api.get<ApiResponse<Product>>(`/products/admin/${editingProduct.id}`);
       setEditingProduct(data.data!);
       toast.success('Imagen eliminada');
     } catch { toast.error('Error al eliminar imagen'); }

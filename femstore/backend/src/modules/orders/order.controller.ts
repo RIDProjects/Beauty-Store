@@ -8,7 +8,7 @@ import { decryptBody } from '../../common/middleware/decryptBody';
 const router = Router();
 const orderService = new OrderService();
 
-const VALID_STATUSES: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+const VALID_STATUSES: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'completed', 'cancelled'];
 
 // POST /api/orders - Create order (optional auth)
 router.post('/', optionalAuth, decryptBody('customer_phone', 'customer_email', 'delivery_address', 'notes'), async (req: Request, res: Response) => {

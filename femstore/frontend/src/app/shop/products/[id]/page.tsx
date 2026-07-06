@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, ArrowLeft, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Heart, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { Product, ApiResponse } from '@/types';
 import { useCartStore } from '@/store/cart.store';
@@ -44,6 +44,28 @@ export default function ProductDetailPage() {
     };
     fetchProduct();
   }, [id, router]);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product!.name,
+          text: product!.description || `Mirá este producto: ${product!.name}`,
+          url,
+        });
+      } catch {
+        // user cancelled
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success('¡Link copiado al portapapeles! 🔗');
+      } catch {
+        toast.error('No se pudo copiar el link');
+      }
+    }
+  };
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -218,11 +240,7 @@ export default function ProductDetailPage() {
                   >
                     +
                   </button>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
-                    {(Number(product.stock) || 0) > 0
-                      ? `${product.stock} disponibles`
-                      : 'Sin stock'}
-                  </span>
+
                 </div>
               </div>
 
@@ -245,6 +263,14 @@ export default function ProductDetailPage() {
                   <Heart
                     className={`w-5 h-5 ${isFavorite ? 'text-blush-500 fill-blush-500' : ''}`}
                   />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="btn-secondary px-4 py-3"
+                  aria-label="Compartir producto"
+                >
+                  <Share2 className="w-5 h-5" />
                 </button>
               </div>
 

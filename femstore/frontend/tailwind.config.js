@@ -9,43 +9,51 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Rosa empolvado (color principal del logo)
+        // Verde bosque — reemplaza el rosa como color principal
         blush: {
-          50: '#FDF8F8',
-          100: '#FAF0F0',
-          200: '#F5E1E1',
-          300: '#EBCBCB',
-          400: '#D4A5A5',
-          500: '#C08585',
-          600: '#B88383',
-          700: '#9A6B6B',
-          800: '#7D5555',
-          900: '#5E4040',
+          50: '#F4F7F4',
+          100: '#E8F0E9',
+          200: '#D1E2D2',
+          300: '#A8C9AA',
+          400: '#7AAD7E',
+          500: '#3D6B40',
+          600: '#2C4A2E',
+          700: '#254025',
+          800: '#1E331F',
+          900: '#1C271C',
         },
-        // Dorado suave
+        // Tierra cálida — tonos neutros derivados de la paleta verde/crema
         gold: {
-          50: '#FBF9F5',
-          100: '#F5F0E6',
-          200: '#E8DCC8',
-          300: '#D9C7A8',
-          400: '#C9B896',
-          500: '#BBA67A',
-          600: '#A88D63',
-          700: '#8C724F',
-          800: '#705A41',
-          900: '#524331',
+          50: '#F9F8F5',
+          100: '#F0EDE6',
+          200: '#E0DDD4',
+          300: '#C8C4B8',
+          400: '#A8A498',
+          500: '#857F72',
+          600: '#6A6459',
+          700: '#524D44',
+          800: '#3D3930',
+          900: '#28241E',
         },
-        // Crema elegante
+        // Crema natural — paleta Hilo y Miel
         cream: {
-          50: '#FDFCFB',
-          100: '#FDFBF9',
-          200: '#FAF6F0',
-          300: '#F5EDE3',
-          400: '#EDE3D4',
-          500: '#E8D5B7',
+          50: '#FAFAF7',
+          100: '#F5F3EC',
+          200: '#EDEAE2',
+          300: '#F0EDE6',
+          400: '#E6E2D8',
+          500: '#D6D1C4',
         },
-        // Mantener colores existentes por compatibilidad
-        border: '#F5E1E1',
+        // Brand tokens Hilo y Miel (acceso directo)
+        brand: {
+          green: '#2C4A2E',
+          'green-mid': '#3D6B40',
+          cream: '#F0EDE6',
+          'cream-dark': '#E6E2D8',
+          drop: '#1E3820',
+          surface: '#FAFAF7',
+        },
+        border: '#D1E2D2',
         emerald: {
           50: '#ecfdf5',
           100: '#d1fae5',
@@ -72,8 +80,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+        display: ['Cormorant', 'Georgia', 'serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',

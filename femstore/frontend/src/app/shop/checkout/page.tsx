@@ -7,7 +7,7 @@ import Header from '@/components/layout/Header';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
 import { CheckoutFormData, ApiResponse, Order, CustomerAddress } from '@/types';
-import api, { decryptOrder } from '@/lib/api';
+import api from '@/lib/api';
 import { storeConfig } from '@/lib/config';
 import toast from 'react-hot-toast';
 
@@ -133,8 +133,7 @@ export default function CheckoutPage() {
       };
 
       const { data } = await api.post<ApiResponse<Order>>('/orders', payload);
-      const decryptedOrder = decryptOrder(data.data!);
-      setPlacedOrder(decryptedOrder);
+      setPlacedOrder(data.data!);
       stepRef.current = 'success';
       setStep('success');
       clearCart();
@@ -198,7 +197,8 @@ export default function CheckoutPage() {
       `${deliveryLine}` +
       `${notesLine}`;
 
-    const whatsAppLink = `https://wa.me/${storeConfig.vendorWhatsApp}?text=${encodeURIComponent(whatsAppMessage)}`;
+    const phoneForLink = storeConfig.vendorWhatsApp.replace('+', '');
+    const whatsAppLink = `https://wa.me/${phoneForLink}?text=${encodeURIComponent(whatsAppMessage)}`;
 
     return (
       <>

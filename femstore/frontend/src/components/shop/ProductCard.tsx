@@ -80,24 +80,25 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none">
-            <span className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-xs font-bold uppercase px-3 py-1.5 rounded-full">
-              Sin stock
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+            <span className="bg-white text-gray-900 text-sm font-bold uppercase tracking-widest px-4 py-2 rounded-full shadow-md">
+              Agotado
             </span>
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-3 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-300">
-          <button
-            onClick={handleAddToCart}
-            disabled={isOutOfStock}
-            className="w-full bg-blush-500 hover:bg-blush-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg"
-            aria-label={`Agregar ${product.name} al carrito`}
-          >
-            <ShoppingBag className="w-4 h-4" aria-hidden="true" />
-            {isOutOfStock ? 'Sin stock' : 'Agregar al carrito'}
-          </button>
-        </div>
+        {!isOutOfStock && (
+          <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <button
+              onClick={handleAddToCart}
+              className="w-full bg-blush-500 hover:bg-blush-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg"
+              aria-label={`Agregar ${product.name} al carrito`}
+            >
+              <ShoppingBag className="w-4 h-4" aria-hidden="true" />
+              Agregar al carrito
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="p-4">
@@ -118,9 +119,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               <span className="text-blush-600 dark:text-blush-400 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
             )}
           </div>
-          {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
-            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">¡Últimas {product.stock}!</span>
-          )}
         </div>
       </div>
     </Link>

@@ -49,7 +49,7 @@ export interface ProductImage {
   created_at: Date;
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'completed' | 'cancelled';
 export type DeliveryType = 'pickup' | 'delivery';
 
 export interface Order {

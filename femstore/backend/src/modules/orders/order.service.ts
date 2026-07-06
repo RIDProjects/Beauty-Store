@@ -74,21 +74,9 @@ export class OrderService {
           throw new Error(`El producto "${product.name}" no está disponible`);
         }
 
-        const availableStock = parseInt(product.stock, 10) || 0;
         if (item.quantity <= 0) {
           throw new Error(`Cantidad inválida para "${product.name}"`);
         }
-        if (availableStock < item.quantity) {
-          throw new Error(
-            `Stock insuficiente para "${product.name}". Disponibles: ${availableStock}, solicitados: ${item.quantity}`
-          );
-        }
-
-        // Decrementar stock dentro de la transacción
-        await client.query(
-          `UPDATE products SET stock = stock - $1 WHERE id = $2`,
-          [item.quantity, product.id]
-        );
 
         const itemSubtotal = parseFloat(product.price) * item.quantity;
         subtotal += itemSubtotal;
@@ -132,18 +120,12 @@ export class OrderService {
 
       const order = orderResult.rows[0] as Order;
 
-      // Create order items and update sales count
+      // Create order items
       for (const item of resolvedItems) {
         await client.query(
           `INSERT INTO order_items (order_id, product_id, product_name, product_price, quantity, subtotal)
            VALUES ($1, $2, $3, $4, $5, $6)`,
           [order.id, item.product_id, item.product_name, item.product_price, item.quantity, item.subtotal]
-        );
-        
-        // Update product sales count
-        await client.query(
-          `UPDATE products SET sales_count = sales_count + $1 WHERE id = $2`,
-          [item.quantity, item.product_id]
         );
       }
 
@@ -265,8 +247,38 @@ export class OrderService {
 
     if (result.rows.length === 0) throw new Error('Orden no encontrada');
 
+    // If marking as completed, deduct stock and update sales
+    if (status === 'completed') {
+      const completedItemsResult = await query('SELECT * FROM order_items WHERE order_id = $1', [id]);
+      const completedItems = completedItemsResult.rows;
+
+      const outOfStockProducts: { name: string; id: string }[] = [];
+
+      for (const item of completedItems) {
+        // Deduct stock (floor at 0) and increment sales_count atomically
+        const stockResult = await query(
+          `UPDATE products SET
+            stock = GREATEST(0, stock - $1),
+            sales_count = sales_count + $1
+           WHERE id = $2
+           RETURNING name, stock`,
+          [item.quantity, item.product_id]
+        );
+
+        const updatedProduct = stockResult.rows[0];
+        if (updatedProduct && parseInt(updatedProduct.stock, 10) === 0) {
+          outOfStockProducts.push({ name: updatedProduct.name, id: item.product_id });
+        }
+      }
+
+      // Notify admin via WhatsApp for out-of-stock products (non-blocking)
+      if (outOfStockProducts.length > 0) {
+        whatsappService.sendOutOfStockNotification(outOfStockProducts).catch(() => {});
+      }
+    }
+
     const order = result.rows[0] as Order;
-    
+
     // Decrypt sensitive fields
     order.customer_phone = decrypt(order.customer_phone);
     order.customer_email = order.customer_email ? decrypt(order.customer_email) : undefined;
@@ -286,9 +298,13 @@ export class OrderService {
     week_orders: number;
     month_orders: number;
     out_of_stock: number;
+    total_products: number;
+    total_products_value: number;
+    total_units_sold: number;
+    total_sold_revenue: number;
     chart_data: { date: string; count: number }[];
   }> {
-    const [statsResult, outOfStockResult, chartResult] = await Promise.all([
+    const [statsResult, outOfStockResult, chartResult, productStatsResult, soldRevenueResult] = await Promise.all([
       query(`
         SELECT
           COUNT(*)                                                              AS total_orders,
@@ -315,11 +331,28 @@ export class OrderService {
         GROUP BY gs.day
         ORDER BY gs.day ASC
       `),
+      query(`
+        SELECT
+          COUNT(*) AS total_products,
+          COALESCE(SUM(price), 0) AS total_products_value,
+          COALESCE(SUM(sales_count), 0) AS total_units_sold
+        FROM products
+        WHERE is_active = TRUE
+      `),
+      query(`
+        SELECT COALESCE(SUM(o.total), 0) AS total_sold_revenue
+        FROM orders o
+        WHERE o.status = 'completed'
+      `),
     ]);
 
     return {
       ...statsResult.rows[0],
       out_of_stock: parseInt(outOfStockResult.rows[0].out_of_stock),
+      total_products: parseInt(productStatsResult.rows[0].total_products),
+      total_products_value: parseFloat(productStatsResult.rows[0].total_products_value),
+      total_units_sold: parseInt(productStatsResult.rows[0].total_units_sold),
+      total_sold_revenue: parseFloat(soldRevenueResult.rows[0].total_sold_revenue),
       chart_data: chartResult.rows.map((r) => ({ date: r.date, count: parseInt(r.count) })),
     };
   }

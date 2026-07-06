@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 
 @layer base {
   :root {
-    --border: #F5E1E1;
+    --border: #D1E2D2;
   }
 
   .dark {
@@ -19,11 +19,11 @@
 
   body {
     @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: 'DM Sans', system-ui, sans-serif;
   }
 
   h1, h2, h3 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cormorant', Georgia, serif;
   }
 }
 
@@ -96,7 +96,7 @@
 
   .section-title {
     @apply text-3xl font-bold text-gray-900 dark:text-white mb-2;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant', serif;
   }
 }
 
@@ -106,16 +106,16 @@
   }
 
   .bg-gradient-hero {
-    background: linear-gradient(135deg, #FDF8F8 0%, #FAF0F0 50%, #FBF9F5 100%);
+    background: linear-gradient(135deg, #FAFAF7 0%, #F0EDE6 50%, #F4F7F4 100%);
   }
 
   .dark .bg-gradient-hero {
-    background: linear-gradient(135deg, #1F2937 0%, #111827 50%, #1F2937 100%);
+    background: linear-gradient(135deg, #1C271C 0%, #111827 50%, #1C271C 100%);
   }
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #EBCBCB transparent;
+    scrollbar-color: #A8C9AA transparent;
   }
 
   .scrollbar-thin::-webkit-scrollbar {
@@ -127,7 +127,7 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #EBCBCB;
+    background-color: #A8C9AA;
     border-radius: 999px;
   }
 

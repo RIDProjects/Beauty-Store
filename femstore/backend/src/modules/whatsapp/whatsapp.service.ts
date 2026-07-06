@@ -41,6 +41,33 @@ export class WhatsAppService {
     );
   }
 
+  async sendOutOfStockNotification(products: { name: string; id: string }[]): Promise<boolean> {
+    const vendorPhone = process.env.VENDOR_WHATSAPP;
+    const fromPhone = process.env.TWILIO_WHATSAPP_FROM;
+
+    const productsList = products.map(p => `  • ${p.name}`).join('\n');
+    const message =
+      `⚠️ *PRODUCTO AGOTADO - FemStore*\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `Los siguientes productos se han agotado:\n` +
+      `${productsList}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `Revisá el inventario en el panel de administración.`;
+
+    console.log('\n⚠️ Product out of stock notification:');
+    console.log(message);
+
+    if (!vendorPhone || !this.client || !fromPhone) return true;
+
+    try {
+      await this.client.messages.create({ from: fromPhone, to: vendorPhone, body: message });
+      return true;
+    } catch (error) {
+      console.error('❌ Error sending out-of-stock WhatsApp:', error);
+      return false;
+    }
+  }
+
   async sendOrderNotification(order: Order): Promise<boolean> {
     const message = this.formatOrderMessage(order);
     const vendorPhone = process.env.VENDOR_WHATSAPP;
