@@ -7,3 +7,6 @@
 /femstore/backend/.env
 /femstore/backend/dist/
 CLAUDE.md
+
+# Runtime image uploads
+femstore/backend/uploads/
