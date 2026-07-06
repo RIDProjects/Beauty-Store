@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -10,6 +10,7 @@ import { useAuthStore } from '@/store/auth.store';
 import LogoSVG from '@/components/layout/Logo';
 import api from '@/lib/api';
 import { ApiResponse } from '@/types';
+import toast from 'react-hot-toast';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
@@ -33,13 +34,45 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [user, isInitialized, router]);
 
-  // Contador de notificaciones sin leer — refresca al navegar y cada 60s
+  // Contador de notificaciones sin leer — refresca al navegar y cada 60s.
+  // Popup grande al entrar al admin con pendientes, y en cada aumento del contador.
+  const prevCountRef = useRef<number | null>(null);
   useEffect(() => {
     if (!user || user.role !== 'admin') return;
     const fetchCount = async () => {
       try {
         const { data } = await api.get<ApiResponse<{ count: number }>>('/notifications/unread-count');
-        setUnreadCount(data.data?.count ?? 0);
+        const count = data.data?.count ?? 0;
+        setUnreadCount(count);
+
+        const onNotificationsPage = window.location.pathname === '/admin/notifications';
+        const isNew = prevCountRef.current === null || count > prevCountRef.current;
+        if (count > 0 && isNew && !onNotificationsPage) {
+          toast(
+            (t) => (
+              <div className="flex items-start gap-3 py-1">
+                <div className="w-10 h-10 rounded-full bg-blush-500/15 flex items-center justify-center flex-shrink-0">
+                  <Bell className="w-5 h-5 text-blush-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-base">
+                    Tenés {count} notificaci{count === 1 ? 'ón' : 'ones'} sin leer
+                  </p>
+                  <Link
+                    href="/admin/notifications"
+                    onClick={() => toast.dismiss(t.id)}
+                    className="text-sm text-blush-500 font-medium underline"
+                  >
+                    Ver notificaciones →
+                  </Link>
+                </div>
+              </div>
+            ),
+            { id: 'unread-notifications', duration: 8000 }
+          );
+        }
+        if (onNotificationsPage) toast.dismiss('unread-notifications');
+        prevCountRef.current = count;
       } catch { /* silencioso — el badge no es crítico */ }
     };
     fetchCount();
