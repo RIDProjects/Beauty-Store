@@ -2,7 +2,7 @@ import { query, getClient } from '../../config/database';
 import { Order, OrderStatus, Pagination } from '../../common/types';
 import { generateOrderNumber, paginate } from '../../common/helpers';
 import { WhatsAppService } from '../whatsapp/whatsapp.service';
-import { encrypt, decrypt } from '../../common/encryption';
+import { encrypt, tryDecrypt } from '../../common/encryption';
 
 export interface CreateOrderDto {
   user_id?: string;
@@ -17,14 +17,6 @@ export interface CreateOrderDto {
     quantity: number;
   }[];
 }
-
-// Helper para desencriptar datos que pueden venir encriptados desde el frontend
-const tryDecrypt = (value: string | undefined): string | undefined => {
-  if (!value) return value;
-  // Intentar desencriptar - si falla, devolver el valor original
-  const decrypted = decrypt(value);
-  return decrypted === value ? value : decrypted; // Si es igual, no estaba encriptado
-};
 
 export interface OrderFilters {
   status?: OrderStatus;
@@ -207,9 +199,9 @@ export class OrderService {
     // Decrypt sensitive fields for each order
     const orders = (ordersResult.rows as Order[]).map((order) => ({
       ...order,
-      customer_phone: decrypt(order.customer_phone),
-      customer_email: order.customer_email ? decrypt(order.customer_email) : undefined,
-      delivery_address: order.delivery_address ? decrypt(order.delivery_address) : undefined,
+      customer_phone: tryDecrypt(order.customer_phone),
+      customer_email: order.customer_email ? tryDecrypt(order.customer_email) : undefined,
+      delivery_address: order.delivery_address ? tryDecrypt(order.delivery_address) : undefined,
     }));
 
     // Fetch items for each order
@@ -234,9 +226,9 @@ export class OrderService {
     const order = result.rows[0] as Order;
     
     // Decrypt sensitive fields
-    order.customer_phone = decrypt(order.customer_phone);
-    order.customer_email = order.customer_email ? decrypt(order.customer_email) : undefined;
-    order.delivery_address = order.delivery_address ? decrypt(order.delivery_address) : undefined;
+    order.customer_phone = tryDecrypt(order.customer_phone);
+    order.customer_email = order.customer_email ? tryDecrypt(order.customer_email) : undefined;
+    order.delivery_address = order.delivery_address ? tryDecrypt(order.delivery_address) : undefined;
 
     const itemsResult = await query(
       'SELECT * FROM order_items WHERE order_id = $1 ORDER BY created_at ASC',
@@ -299,15 +291,16 @@ export class OrderService {
       await client.query('COMMIT');
 
       const order = result.rows[0] as Order;
-      order.customer_phone = decrypt(order.customer_phone);
-      order.customer_email = order.customer_email ? decrypt(order.customer_email) : undefined;
-      order.delivery_address = order.delivery_address ? decrypt(order.delivery_address) : undefined;
+      order.customer_phone = tryDecrypt(order.customer_phone);
+      order.customer_email = order.customer_email ? tryDecrypt(order.customer_email) : undefined;
+      order.delivery_address = order.delivery_address ? tryDecrypt(order.delivery_address) : undefined;
 
       const itemsResult = await query('SELECT * FROM order_items WHERE order_id = $1', [id]);
       order.items = itemsResult.rows;
 
       // Non-blocking WhatsApp notification after commit
       if (outOfStockProducts.length > 0) {
+        order.out_of_stock_products = outOfStockProducts;
         whatsappService.sendOutOfStockNotification(outOfStockProducts).catch(() => {});
       }
 

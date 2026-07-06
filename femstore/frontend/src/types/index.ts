@@ -69,6 +69,7 @@ export interface Order {
   whatsapp_sent: boolean;
   items?: OrderItem[];
   created_at: string;
+  out_of_stock_products?: { id: string; name: string }[];
 }
 
 export interface CartItem {

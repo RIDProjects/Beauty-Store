@@ -4,6 +4,7 @@ import { Search, ChevronDown } from 'lucide-react';
 import { Order, OrderStatus, ApiResponse, Pagination } from '@/types';
 import api, { decryptOrders } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { formatWhatsAppLink, storeConfig } from '@/lib/config';
 
 const STATUS_OPTIONS: { value: string; label: string; class: string }[] = [
   { value: '', label: 'Todos', class: '' },
@@ -48,8 +49,39 @@ export default function AdminOrdersPage() {
 
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     try {
-      await api.patch(`/orders/${orderId}/status`, { status: newStatus });
+      const { data } = await api.patch<ApiResponse<Order>>(`/orders/${orderId}/status`, { status: newStatus });
       toast.success('Estado actualizado ✅');
+
+      // Si la entrega dejó productos en stock 0, ofrecer el aviso por WhatsApp
+      // (mismo patrón de link wa.me que la confirmación de pedido del checkout)
+      const outOfStock = data.data?.out_of_stock_products;
+      if (outOfStock?.length) {
+        const message =
+          `⚠️ *PRODUCTO AGOTADO - ${storeConfig.storeName}*\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
+          `${outOfStock.map((p) => `• ${p.name}`).join('\n')}\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
+          `Revisá el inventario en el panel de administración.`;
+
+        toast(
+          (t) => (
+            <div className="text-sm">
+              <p className="font-semibold mb-1">⚠️ Se agotó: {outOfStock.map((p) => p.name).join(', ')}</p>
+              <a
+                href={formatWhatsAppLink(message)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => toast.dismiss(t.id)}
+                className="text-green-600 font-medium underline"
+              >
+                Enviar aviso por WhatsApp →
+              </a>
+            </div>
+          ),
+          { duration: 12000 }
+        );
+      }
+
       fetchOrders();
     } catch { toast.error('Error al actualizar estado'); }
   };

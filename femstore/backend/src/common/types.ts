@@ -70,6 +70,9 @@ export interface Order {
   created_at: Date;
   updated_at: Date;
   items?: OrderItem[];
+  // Productos que quedaron en stock 0 tras marcar la orden como entregada;
+  // el admin UI lo usa para ofrecer el aviso por WhatsApp
+  out_of_stock_products?: { id: string; name: string }[];
 }
 
 export interface OrderItem {
