@@ -39,27 +39,22 @@ export default async function HomePage() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative min-h-[600px] flex items-center bg-gradient-to-br from-blush-50 via-cream-50 to-blush-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
-          {/* Background con imagen del logo - rectángulo completo */}
-          <div className="absolute inset-0 opacity-10 dark:opacity-5 pointer-events-none" role="img" aria-label="Logo Vainy Bliss de fondo">
-            <img 
-              src="/logo.png" 
-              alt="Logo Vainy Bliss"
-              className="w-full h-full object-cover"
-            />
+        <section className="relative min-h-[600px] flex items-center overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
+          <div className="absolute inset-0 opacity-10 pointer-events-none" role="img" aria-label="Logo Vainy Bliss de fondo">
+            <img src="/logo.png" alt="" className="w-full h-full object-cover" />
           </div>
-          
+
           <div className="page-container py-16 relative z-10">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 mb-4">
-                <Heart className="w-5 h-5 text-blush-500 fill-blush-500" />
-                <span className="text-blush-600 dark:text-blush-400 font-medium text-sm">Nueva colección disponible</span>
+                <Heart className="w-5 h-5" style={{ color: 'var(--color-accent)', fill: 'var(--color-accent)' }} />
+                <span className="font-medium text-sm" style={{ color: 'var(--color-accent)' }}>Nueva colección disponible</span>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+              <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-6" style={{ color: 'var(--color-text)' }}>
                 Tu estilo,{' '}
                 <span className="text-gradient">tu esencia</span>
               </h1>
-              <p className="text-gray-600 dark:text-gray-300 text-xl leading-relaxed mb-8 max-w-lg">
+              <p className="text-xl leading-relaxed mb-8 max-w-lg" style={{ color: 'var(--color-text-muted)' }}>
                 Descubre nuestra colección exclusiva de moda y belleza diseñada especialmente para mujeres como tú.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -70,13 +65,13 @@ export default async function HomePage() {
                   Ver novedades
                 </Link>
               </div>
-              <div className="flex items-center gap-6 mt-10 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-6 mt-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 <div className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                   <span>Calidad garantizada</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Truck className="w-4 h-4 text-blush-400" />
+                  <Truck className="w-4 h-4" style={{ color: 'var(--color-accent)' }} />
                   <span>Entrega rápida</span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -90,16 +85,18 @@ export default async function HomePage() {
 
         {/* Categories */}
         {categories.length > 0 && (
-          <section className="py-14 bg-white dark:bg-[#121A12]">
+          <section className="py-14" style={{ backgroundColor: 'var(--color-surface)' }}>
             <div className="page-container">
               <h2 className="section-title text-center mb-3">Categorías</h2>
-              <p className="text-center text-gray-500 dark:text-gray-400 mb-10">Encuentra exactamente lo que buscas</p>
+              <p className="text-center mb-10" style={{ color: 'var(--color-text-muted)' }}>Encuentra exactamente lo que buscas</p>
               <div className="flex flex-wrap justify-center gap-3">
                 {categories.map((cat) => (
                   <Link
                     key={cat.id}
                     href={`/shop/products?category_id=${cat.id}`}
-                    className="px-6 py-3 bg-blush-50 dark:bg-blush-900/30 hover:bg-blush-500 text-blush-700 dark:text-blush-300 hover:text-white rounded-full font-medium transition-all duration-200 border border-blush-200 dark:border-blush-700 hover:border-blush-500 hover:shadow-md"
+                    className="px-6 py-3 rounded-full font-medium transition-all duration-200 hover:text-white hover:shadow-md"
+                    style={{ backgroundColor: 'var(--color-accent-light)', color: 'var(--color-accent)', border: '1px solid var(--color-border)' }}
+                    onMouseEnter={undefined}
                   >
                     {cat.name}
                   </Link>
@@ -115,9 +112,9 @@ export default async function HomePage() {
             <div className="flex items-end justify-between mb-10">
               <div>
                 <h2 className="section-title mb-2">Productos destacados</h2>
-                <p className="text-gray-500 dark:text-gray-400">Lo más amado de nuestra colección</p>
+                <p style={{ color: 'var(--color-text-muted)' }}>Lo más amado de nuestra colección</p>
               </div>
-              <Link href="/shop/products" className="text-blush-500 hover:text-blush-700 font-medium text-sm transition-colors">
+              <Link href="/shop/products" className="font-medium text-sm transition-colors" style={{ color: 'var(--color-accent)' }}>
                 Ver todos →
               </Link>
             </div>
@@ -128,8 +125,8 @@ export default async function HomePage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 text-gray-400 dark:text-gray-500">
-                <Heart className="w-12 h-12 mx-auto mb-3 text-blush-200" />
+              <div className="text-center py-20" style={{ color: 'var(--color-text-muted)' }}>
+                <Heart className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--color-accent-light)' }} />
                 <p>Pronto tendremos productos disponibles</p>
               </div>
             )}
@@ -137,7 +134,7 @@ export default async function HomePage() {
         </section>
 
         {/* Features banner */}
-        <section className="py-12 bg-white dark:bg-[#121A12] border-t border-gray-100 dark:border-[#2a352a]">
+        <section className="py-12" style={{ backgroundColor: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
           <div className="page-container">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               {[
@@ -145,13 +142,16 @@ export default async function HomePage() {
                 { icon: Shield, title: 'Compra segura', desc: 'Tus datos siempre protegidos' },
                 { icon: MessageCircle, title: 'Atención al cliente', desc: 'Estamos aquí para ayudarte' },
               ].map((feat) => (
-                <div key={feat.title} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-blush-50 dark:hover:bg-gray-800 transition-colors">
-                  <div className="w-12 h-12 bg-blush-100 dark:bg-blush-900 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <feat.icon className="w-6 h-6 text-blush-500" />
+                <div key={feat.title} className="flex items-start gap-4 p-4 rounded-2xl transition-colors" style={{ cursor: 'default' }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)')}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-accent-light)' }}>
+                    <feat.icon className="w-6 h-6" style={{ color: 'var(--color-accent)' }} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{feat.title}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{feat.desc}</p>
+                    <h3 className="font-semibold" style={{ color: 'var(--color-text)' }}>{feat.title}</h3>
+                    <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{feat.desc}</p>
                   </div>
                 </div>
               ))}
@@ -161,28 +161,29 @@ export default async function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-black text-white py-12">
+      <footer className="py-12 text-white" style={{ backgroundColor: '#0D1208' }}>
         <div className="page-container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* Brand */}
             <div className="text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                <Heart className="w-5 h-5 text-blush-400 fill-blush-400" />
-                <span className="text-xl font-bold" style={{ fontFamily: 'Playfair Display, serif' }}>Vainy Bliss</span>
+                <Heart className="w-5 h-5" style={{ color: '#5E9060', fill: '#5E9060' }} />
+                <span className="text-xl font-bold" style={{ fontFamily: 'Cormorant, Georgia, serif', color: '#F0EDE6' }}>Vainy Bliss</span>
               </div>
-              <p className="text-gray-400 text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed" style={{ color: '#a8c4a8' }}>
                 Moda y belleza diseñada para mujeres como tú.
               </p>
             </div>
 
             {/* Atención al cliente */}
             <div className="text-center md:text-left">
-              <h3 className="font-semibold text-white mb-3">Atención al cliente</h3>
+              <h3 className="font-semibold mb-3" style={{ color: '#F0EDE6' }}>Atención al cliente</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
                     href={`tel:${storeConfig.vendorWhatsApp}`}
-                    className="flex items-center justify-center md:justify-start gap-2 text-gray-400 hover:text-blush-400 transition-colors"
+                    className="flex items-center justify-center md:justify-start gap-2 transition-colors hover:text-[#5E9060]"
+                    style={{ color: '#a8c4a8' }}
                   >
                     <Phone className="w-4 h-4" />
                     <span>{storeConfig.vendorPhoneDisplay}</span>
@@ -193,7 +194,8 @@ export default async function HomePage() {
                     href={formatWhatsAppLink('Hola, tengo una consulta sobre Vainy Bliss')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center md:justify-start gap-2 text-gray-400 hover:text-blush-400 transition-colors"
+                    className="flex items-center justify-center md:justify-start gap-2 transition-colors hover:text-[#5E9060]"
+                    style={{ color: '#a8c4a8' }}
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>WhatsApp</span>
@@ -204,34 +206,26 @@ export default async function HomePage() {
 
             {/* Enlaces */}
             <div className="text-center md:text-left">
-              <h3 className="font-semibold text-white mb-3">Tienda</h3>
+              <h3 className="font-semibold mb-3" style={{ color: '#F0EDE6' }}>Tienda</h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/shop/products" className="text-gray-400 hover:text-blush-400 transition-colors">
-                    Todos los productos
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-gray-400 hover:text-blush-400 transition-colors">
-                    Inicio
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/politica-de-privacidad" className="text-gray-400 hover:text-blush-400 transition-colors">
-                    Política de privacidad
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terminos" className="text-gray-400 hover:text-blush-400 transition-colors">
-                    Términos y condiciones
-                  </Link>
-                </li>
+                {[
+                  { href: '/shop/products', label: 'Todos los productos' },
+                  { href: '/', label: 'Inicio' },
+                  { href: '/politica-de-privacidad', label: 'Política de privacidad' },
+                  { href: '/terminos', label: 'Términos y condiciones' },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="transition-colors hover:text-[#5E9060]" style={{ color: '#a8c4a8' }}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 pt-6 text-center">
-            <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Vainy Bliss. Todos los derechos reservados.</p>
+          <div className="border-t pt-6 text-center" style={{ borderColor: '#2a352a' }}>
+            <p className="text-sm" style={{ color: '#5a7a57' }}>© {new Date().getFullYear()} Vainy Bliss. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>
