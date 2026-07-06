@@ -149,6 +149,15 @@ const ALTER_STATEMENTS = [
   `ALTER TABLE orders ALTER COLUMN customer_email TYPE TEXT`,
   `ALTER TABLE users ALTER COLUMN phone TYPE TEXT`,
   `ALTER TABLE users ALTER COLUMN email TYPE TEXT`,
+  // Migración 007 — recalcular sales_count desde pedidos entregados.
+  // Una versión vieja lo sumaba al CREAR el pedido, dejando "ventas" fantasma
+  // de pedidos cancelados. Recalcular en cada arranque es autocorrectivo:
+  // sales_count es un dato derivado y esta es su fuente de verdad.
+  `UPDATE products p SET sales_count = COALESCE((
+     SELECT SUM(oi.quantity) FROM order_items oi
+     JOIN orders o ON o.id = oi.order_id
+     WHERE oi.product_id = p.id AND o.status IN ('delivered', 'completed')
+   ), 0)`,
 ];
 
 function maskDbUrl(url: string | undefined): string {
