@@ -33,6 +33,11 @@ import notificationRoutes from './modules/notifications/notification.controller'
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Railway/Vercel ponen un proxy adelante que agrega X-Forwarded-For.
+// Sin esto, express-rate-limit tira ValidationError y crashea el proceso.
+// 1 = confiar solo en el primer proxy (no en cualquier header spoofeado).
+app.set('trust proxy', 1);
+
 // ─── Security & Middleware ────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
