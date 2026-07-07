@@ -80,13 +80,10 @@ export default function Header() {
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${categoriesOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {categoriesOpen && (
-                    <div className="absolute left-0 top-full mt-2 w-52 rounded-xl shadow-lg z-50 py-1.5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                    <div className="absolute left-0 top-full mt-2 w-52 rounded-xl shadow-lg z-50 py-1.5 animate-fade-in" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                       <button
                         onClick={() => { router.push('/shop/products'); setCategoriesOpen(false); }}
-                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:text-[var(--color-accent)]"
-                        style={{ color: 'var(--color-text)' }}
-                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-accent-light)')}
-                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                        className="w-full text-left px-4 py-2 text-sm transition-colors text-[var(--color-text)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent-light)]"
                       >
                         Todos los productos
                       </button>
@@ -95,10 +92,7 @@ export default function Header() {
                         <button
                           key={cat.id}
                           onClick={() => { router.push(`/shop/products?category_id=${cat.id}`); setCategoriesOpen(false); }}
-                          className="w-full text-left px-4 py-2 text-sm transition-colors hover:text-[var(--color-accent)]"
-                          style={{ color: 'var(--color-text)' }}
-                          onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-accent-light)')}
-                          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                          className="w-full text-left px-4 py-2 text-sm transition-colors text-[var(--color-text)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent-light)]"
                         >
                           {cat.name}
                         </button>

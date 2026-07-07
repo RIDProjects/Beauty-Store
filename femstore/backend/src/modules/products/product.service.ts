@@ -27,6 +27,16 @@ export interface ProductsResult {
   pagination: Pagination;
 }
 
+// Unidades comprometidas en pedidos activos (no cancelados ni entregados).
+// El stock físico solo se descuenta al entregar; "available" es lo vendible online.
+const RESERVED_SQL = `COALESCE((
+  SELECT SUM(oi.quantity)::int
+  FROM order_items oi
+  JOIN orders o ON o.id = oi.order_id
+  WHERE oi.product_id = p.id
+    AND o.status NOT IN ('cancelled', 'delivered', 'completed')
+), 0)`;
+
 export class ProductService {
   async findAll(filters: ProductFilters = {}): Promise<ProductsResult> {
     const { page, limit, offset } = paginate(filters.page, filters.limit);
@@ -65,9 +75,11 @@ export class ProductService {
     const total = parseInt(countResult.rows[0].count);
 
     const productsResult = await query(
-      `SELECT 
+      `SELECT
         p.*,
         c.name AS category_name,
+        ${RESERVED_SQL} AS reserved,
+        GREATEST(0, p.stock - ${RESERVED_SQL}) AS available,
         (
           SELECT json_agg(pi ORDER BY pi.sort_order ASC)
           FROM product_images pi
@@ -99,9 +111,11 @@ export class ProductService {
 
   async findById(id: string): Promise<Product | null> {
     const result = await query(
-      `SELECT 
+      `SELECT
         p.*,
         c.name AS category_name,
+        ${RESERVED_SQL} AS reserved,
+        GREATEST(0, p.stock - ${RESERVED_SQL}) AS available,
         (
           SELECT json_agg(pi ORDER BY pi.sort_order ASC)
           FROM product_images pi

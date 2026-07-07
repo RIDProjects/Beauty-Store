@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, ArrowLeft, Heart, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Heart, ChevronLeft, ChevronRight, Share2, Check } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { Product, ApiResponse } from '@/types';
 import { useCartStore } from '@/store/cart.store';
@@ -26,7 +26,7 @@ export default function ProductDetailPage() {
   const handleToggleFavorite = () => {
     if (!product) return;
     const nowFav = toggleFavorite(product.id);
-    if (nowFav) toast.success(`${product.name} agregado a favoritos ❤️`);
+    if (nowFav) toast.success(`${product.name} agregado a favoritos`);
     else toast(`${product.name} eliminado de favoritos`);
   };
 
@@ -60,7 +60,7 @@ export default function ProductDetailPage() {
     } else {
       try {
         await navigator.clipboard.writeText(url);
-        toast.success('¡Link copiado al portapapeles! 🔗');
+        toast.success('¡Link copiado al portapapeles!');
       } catch {
         toast.error('No se pudo copiar el link');
       }
@@ -69,7 +69,7 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (!product) return;
-    const stock = Number(product.stock) || 0;
+    const stock = Number(product.available ?? product.stock) || 0;
     if (stock <= 0) {
       toast.error('Producto sin stock');
       return;
@@ -79,7 +79,7 @@ export default function ProductDetailPage() {
       toast.error(`Solo hay ${stock} unidades disponibles`);
       return;
     }
-    toast.success(`${product.name} agregado al carrito 🛍️`);
+    toast.success(`${product.name} agregado al carrito`);
   };
 
   if (isLoading) {
@@ -129,7 +129,7 @@ export default function ProductDetailPage() {
           <div className="page-container py-8">
           <Link
             href="/shop/products"
-            className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blush-500 transition-colors mb-6 text-sm"
+            className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-blush-600 dark:hover:text-blush-400 transition-colors mb-6 text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver
@@ -150,13 +150,13 @@ export default function ProductDetailPage() {
                   <>
                     <button
                       onClick={() => setActiveImage((i) => (i - 1 + images.length) % images.length)}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setActiveImage((i) => (i + 1) % images.length)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -192,19 +192,19 @@ export default function ProductDetailPage() {
                 <span className="badge-blush">{product.category_name}</span>
               )}
 
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-[var(--color-text)]">{product.name}</h1>
 
 
               <div className="flex items-end gap-3">
                 {product.is_on_sale && product.sale_price ? (
                   <>
-                    <span className="text-4xl font-bold text-red-500 dark:text-red-400">
+                    <span className="text-3xl font-bold text-red-600 dark:text-red-400">
                       ${Number(product.sale_price).toFixed(2)}
                     </span>
-                    <span className="text-xl text-gray-400 line-through mb-1">
+                    <span className="text-xl text-[var(--color-text-muted)] line-through mb-1">
                       ${Number(product.price).toFixed(2)}
                     </span>
-                    <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-full mb-1">
+                    <span className="bg-red-600 text-white text-sm font-medium px-2.5 py-1 rounded-full mb-1">
                       Oferta
                     </span>
                   </>
@@ -217,8 +217,8 @@ export default function ProductDetailPage() {
 
               {product.description && (
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Descripción</h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{product.description}</p>
+                  <h3 className="font-semibold text-[var(--color-text)] mb-2">Descripción</h3>
+                  <p className="text-[var(--color-text-muted)] leading-relaxed">{product.description}</p>
                 </div>
               )}
 
@@ -228,15 +228,15 @@ export default function ProductDetailPage() {
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
-                    className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 transition-colors"
+                    className="w-10 h-10 rounded-xl border-2 border-[var(--color-border)] hover:border-blush-400 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-[var(--color-text)] transition-colors"
                   >
                     −
                   </button>
-                  <span className="w-10 text-center font-bold text-lg dark:text-white">{quantity}</span>
+                  <span className="w-10 text-center font-bold text-lg text-[var(--color-text)]">{quantity}</span>
                   <button
-                    onClick={() => setQuantity((q) => Math.min((Number(product.stock) || 0), q + 1))}
-                    disabled={quantity >= (Number(product.stock) || 0)}
-                    className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blush-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-gray-600 dark:text-gray-300 transition-colors"
+                    onClick={() => setQuantity((q) => Math.min((Number(product.available ?? product.stock) || 0), q + 1))}
+                    disabled={quantity >= (Number(product.available ?? product.stock) || 0)}
+                    className="w-10 h-10 rounded-xl border-2 border-[var(--color-border)] hover:border-blush-400 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center font-bold text-[var(--color-text)] transition-colors"
                   >
                     +
                   </button>
@@ -247,11 +247,11 @@ export default function ProductDetailPage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleAddToCart}
-                  disabled={(Number(product.stock) || 0) <= 0}
+                  disabled={(Number(product.available ?? product.stock) || 0) <= 0}
                   className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   <ShoppingBag className="w-5 h-5" />
-                  {(Number(product.stock) || 0) <= 0 ? 'Sin stock' : 'Agregar al carrito'}
+                  {(Number(product.available ?? product.stock) || 0) <= 0 ? 'Sin stock' : 'Agregar al carrito'}
                 </button>
                 <button
                   type="button"
@@ -276,9 +276,9 @@ export default function ProductDetailPage() {
 
               <div className="rounded-xl p-4 space-y-2" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
                 {['Calidad garantizada en cada producto', 'Entrega a domicilio disponible', 'Atención personalizada'].map((text) => (
-                  <div key={text} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                  <div key={text} className="flex items-center gap-2 text-sm text-[var(--color-text)]">
                     <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-accent-light)' }}>
-                      <span className="text-blush-700 text-xs">✓</span>
+                      <Check className="w-3 h-3 text-blush-700" aria-hidden="true" />
                     </div>
                     {text}
                   </div>

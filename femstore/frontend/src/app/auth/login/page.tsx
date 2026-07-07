@@ -17,7 +17,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await login(form.email, form.password);
-      toast.success('¡Bienvenida de vuelta! 🌸');
+      toast.success('¡Bienvenida de vuelta!');
       router.push(searchParams.get('redirect') || '/');
     } catch (error) {
       toast.error((error as Error).message);
@@ -33,12 +33,12 @@ export default function LoginPage() {
             <div className="w-10 h-10 bg-gradient-to-br from-blush-400 to-sage-600 rounded-full flex items-center justify-center">
               <Heart className="w-5 h-5 text-white fill-white" />
             </div>
-            <span className="text-2xl font-bold text-gradient" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <span className="text-2xl font-bold text-gradient" style={{ fontFamily: 'Cormorant, Georgia, serif' }}>
               Vainy Bliss
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Iniciar sesión</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Bienvenida de vuelta 🌸</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">Iniciar sesión</h1>
+          <p className="text-[var(--color-text-muted)] mt-1">Bienvenida de vuelta</p>
         </div>
 
         <div className="card p-8">
@@ -71,7 +71,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -83,7 +83,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+          <p className="text-center text-sm text-[var(--color-text-muted)] mt-6">
             ¿No tienes cuenta?{' '}
             <Link href="/auth/register" className="text-blush-600 dark:text-blush-400 font-semibold hover:underline">
               Regístrate gratis

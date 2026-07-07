@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Calendar, Clock, AlertCircle, Package, TrendingUp, DollarSign } from 'lucide-react';
+import { ShoppingCart, Calendar, Clock, AlertCircle, Package, TrendingUp, DollarSign, Truck, Store } from 'lucide-react';
 import Link from 'next/link';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip,
@@ -25,12 +25,12 @@ interface Stats {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending:    { label: 'Pendiente',  color: 'text-amber-600 dark:text-amber-400 bg-amber-400/10' },
-  confirmed:  { label: 'Confirmado', color: 'text-blue-600 dark:text-blue-400 bg-blue-400/10' },
-  processing: { label: 'Procesando', color: 'text-blue-600 dark:text-blue-400 bg-blue-400/10' },
-  shipped:    { label: 'Enviado',    color: 'text-purple-600 dark:text-purple-400 bg-purple-400/10' },
-  delivered:  { label: 'Entregado',  color: 'text-green-600 dark:text-green-400 bg-green-400/10' },
-  cancelled:  { label: 'Cancelado',  color: 'text-[var(--color-text-muted)] bg-gray-500/10' },
+  pending:    { label: 'Pendiente',  color: 'badge-status-pending' },
+  confirmed:  { label: 'Confirmado', color: 'badge-status-confirmed' },
+  processing: { label: 'Procesando', color: 'badge-status-processing' },
+  shipped:    { label: 'Enviado',    color: 'badge-status-shipped' },
+  delivered:  { label: 'Entregado',  color: 'badge-status-delivered' },
+  cancelled:  { label: 'Cancelado',  color: 'badge-status-cancelled' },
 };
 
 function formatChartDate(dateStr: string) {
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text)]" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">
           Dashboard
         </h1>
         <p className="text-[var(--color-text-muted)] text-sm mt-1">Resumen de tu tienda</p>
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-[var(--color-surface)] rounded-2xl p-5 animate-pulse h-28" />
+            <div key={i} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 animate-pulse h-28" />
           ))}
         </div>
       ) : stats && (
@@ -222,8 +222,10 @@ export default function AdminDashboard() {
                         <span className="text-[var(--color-text)]">{order.customer_name}</span>
                       </td>
                       <td className="px-5 py-3 hidden md:table-cell">
-                        <span className="text-[var(--color-text-muted)] text-xs">
-                          {order.delivery_type === 'delivery' ? '🚚' : '🏪'}
+                        <span className="text-[var(--color-text-muted)]" title={order.delivery_type === 'delivery' ? 'Entrega a domicilio' : 'Retiro en tienda'}>
+                          {order.delivery_type === 'delivery'
+                            ? <Truck className="w-4 h-4" aria-label="Entrega a domicilio" />
+                            : <Store className="w-4 h-4" aria-label="Retiro en tienda" />}
                         </span>
                       </td>
                       <td className="px-5 py-3 hidden sm:table-cell">
@@ -232,7 +234,7 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-5 py-3">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${s.color}`}>
+                        <span className={s.color}>
                           {s.label}
                         </span>
                       </td>
@@ -255,20 +257,20 @@ export default function AdminDashboard() {
               <AreaChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="blushGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#C08585" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#C08585" stopOpacity={0} />
+                    <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--color-accent)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: '#6b7280', fontSize: 10 }}
+                  tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }}
                   tickLine={false}
                   axisLine={false}
                   interval={6}
                 />
                 <YAxis
-                  tick={{ fill: '#6b7280', fontSize: 10 }}
+                  tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }}
                   tickLine={false}
                   axisLine={false}
                   allowDecimals={false}
@@ -277,11 +279,11 @@ export default function AdminDashboard() {
                 <Area
                   type="monotone"
                   dataKey="count"
-                  stroke="#C08585"
+                  stroke="var(--color-accent)"
                   strokeWidth={2}
                   fill="url(#blushGradient)"
                   dot={false}
-                  activeDot={{ r: 4, fill: '#C08585', stroke: '#1f2937', strokeWidth: 2 }}
+                  activeDot={{ r: 4, fill: 'var(--color-accent)', stroke: 'var(--color-surface)', strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>

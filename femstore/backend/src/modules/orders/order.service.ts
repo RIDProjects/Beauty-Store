@@ -57,8 +57,18 @@ export class OrderService {
       }[] = [];
 
       for (const item of dto.items) {
+        // FOR UPDATE serializa creaciones concurrentes del mismo producto para
+        // que "reservado" (pedidos activos) se calcule sin carreras.
         const productResult = await client.query(
-          'SELECT id, name, price, stock, is_active FROM products WHERE id = $1',
+          `SELECT p.id, p.name, p.price, p.stock, p.is_active,
+            GREATEST(0, p.stock - COALESCE((
+              SELECT SUM(oi.quantity)::int
+              FROM order_items oi
+              JOIN orders o ON o.id = oi.order_id
+              WHERE oi.product_id = p.id
+                AND o.status NOT IN ('cancelled', 'delivered', 'completed')
+            ), 0)) AS available
+           FROM products p WHERE p.id = $1 FOR UPDATE OF p`,
           [item.product_id]
         );
 
@@ -76,8 +86,9 @@ export class OrderService {
           throw new Error(`Cantidad inválida para "${product.name}"`);
         }
 
-        if (product.stock < item.quantity) {
-          throw new Error(`Stock insuficiente para "${product.name}". Disponible: ${product.stock}`);
+        const available = parseInt(product.available, 10);
+        if (available < item.quantity) {
+          throw new Error(`Stock insuficiente para "${product.name}". Disponible: ${available}`);
         }
 
         const itemSubtotal = parseFloat(product.price) * item.quantity;
@@ -252,6 +263,7 @@ export class OrderService {
   async updateStatus(id: string, status: OrderStatus): Promise<Order> {
     const client = await getClient();
     const outOfStockProducts: { name: string; id: string }[] = [];
+    const stockShortages: { name: string; id: string; deficit: number }[] = [];
 
     try {
       await client.query('BEGIN');
@@ -284,7 +296,7 @@ export class OrderService {
         for (const item of itemsResult.rows) {
           const stockResult = await client.query(
             `UPDATE products SET
-              stock = GREATEST(0, stock - $1),
+              stock = stock - $1,
               sales_count = sales_count + $1
              WHERE id = $2
              RETURNING name, stock`,
@@ -292,7 +304,16 @@ export class OrderService {
           );
 
           const updated = stockResult.rows[0];
-          if (updated && parseInt(updated.stock, 10) === 0) {
+          if (!updated) continue;
+
+          const newStock = parseInt(updated.stock, 10);
+          if (newStock < 0) {
+            // La unidad física ya no estaba (p. ej. venta presencial): normalizar a 0
+            // y avisar en vez de esconder la inconsistencia.
+            await client.query('UPDATE products SET stock = 0 WHERE id = $1', [item.product_id]);
+            stockShortages.push({ name: updated.name, id: item.product_id, deficit: -newStock });
+          }
+          if (newStock <= 0) {
             outOfStockProducts.push({ name: updated.name, id: item.product_id });
           }
         }
@@ -307,6 +328,18 @@ export class OrderService {
 
       const itemsResult = await query('SELECT * FROM order_items WHERE order_id = $1', [id]);
       order.items = itemsResult.rows;
+
+      // Inconsistencia física: se entregó sin stock suficiente (venta presencial no registrada)
+      if (stockShortages.length > 0) {
+        notificationService.create(
+          'system',
+          'Inconsistencia de stock',
+          `Se entregó el pedido pero faltaba stock físico: ${stockShortages
+            .map((p) => `${p.name} (faltaron ${p.deficit})`)
+            .join(', ')}. Revisá el inventario.`,
+          { product_ids: stockShortages.map((p) => p.id), order_id: id }
+        ).catch(() => {});
+      }
 
       // Non-blocking WhatsApp notification after commit
       if (outOfStockProducts.length > 0) {

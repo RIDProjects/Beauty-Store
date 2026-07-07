@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ShoppingBag, CheckCircle, MapPin, Phone, User, FileText, Package, Plus, Trash2 } from 'lucide-react';
+import { ShoppingBag, CheckCircle, MapPin, Phone, User, FileText, Package, Plus, Trash2, AlertTriangle, MessageCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { useCartStore } from '@/store/cart.store';
 import { useAuthStore } from '@/store/auth.store';
@@ -154,8 +154,8 @@ export default function CheckoutPage() {
             <div className="w-16 h-16 bg-blush-100 dark:bg-blush-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <ShoppingBag className="w-8 h-8 text-blush-500" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Finalizar compra</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">Para continuar necesitas iniciar sesión o puedes continuar como invitada</p>
+            <h2 className="text-xl font-bold text-[var(--color-text)] mb-2">Finalizar compra</h2>
+            <p className="text-[var(--color-text-muted)] mb-6">Para continuar necesitas iniciar sesión o puedes continuar como invitada</p>
             <div className="space-y-3">
               <Link href="/auth/login?redirect=/shop/checkout" className="btn-primary w-full block text-center">
                 Iniciar sesión
@@ -208,29 +208,29 @@ export default function CheckoutPage() {
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-1 text-center">
+            <h2 className="text-3xl font-bold text-[var(--color-text)] mb-1 text-center">
               #{placedOrder.order_number}
             </h2>
-            <p className="text-center text-gray-500 dark:text-gray-400 mb-6">¡Pedido confirmado! 🎉</p>
+            <p className="text-center text-[var(--color-text-muted)] mb-6">¡Pedido confirmado!</p>
 
             <div className="bg-[var(--color-surface-alt)] rounded-xl p-4 mb-6">
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm mb-3">Resumen del pedido</h3>
+              <h3 className="font-semibold text-[var(--color-text)] text-sm mb-3">Resumen del pedido</h3>
               <div className="space-y-2">
                 {placedOrder.items?.map((item, idx) => (
-                  <div key={idx} className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <div key={idx} className="flex justify-between text-sm text-[var(--color-text-muted)]">
                     <span>{item.product_name} x{item.quantity}</span>
                     <span>${Number(item.subtotal).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
-              <div className="border-t mt-3 pt-3 flex justify-between font-bold text-gray-900 dark:text-white" style={{ borderColor: 'var(--color-border)' }}>
+              <div className="border-t mt-3 pt-3 flex justify-between font-bold text-[var(--color-text)]" style={{ borderColor: 'var(--color-border)' }}>
                 <span>Total</span>
                 <span className="text-blush-600">${Number(placedOrder.total).toFixed(2)}</span>
               </div>
             </div>
 
             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-3 mb-4 flex gap-2 items-start">
-              <span className="text-amber-500 text-lg leading-none mt-0.5">⚠️</span>
+              <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
               <p className="text-sm text-amber-800 dark:text-amber-300">
                 <strong>Paso importante:</strong> tocá el botón de abajo para enviarnos tu pedido por WhatsApp. Sin ese mensaje no podremos procesarlo.
               </p>
@@ -241,9 +241,10 @@ export default function CheckoutPage() {
                 href={whatsAppLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary w-full block text-center text-base py-4"
+                className="btn-primary w-full flex items-center justify-center gap-2 text-base py-4"
               >
-                📲 Enviar pedido por WhatsApp
+                <MessageCircle className="w-5 h-5" aria-hidden="true" />
+                Enviar pedido por WhatsApp
               </a>
               <Link href="/shop/orders" className="btn-secondary w-full block text-center">
                 Ver mis pedidos
@@ -266,7 +267,7 @@ export default function CheckoutPage() {
             <div className="lg:col-span-2">
               <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
                 <div className="card p-6">
-                  <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <h2 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2">
                     <User className="w-5 h-5 text-blush-500" />
                     Información de contacto
                   </h2>
@@ -304,7 +305,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="customer_email" className="label">Email <span className="text-gray-400 dark:text-gray-500 font-normal">(opcional)</span></label>
+                      <label htmlFor="customer_email" className="label">Email <span className="text-[var(--color-text-muted)] font-normal">(opcional)</span></label>
                       <input
                         id="customer_email"
                         name="email"
@@ -321,14 +322,14 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="card p-6">
-                  <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <h2 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2">
                     <Package className="w-5 h-5 text-blush-500" />
                     Método de entrega
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-3 mb-4">
                     {[
-                      { value: 'pickup', label: '🏪 Retiro en tienda', desc: 'Coordinar punto de entrega' },
-                      { value: 'delivery', label: '🚚 Entrega a domicilio', desc: 'Recíbelo en tu dirección' },
+                      { value: 'pickup', label: 'Retiro en tienda', desc: 'Coordinar punto de entrega' },
+                      { value: 'delivery', label: 'Entrega a domicilio', desc: 'Recíbelo en tu dirección' },
                     ].map((opt) => (
                       <button
                         key={opt.value}
@@ -340,8 +341,8 @@ export default function CheckoutPage() {
                             : 'border-[var(--color-border)] hover:border-blush-200'
                         }`}
                       >
-                        <p className="font-semibold text-gray-900 dark:text-white">{opt.label}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{opt.desc}</p>
+                        <p className="font-semibold text-[var(--color-text)]">{opt.label}</p>
+                        <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{opt.desc}</p>
                       </button>
                     ))}
                   </div>
@@ -375,13 +376,13 @@ export default function CheckoutPage() {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{addr.label}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{addr.address}</p>
+                                <p className="text-sm font-medium text-[var(--color-text)]">{addr.label}</p>
+                                <p className="text-xs text-[var(--color-text-muted)] truncate">{addr.address}</p>
                               </div>
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); handleDeleteAddress(addr.id); }}
-                                className="p-1 text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors flex-shrink-0"
+                                className="p-1 text-[var(--color-text-muted)] hover:text-red-500 transition-colors flex-shrink-0"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -428,7 +429,7 @@ export default function CheckoutPage() {
                                 <button
                                   type="button"
                                   onClick={() => setShowNewAddressForm(false)}
-                                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-sm"
+                                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] text-sm"
                                 >
                                   Cancelar
                                 </button>
@@ -451,9 +452,9 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="card p-6">
-                  <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <h2 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2">
                     <FileText className="w-5 h-5 text-blush-500" />
-                    Notas adicionales <span className="text-gray-400 dark:text-gray-500 font-normal text-sm">(opcional)</span>
+                    Notas adicionales <span className="text-[var(--color-text-muted)] font-normal text-sm">(opcional)</span>
                   </h2>
                   <textarea
                     className="input resize-none"
@@ -472,15 +473,15 @@ export default function CheckoutPage() {
 
             <div className="lg:col-span-1">
               <div className="card p-6 sticky top-20">
-                <h2 className="font-bold text-gray-900 dark:text-white mb-4">Resumen del pedido</h2>
+                <h2 className="font-bold text-[var(--color-text)] mb-4">Resumen del pedido</h2>
                 <div className="space-y-3 mb-4">
                   {items.map((item) => (
                     <div key={item.product_id} className="flex justify-between items-start text-sm">
                       <div className="flex-1 min-w-0 pr-2">
-                        <p className="text-gray-800 dark:text-gray-200 font-medium truncate">{item.product_name}</p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">x{item.quantity} × ${Number(item.product_price).toFixed(2)}</p>
+                        <p className="text-[var(--color-text)] font-medium truncate">{item.product_name}</p>
+                        <p className="text-[var(--color-text-muted)] text-xs">x{item.quantity} × ${Number(item.product_price).toFixed(2)}</p>
                       </div>
-                      <span className="font-medium text-gray-900 dark:text-gray-100 flex-shrink-0">
+                      <span className="font-medium text-[var(--color-text)] flex-shrink-0">
                         ${(Number(item.product_price) * item.quantity).toFixed(2)}
                       </span>
                     </div>
@@ -488,21 +489,21 @@ export default function CheckoutPage() {
                 </div>
                 <div className="border-t border-[var(--color-border)] pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                    <span className="text-[var(--color-text-muted)]">Subtotal</span>
                     <span className="font-medium">${total.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center mt-1">
-                    <span className="text-gray-600 dark:text-gray-400 text-sm">Envío</span>
+                    <span className="text-[var(--color-text-muted)] text-sm">Envío</span>
                     <span className="text-green-600 dark:text-green-400 text-sm font-medium">A coordinar</span>
                   </div>
                   <div className="flex justify-between items-center mt-3 pt-3 border-t border-[var(--color-border)]">
-                    <span className="font-bold text-gray-900 dark:text-white">Total</span>
+                    <span className="font-bold text-[var(--color-text)]">Total</span>
                     <span className="font-bold text-blush-600 text-xl">${total.toFixed(2)}</span>
                   </div>
                 </div>
                 <div className="mt-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-xl p-3">
                   <p className="text-xs text-amber-700 dark:text-amber-400">
-                    📱 Al confirmar, el vendedor recibirá tu pedido por WhatsApp y te contactará para coordinar el pago y la entrega.
+                    Al confirmar, el vendedor recibirá tu pedido por WhatsApp y te contactará para coordinar el pago y la entrega.
                   </p>
                 </div>
               </div>

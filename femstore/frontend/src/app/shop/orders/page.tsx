@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, Clock, CheckCircle, Truck, XCircle, ChevronDown, MessageCircle } from 'lucide-react';
+import { Package, Clock, CheckCircle, Truck, XCircle, ChevronDown, MessageCircle, RefreshCw } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { useAuthStore } from '@/store/auth.store';
 import { Order, OrderStatus, ApiResponse } from '@/types';
@@ -9,12 +9,12 @@ import api, { decryptOrders } from '@/lib/api';
 import { storeConfig } from '@/lib/config';
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; icon: typeof Clock }> = {
-  pending:    { label: 'Pendiente',   color: 'badge-yellow', icon: Clock },
-  confirmed:  { label: 'Confirmado',  color: 'badge-blue',   icon: CheckCircle },
-  processing: { label: 'Procesando',  color: 'badge-blue',   icon: Package },
-  shipped:    { label: 'Enviado',     color: 'badge-blue',   icon: Truck },
-  delivered:  { label: 'Entregado',   color: 'badge-green',  icon: CheckCircle },
-  cancelled:  { label: 'Cancelado',   color: 'badge-gray',   icon: XCircle },
+  pending:    { label: 'Pendiente',   color: 'badge-status-pending',    icon: Clock },
+  confirmed:  { label: 'Confirmado',  color: 'badge-status-confirmed',  icon: CheckCircle },
+  processing: { label: 'Procesando',  color: 'badge-status-processing', icon: Package },
+  shipped:    { label: 'Enviado',     color: 'badge-status-shipped',    icon: Truck },
+  delivered:  { label: 'Entregado',   color: 'badge-status-delivered',  icon: CheckCircle },
+  cancelled:  { label: 'Cancelado',   color: 'badge-status-cancelled',  icon: XCircle },
 };
 
 export default function MyOrdersPage() {
@@ -59,9 +59,10 @@ export default function MyOrdersPage() {
             <button
               onClick={handleRefresh}
               disabled={isLoading}
-              className="text-sm text-blush-600 hover:text-blush-700 font-medium"
+              className="text-sm text-blush-600 hover:text-blush-700 font-medium flex items-center gap-1.5"
             >
-              {isLoading ? 'Actualizando...' : '🔄 Actualizar'}
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
+              {isLoading ? 'Actualizando...' : 'Actualizar'}
             </button>
           </div>
 
@@ -77,8 +78,8 @@ export default function MyOrdersPage() {
           ) : orders.length === 0 ? (
             <div className="text-center py-20">
               <Package className="w-14 h-14 mx-auto text-blush-200 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 font-medium">Aún no tienes pedidos</p>
-              <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">¡Explora nuestra tienda y haz tu primer pedido!</p>
+              <p className="text-[var(--color-text-muted)] font-medium">Aún no tienes pedidos</p>
+              <p className="text-[var(--color-text-muted)] text-sm mt-1">¡Explora nuestra tienda y haz tu primer pedido!</p>
               <button onClick={() => router.push('/shop/products')} className="btn-primary mt-6">
                 Ir a la tienda
               </button>
@@ -93,7 +94,7 @@ export default function MyOrdersPage() {
                 return (
                   <div key={order.id} className="card overflow-hidden">
                     <button
-                      className="w-full text-left p-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blush-400"
+                      className="w-full text-left p-5 hover:bg-[var(--color-surface-alt)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blush-400"
                       onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                       aria-expanded={isExpanded}
                       aria-label={`Pedido #${order.order_number}`}
@@ -101,7 +102,7 @@ export default function MyOrdersPage() {
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <p className="font-mono font-bold text-blush-600">#{order.order_number}</p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
                             {new Date(order.created_at).toLocaleDateString('es-ES', {
                               year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                             })}
@@ -112,27 +113,27 @@ export default function MyOrdersPage() {
                             <Icon className="w-3 h-3" />
                             {config.label}
                           </span>
-                          <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`w-4 h-4 text-[var(--color-text-muted)] transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--color-border)]">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="text-sm text-[var(--color-text-muted)]">
                           {order.items?.length} producto{order.items?.length !== 1 ? 's' : ''} • {' '}
-                          {order.delivery_type === 'delivery' ? '🚚 Entrega a domicilio' : '🏪 Retiro en tienda'}
+                          {order.delivery_type === 'delivery' ? 'Entrega a domicilio' : 'Retiro en tienda'}
                         </span>
-                        <span className="font-bold text-gray-900 dark:text-white">${Number(order.total).toFixed(2)}</span>
+                        <span className="font-bold text-[var(--color-text)]">${Number(order.total).toFixed(2)}</span>
                       </div>
                     </button>
 
                     {isExpanded && (
                       <div className="border-t border-[var(--color-border)] p-5 bg-[var(--color-surface-alt)] space-y-4">
                         <div>
-                          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Productos</p>
+                          <p className="text-xs font-semibold text-[var(--color-text-muted)] uppercase mb-2">Productos</p>
                           <div className="space-y-2">
                             {order.items?.map((item) => (
-                              <div key={item.id} className="flex justify-between text-sm text-gray-700 dark:text-gray-300">
-                                <span>{item.product_name} <span className="text-gray-400 dark:text-gray-500">x{item.quantity}</span></span>
+                              <div key={item.id} className="flex justify-between text-sm text-[var(--color-text)]">
+                                <span>{item.product_name} <span className="text-[var(--color-text-muted)]">x{item.quantity}</span></span>
                                 <span>${Number(item.subtotal).toFixed(2)}</span>
                               </div>
                             ))}
@@ -141,14 +142,14 @@ export default function MyOrdersPage() {
 
                         {order.delivery_address && (
                           <div className="text-sm">
-                            <span className="text-gray-400 dark:text-gray-500">Dirección de entrega: </span>
-                            <span className="text-gray-800 dark:text-gray-200">{order.delivery_address}</span>
+                            <span className="text-[var(--color-text-muted)]">Dirección de entrega: </span>
+                            <span className="text-[var(--color-text)]">{order.delivery_address}</span>
                           </div>
                         )}
                         {order.notes && (
                           <div className="text-sm">
-                            <span className="text-gray-400 dark:text-gray-500">Notas: </span>
-                            <span className="text-gray-800 dark:text-gray-200">{order.notes}</span>
+                            <span className="text-[var(--color-text-muted)]">Notas: </span>
+                            <span className="text-[var(--color-text)]">{order.notes}</span>
                           </div>
                         )}
 
@@ -162,7 +163,7 @@ export default function MyOrdersPage() {
                             <MessageCircle className="w-4 h-4" />
                             Consultar por WhatsApp
                           </a>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-2">
+                          <p className="text-xs text-[var(--color-text-muted)] text-center mt-2">
                             El vendedor te notificará cuando tu pedido esté listo o en camino
                           </p>
                         </div>

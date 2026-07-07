@@ -26,7 +26,9 @@ export const useCartStore = create<CartStore>()(
       isOpen: false,
 
       addItem: (product: Product, amount: number = 1): AddItemResult => {
-        const stock = Number(product.stock) || 0;
+        // `available` descuenta unidades reservadas por pedidos activos;
+        // fallback a stock físico para respuestas viejas del backend.
+        const stock = Number(product.available ?? product.stock) || 0;
         if (stock <= 0) return 'out_of_stock';
 
         const items = get().items;

@@ -14,8 +14,10 @@ describe('Cart Store', () => {
     price: 29.99,
     description: 'Test description',
     stock: 10,
+    is_on_sale: false,
     is_active: true,
     primary_image: 'test-image.jpg',
+    created_at: '2026-01-01T00:00:00Z',
   };
 
   it('should add item to cart', () => {

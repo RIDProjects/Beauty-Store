@@ -393,7 +393,12 @@ export default function AdminProductsPage() {
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-[var(--color-text)] truncate max-w-[140px]">{product.name}</p>
-                        <p className="text-xs text-[var(--color-text-muted)]">Stock: {product.stock}</p>
+                        <p className="text-xs text-[var(--color-text-muted)]">
+                          Stock: {product.stock}
+                          {Number(product.reserved) > 0 && (
+                            <span className="text-amber-600 dark:text-amber-400"> · {product.reserved} reservado{Number(product.reserved) === 1 ? '' : 's'}</span>
+                          )}
+                        </p>
                       </div>
                     </div>
                   </td>

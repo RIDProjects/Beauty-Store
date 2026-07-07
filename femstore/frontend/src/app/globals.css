@@ -51,6 +51,23 @@
   h1, h2, h3 {
     font-family: 'Cormorant', Georgia, serif;
   }
+
+  /* Focus visible consistente con el acento de marca (WCAG 2.4.7) */
+  :where(a, button, [role='button'], input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
 }
 
 @layer components {
@@ -70,7 +87,7 @@
            disabled:opacity-50 disabled:cursor-not-allowed;
     background-color: var(--color-surface);
     color: var(--color-accent);
-    border-color: var(--color-border);
+    border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
   }
 
   .btn-secondary:hover:not(:disabled) {
@@ -107,7 +124,7 @@
   .input:focus {
     outline: none;
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 2px rgba(61, 107, 64, 0.2);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
   }
 
   .label {
@@ -151,12 +168,35 @@
     color: var(--color-text-muted);
   }
 
+  /* Estados de pedido — un solo sistema para tienda y admin */
+  .badge-status-pending {
+    @apply badge text-amber-600 dark:text-amber-400 bg-amber-400/10;
+  }
+
+  .badge-status-confirmed,
+  .badge-status-processing {
+    @apply badge text-blue-600 dark:text-blue-400 bg-blue-400/10;
+  }
+
+  .badge-status-shipped {
+    @apply badge text-purple-600 dark:text-purple-400 bg-purple-400/10;
+  }
+
+  .badge-status-delivered {
+    @apply badge text-green-600 dark:text-green-400 bg-green-400/10;
+  }
+
+  .badge-status-cancelled {
+    @apply badge bg-gray-500/10;
+    color: var(--color-text-muted);
+  }
+
   .page-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   .section-title {
-    @apply text-3xl font-bold mb-2;
+    @apply text-3xl md:text-4xl font-bold mb-2 tracking-tight;
     font-family: 'Cormorant', serif;
     color: var(--color-text);
   }

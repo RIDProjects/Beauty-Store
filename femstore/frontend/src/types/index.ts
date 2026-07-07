@@ -34,6 +34,10 @@ export interface Product {
   sale_price?: number | null;
   is_on_sale: boolean;
   stock: number;
+  /** Unidades comprometidas en pedidos activos (viene del backend) */
+  reserved?: number;
+  /** stock − reserved: lo que realmente se puede vender online */
+  available?: number;
   category_id?: string;
   category_name?: string;
   is_active: boolean;

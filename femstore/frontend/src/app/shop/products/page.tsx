@@ -73,7 +73,7 @@ export default function ProductsPage() {
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="section-title">Tienda</h1>
-            <p className="text-gray-500 dark:text-gray-400">Descubre todos nuestros productos</p>
+            <p className="text-[var(--color-text-muted)]">Descubre todos nuestros productos</p>
           </div>
 
           {/* Filters Bar */}
@@ -81,7 +81,7 @@ export default function ProductsPage() {
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" />
                 <input
                   type="text"
                   placeholder="Buscar productos..."
@@ -118,7 +118,7 @@ export default function ProductsPage() {
 
           {/* Results count */}
           {pagination && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p className="text-sm text-[var(--color-text-muted)] mb-4">
               {pagination.total} {pagination.total === 1 ? 'producto encontrado' : 'productos encontrados'}
             </p>
           )}
@@ -155,7 +155,7 @@ export default function ProductsPage() {
                   >
                     ← Anterior
                   </button>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-[var(--color-text-muted)]">
                     Página {page} de {pagination.totalPages}
                   </span>
                   <button
@@ -169,7 +169,7 @@ export default function ProductsPage() {
               )}
             </>
           ) : (
-            <div className="text-center py-24 text-gray-400 dark:text-gray-500">
+            <div className="text-center py-24 text-[var(--color-text-muted)]">
               <Search className="w-12 h-12 mx-auto mb-3 text-blush-200" />
               <p className="font-medium">No se encontraron productos</p>
               <p className="text-sm mt-1">Intenta con otros filtros</p>

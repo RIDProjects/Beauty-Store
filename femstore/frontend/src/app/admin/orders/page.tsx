@@ -8,12 +8,12 @@ import { formatWhatsAppLink, storeConfig } from '@/lib/config';
 
 const STATUS_OPTIONS: { value: string; label: string; class: string }[] = [
   { value: '', label: 'Todos', class: '' },
-  { value: 'pending',    label: 'Pendiente',  class: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-400/10' },
-  { value: 'confirmed',  label: 'Confirmado', class: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-400/10' },
-  { value: 'processing', label: 'Procesando', class: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-400/10' },
-  { value: 'shipped',    label: 'Enviado',    class: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-400/10' },
-  { value: 'delivered',  label: 'Entregado',  class: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-green-600 dark:text-green-400 bg-green-400/10' },
-  { value: 'cancelled',  label: 'Cancelado',  class: 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-[var(--color-text-muted)] bg-gray-500/10' },
+  { value: 'pending',    label: 'Pendiente',  class: 'badge-status-pending' },
+  { value: 'confirmed',  label: 'Confirmado', class: 'badge-status-confirmed' },
+  { value: 'processing', label: 'Procesando', class: 'badge-status-processing' },
+  { value: 'shipped',    label: 'Enviado',    class: 'badge-status-shipped' },
+  { value: 'delivered',  label: 'Entregado',  class: 'badge-status-delivered' },
+  { value: 'cancelled',  label: 'Cancelado',  class: 'badge-status-cancelled' },
 ];
 
 const NEXT_STATUSES: Record<OrderStatus, OrderStatus[]> = {
@@ -66,7 +66,7 @@ export default function AdminOrdersPage() {
         toast(
           (t) => (
             <div className="text-sm">
-              <p className="font-semibold mb-1">⚠️ Se agotó: {outOfStock.map((p) => p.name).join(', ')}</p>
+              <p className="font-semibold mb-1">Se agotó: {outOfStock.map((p) => p.name).join(', ')}</p>
               <a
                 href={formatWhatsAppLink(message)}
                 target="_blank"
@@ -147,7 +147,7 @@ export default function AdminOrdersPage() {
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-[var(--color-text)]">${Number(order.total).toFixed(2)}</p>
                     <p className="text-xs text-[var(--color-text-muted)]">
-                      {order.delivery_type === 'delivery' ? '🚚 Domicilio' : '🏪 Retiro'}
+                      {order.delivery_type === 'delivery' ? 'Domicilio' : 'Retiro'}
                     </p>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-[var(--color-text-muted)] transition-transform ${isExpanded ? 'rotate-180' : ''}`} />

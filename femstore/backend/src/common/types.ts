@@ -38,6 +38,9 @@ export interface Product {
   category_name?: string;
   images?: ProductImage[];
   primary_image?: string;
+  // Calculados (no persistidos): reserved = pedidos activos; available = stock − reserved
+  reserved?: number;
+  available?: number;
 }
 
 export interface ProductImage {
