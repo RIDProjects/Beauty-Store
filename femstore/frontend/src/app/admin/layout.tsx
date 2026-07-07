@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import LogoSVG from '@/components/layout/Logo';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import api from '@/lib/api';
 import { ApiResponse } from '@/types';
 import toast from 'react-hot-toast';
@@ -180,6 +181,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex-1 min-w-0">
             <p className="text-sm text-[var(--color-text-muted)]">Panel de administración</p>
           </div>
+          <ThemeToggle />
           <Link href="/" className="text-xs text-blush-600 dark:text-blush-400 hover:text-blush-500 dark:hover:text-blush-300 transition-colors hidden sm:block">
             Ver tienda →
           </Link>
