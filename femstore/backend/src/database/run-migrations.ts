@@ -234,6 +234,23 @@ async function runStatement(stmt: string, label?: string): Promise<'ok' | 'skip'
   }
 }
 
+// En Railway la red privada hacia Postgres puede tardar unos segundos en estar
+// lista tras el arranque del contenedor; sin retry el primer deploy siempre
+// crasheaba y dependía del restart policy para levantar.
+async function waitForDatabase(attempts = 5, delayMs = 2000): Promise<void> {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      await query('SELECT 1');
+      return;
+    } catch (err) {
+      if (attempt === attempts) throw err;
+      console.log(`  ⏳ DB no disponible (intento ${attempt}/${attempts}), reintento en ${delayMs / 1000}s...`);
+      await new Promise((r) => setTimeout(r, delayMs));
+      delayMs *= 2;
+    }
+  }
+}
+
 async function runMigrations() {
   const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_DEPLOYMENT_ID;
 
@@ -251,7 +268,7 @@ async function runMigrations() {
     else err++;
   };
 
-  await query('SELECT 1');
+  await waitForDatabase();
   console.log('✅ Database connection successful\n');
 
   // Main DDL statements

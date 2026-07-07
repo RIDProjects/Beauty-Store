@@ -12,7 +12,7 @@ const getDbConfig = () => {
       ssl: { rejectUnauthorized: false },
       max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      connectionTimeoutMillis: 10000,
     };
   }
   
@@ -31,9 +31,11 @@ const getDbConfig = () => {
 
 export const pool = new Pool(getDbConfig());
 
+// No matar el proceso: pg descarta el cliente roto y el pool crea uno nuevo
+// en el siguiente query. Salir aquí causaba reinicios random en Railway cada
+// vez que Postgres cerraba una conexión idle.
 pool.on('error', (err: Error) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  console.error('Unexpected error on idle client (pool will recover)', err);
 });
 
 export const query = async (text: string, params?: unknown[]) => {
