@@ -88,7 +88,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
 
         {!isOutOfStock && (
-          <div className="absolute bottom-0 left-0 right-0 p-3 md:translate-y-full md:group-hover:translate-y-0 transition-transform duration-300">
+          <div className="hidden md:block absolute bottom-0 left-0 right-0 p-3 md:translate-y-full md:group-hover:translate-y-0 transition-transform duration-300">
             <button
               onClick={handleAddToCart}
               className="w-full bg-blush-500 hover:bg-blush-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg"
@@ -116,6 +116,15 @@ export default function ProductCard({ product }: ProductCardProps) {
               <span className="text-blush-600 dark:text-blush-400 font-bold text-lg">${Number(product.price).toFixed(2)}</span>
             )}
           </div>
+          {!isOutOfStock && (
+            <button
+              onClick={handleAddToCart}
+              className="md:hidden w-9 h-9 bg-blush-500 hover:bg-blush-600 text-white rounded-full flex items-center justify-center flex-shrink-0 transition-colors shadow-md"
+              aria-label={`Agregar ${product.name} al carrito`}
+            >
+              <ShoppingBag className="w-4 h-4" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
     </Link>
