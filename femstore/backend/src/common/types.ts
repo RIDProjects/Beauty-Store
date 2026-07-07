@@ -126,6 +126,8 @@ export interface PaginationQuery {
 }
 
 declare global {
+  // La augmentación de tipos de Express requiere namespace; no hay equivalente ES2015
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: JwtPayload;

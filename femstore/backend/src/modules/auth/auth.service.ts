@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { query } from '../../config/database';
 import { User, JwtPayload } from '../../common/types';
-import { encrypt, decrypt, tryDecrypt } from '../../common/encryption';
+import { encrypt, tryDecrypt } from '../../common/encryption';
 
 export interface RegisterDto {
   name: string;

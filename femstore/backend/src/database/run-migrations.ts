@@ -165,7 +165,9 @@ function maskDbUrl(url: string | undefined): string {
   try {
     const match = url.match(/:\/\/([^:]+):([^@]+)@/);
     if (match) return url.replace(match[2], '****');
-  } catch {}
+  } catch {
+    // best effort: si la URL no parsea se devuelve tal cual
+  }
   return url;
 }
 
@@ -224,12 +226,13 @@ async function runStatement(stmt: string, label?: string): Promise<'ok' | 'skip'
     await query(stmt);
     console.log(`  ✅ ${type}: ${display}`);
     return 'ok';
-  } catch (err: any) {
-    if (err.message?.includes('already exists') || err.message?.includes('duplicate')) {
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.includes('already exists') || message.includes('duplicate')) {
       console.log(`  ⏭️  ${type}: already exists`);
       return 'skip';
     }
-    console.log(`  ❌ ${type}: ${err.message?.substring(0, 100) || 'Unknown error'}`);
+    console.log(`  ❌ ${type}: ${message.substring(0, 100) || 'Unknown error'}`);
     return 'error';
   }
 }
