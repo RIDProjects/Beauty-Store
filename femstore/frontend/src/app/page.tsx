@@ -157,14 +157,14 @@ export default async function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 text-white" style={{ backgroundColor: 'var(--color-bg)' }}>
+      <footer className="py-12" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
         <div className="page-container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {/* Brand */}
             <div className="text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
                 <Heart className="w-5 h-5" style={{ color: 'var(--color-accent-hover)', fill: 'var(--color-accent-hover)' }} />
-                <span className="text-xl font-bold" style={{ fontFamily: 'Cormorant, Georgia, serif', color: '#F0EDE6' }}>Vainy Bliss</span>
+                <span className="text-xl font-bold" style={{ fontFamily: 'Cormorant, Georgia, serif', color: 'var(--color-text)' }}>Vainy Bliss</span>
               </div>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 Moda y belleza diseñada para mujeres como tú.
@@ -173,7 +173,7 @@ export default async function HomePage() {
 
             {/* Atención al cliente */}
             <div className="text-center md:text-left">
-              <h3 className="font-semibold mb-3" style={{ color: '#F0EDE6' }}>Atención al cliente</h3>
+              <h3 className="font-semibold mb-3" style={{ color: 'var(--color-text)' }}>Atención al cliente</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
@@ -202,7 +202,7 @@ export default async function HomePage() {
 
             {/* Enlaces */}
             <div className="text-center md:text-left">
-              <h3 className="font-semibold mb-3" style={{ color: '#F0EDE6' }}>Tienda</h3>
+              <h3 className="font-semibold mb-3" style={{ color: 'var(--color-text)' }}>Tienda</h3>
               <ul className="space-y-2 text-sm">
                 {[
                   { href: '/shop/products', label: 'Todos los productos' },

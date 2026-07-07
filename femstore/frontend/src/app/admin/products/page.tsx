@@ -179,7 +179,7 @@ export default function AdminProductsPage() {
       <div className="space-y-6 max-w-2xl">
         <div className="flex items-center gap-3">
           <button onClick={() => setMode('list')} className="btn-ghost py-1.5 px-3 text-sm">← Volver</button>
-          <h1 className="text-xl font-bold text-white">{mode === 'create' ? 'Nuevo producto' : 'Editar producto'}</h1>
+          <h1 className="text-xl font-bold text-[var(--color-text)]">{mode === 'create' ? 'Nuevo producto' : 'Editar producto'}</h1>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
@@ -211,7 +211,7 @@ export default function AdminProductsPage() {
                 onChange={(e) => setForm({ ...form, is_on_sale: e.target.checked })}
                 className="w-4 h-4 text-blush-500"
               />
-              <label htmlFor="is_on_sale" className="text-sm text-gray-700 cursor-pointer font-medium">Producto en oferta</label>
+              <label htmlFor="is_on_sale" className="text-sm text-[var(--color-text)] cursor-pointer font-medium">Producto en oferta</label>
             </div>
             {form.is_on_sale && (
               <div>
@@ -225,7 +225,7 @@ export default function AdminProductsPage() {
                   onChange={(e) => setForm({ ...form, sale_price: e.target.value })}
                   placeholder="0.00"
                 />
-                <p className="text-xs text-gray-400 mt-1">Dejar vacío para mostrar solo el badge sin precio especial</p>
+                <p className="text-xs text-[var(--color-text-muted)] mt-1">Dejar vacío para mostrar solo el badge sin precio especial</p>
               </div>
             )}
             <div>
@@ -237,14 +237,14 @@ export default function AdminProductsPage() {
             </div>
             <div className="flex items-center gap-3">
               <input type="checkbox" id="is_active" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-blush-500" />
-              <label htmlFor="is_active" className="text-sm text-gray-700 cursor-pointer">Producto activo (visible en la tienda)</label>
+              <label htmlFor="is_active" className="text-sm text-[var(--color-text)] cursor-pointer">Producto activo (visible en la tienda)</label>
             </div>
           </div>
 
           {/* Images - only when editing */}
           {mode === 'edit' && editingProduct && (
             <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
-              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+              <h3 className="font-semibold text-[var(--color-text)] mb-4 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-blush-500" />
                 Imágenes
               </h3>
@@ -268,20 +268,20 @@ export default function AdminProductsPage() {
                   type="button"
                   onClick={() => fileRef.current?.click()}
                   disabled={uploadingImage}
-                  className="aspect-square rounded-xl border-2 border-dashed border-blush-200 hover:border-blush-400 flex flex-col items-center justify-center gap-1 text-blush-400 hover:text-blush-600 transition-colors"
+                  className="aspect-square rounded-xl border-2 border-dashed border-blush-200 hover:border-blush-400 flex flex-col items-center justify-center gap-1 text-blush-500 hover:text-blush-600 transition-colors"
                 >
                   <Upload className="w-5 h-5" />
                   <span className="text-xs">{uploadingImage ? 'Subiendo...' : 'Añadir'}</span>
                 </button>
               </div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-              <p className="text-xs text-gray-400">JPG, PNG, WebP • Máx 5MB por imagen</p>
+              <p className="text-xs text-[var(--color-text-muted)]">JPG, PNG, WebP • Máx 5MB por imagen</p>
             </div>
           )}
 
           {mode === 'create' && (
             <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
-              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+              <h3 className="font-semibold text-[var(--color-text)] mb-4 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-blush-500" />
                 Imágenes
               </h3>
@@ -305,7 +305,7 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={() => pendingFileRef.current?.click()}
-                  className="aspect-square rounded-xl border-2 border-dashed border-blush-200 hover:border-blush-400 flex flex-col items-center justify-center gap-1 text-blush-400 hover:text-blush-600 transition-colors"
+                  className="aspect-square rounded-xl border-2 border-dashed border-blush-200 hover:border-blush-400 flex flex-col items-center justify-center gap-1 text-blush-500 hover:text-blush-600 transition-colors"
                 >
                   <Upload className="w-5 h-5" />
                   <span className="text-xs">Añadir</span>
@@ -323,7 +323,7 @@ export default function AdminProductsPage() {
                   if (pendingFileRef.current) pendingFileRef.current.value = '';
                 }}
               />
-              <p className="text-xs text-gray-400">JPG, PNG, WebP • Máx 5MB por imagen • Se suben al guardar el producto</p>
+              <p className="text-xs text-[var(--color-text-muted)]">JPG, PNG, WebP • Máx 5MB por imagen • Se suben al guardar el producto</p>
             </div>
           )}
 
@@ -344,8 +344,8 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Productos</h1>
-          <p className="text-sm text-gray-500">{products.length} productos</p>
+          <h1 className="text-xl font-bold text-[var(--color-text)]">Productos</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{products.length} productos</p>
         </div>
         <button onClick={openCreate} className="btn-primary flex items-center gap-2 text-sm py-2.5">
           <Plus className="w-4 h-4" /> Nuevo producto
@@ -353,7 +353,7 @@ export default function AdminProductsPage() {
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" />
         <input className="input pl-9" placeholder="Buscar productos..." value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
@@ -364,7 +364,7 @@ export default function AdminProductsPage() {
       ) : products.length === 0 ? (
         <div className="text-center py-20 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl">
           <Plus className="w-10 h-10 mx-auto text-blush-400/40 mb-3" />
-          <p className="text-gray-500">No hay productos. ¡Crea el primero!</p>
+          <p className="text-[var(--color-text-muted)]">No hay productos. ¡Crea el primero!</p>
           <button onClick={openCreate} className="btn-primary mt-4 text-sm py-2.5">Crear producto</button>
         </div>
       ) : (
@@ -372,11 +372,11 @@ export default function AdminProductsPage() {
           <table className="w-full">
             <thead className="bg-[var(--color-surface-alt)] border-b border-[var(--color-border)]">
               <tr>
-                <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase">Producto</th>
-                <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Categoría</th>
-                <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase">Precio</th>
-                <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Estado</th>
-                <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Acciones</th>
+                <th className="text-left p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase">Producto</th>
+                <th className="text-left p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase hidden sm:table-cell">Categoría</th>
+                <th className="text-left p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase">Precio</th>
+                <th className="text-left p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase hidden md:table-cell">Estado</th>
+                <th className="p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
@@ -392,20 +392,20 @@ export default function AdminProductsPage() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-100 truncate max-w-[140px]">{product.name}</p>
-                        <p className="text-xs text-gray-500">Stock: {product.stock}</p>
+                        <p className="text-sm font-medium text-[var(--color-text)] truncate max-w-[140px]">{product.name}</p>
+                        <p className="text-xs text-[var(--color-text-muted)]">Stock: {product.stock}</p>
                       </div>
                     </div>
                   </td>
                   <td className="p-4 hidden sm:table-cell">
-                    <span className="text-sm text-gray-400">{product.category_name || '—'}</span>
+                    <span className="text-sm text-[var(--color-text-muted)]">{product.category_name || '—'}</span>
                   </td>
                   <td className="p-4">
                     <div className="flex flex-col gap-0.5">
                       {product.is_on_sale && product.sale_price ? (
                         <>
                           <span className="font-semibold text-red-500">${Number(product.sale_price).toFixed(2)}</span>
-                          <span className="text-xs text-gray-400 line-through">${Number(product.price).toFixed(2)}</span>
+                          <span className="text-xs text-[var(--color-text-muted)] line-through">${Number(product.price).toFixed(2)}</span>
                         </>
                       ) : (
                         <span className="font-semibold text-blush-600">${Number(product.price).toFixed(2)}</span>
@@ -418,8 +418,8 @@ export default function AdminProductsPage() {
                   <td className="p-4 hidden md:table-cell">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       product.is_active
-                        ? 'text-green-400 bg-green-400/10'
-                        : 'text-gray-500 bg-gray-500/10'
+                        ? 'text-green-600 dark:text-green-400 bg-green-400/10'
+                        : 'text-[var(--color-text-muted)] bg-gray-500/10'
                     }`}>
                       {product.is_active ? 'Activo' : 'Inactivo'}
                     </span>
@@ -427,7 +427,7 @@ export default function AdminProductsPage() {
                   <td className="p-4">
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => handleToggle(product.id)} title={product.is_active ? 'Desactivar' : 'Activar'} className="p-1.5 hover:bg-[var(--color-surface-alt)] rounded-lg transition-colors">
-                        {product.is_active ? <EyeOff className="w-4 h-4 text-gray-500" /> : <Eye className="w-4 h-4 text-gray-500" />}
+                        {product.is_active ? <EyeOff className="w-4 h-4 text-[var(--color-text-muted)]" /> : <Eye className="w-4 h-4 text-[var(--color-text-muted)]" />}
                       </button>
                       <button onClick={() => openEdit(product)} className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors">
                         <Pencil className="w-4 h-4 text-blue-500" />

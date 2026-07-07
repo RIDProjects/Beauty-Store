@@ -6,11 +6,11 @@
 
 /* ── CSS Variables — mismo sistema que Hilo y Miel ── */
 :root {
-  --color-bg:           #F0EDE6;
-  --color-surface:      #FAFAF7;
-  --color-surface-alt:  #E6E2D8;
+  --color-bg:           #FFFFFF;
+  --color-surface:      #FFFFFF;
+  --color-surface-alt:  #F5F4EF;
   --color-text:         #2A3C2C;
-  --color-text-muted:   #7A9878;
+  --color-text-muted:   #55705A;
   --color-border:       #C8DDD0;
   --color-accent:       #5C8C68;
   --color-accent-hover: #72A87E;

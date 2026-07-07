@@ -6,9 +6,9 @@ import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
 const TYPE_CONFIG: Record<NotificationType, { icon: typeof Bell; label: string; color: string }> = {
-  new_order:    { icon: ShoppingCart,  label: 'Pedido',  color: 'text-blush-400 bg-blush-500/10' },
-  out_of_stock: { icon: AlertTriangle, label: 'Agotado', color: 'text-amber-400 bg-amber-400/10' },
-  system:       { icon: Info,          label: 'Sistema', color: 'text-blue-400 bg-blue-400/10' },
+  new_order:    { icon: ShoppingCart,  label: 'Pedido',  color: 'text-blush-600 dark:text-blush-400 bg-blush-500/10' },
+  out_of_stock: { icon: AlertTriangle, label: 'Agotado', color: 'text-amber-600 dark:text-amber-400 bg-amber-400/10' },
+  system:       { icon: Info,          label: 'Sistema', color: 'text-blue-600 dark:text-blue-400 bg-blue-400/10' },
 };
 
 const timeAgo = (date: string): string => {
@@ -65,8 +65,8 @@ export default function AdminNotificationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-xl font-bold text-white">Notificaciones</h1>
-          <p className="text-sm text-gray-500">{pagination?.total ?? '—'} en total</p>
+          <h1 className="text-xl font-bold text-[var(--color-text)]">Notificaciones</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{pagination?.total ?? '—'} en total</p>
         </div>
         {unreadCount > 0 && (
           <button onClick={handleMarkAllRead} className="btn-secondary flex items-center gap-2 text-sm py-2">
@@ -84,7 +84,7 @@ export default function AdminNotificationsPage() {
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all border ${
               unreadOnly === opt.value
                 ? 'bg-blush-500 text-white border-blush-500'
-                : 'bg-[var(--color-surface)] text-gray-400 border-[var(--color-border)] hover:border-blush-500/50 hover:text-white'
+                : 'bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-border)] hover:border-blush-500/50 hover:text-[var(--color-text)]'
             }`}
           >
             {opt.label}
@@ -99,7 +99,7 @@ export default function AdminNotificationsPage() {
       ) : notifications.length === 0 ? (
         <div className="text-center py-20 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl">
           <Bell className="w-10 h-10 mx-auto text-blush-400/40 mb-3" />
-          <p className="text-gray-500">{unreadOnly ? 'No hay notificaciones sin leer' : 'No hay notificaciones todavía'}</p>
+          <p className="text-[var(--color-text-muted)]">{unreadOnly ? 'No hay notificaciones sin leer' : 'No hay notificaciones todavía'}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -118,11 +118,11 @@ export default function AdminNotificationsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-gray-100">{n.title}</p>
+                    <p className="text-sm font-medium text-[var(--color-text)]">{n.title}</p>
                     {!n.is_read && <span className="w-2 h-2 rounded-full bg-blush-500 flex-shrink-0" />}
                   </div>
-                  <p className="text-sm text-gray-400 mt-0.5">{n.message}</p>
-                  <p className="text-xs text-gray-500 mt-1">{timeAgo(n.created_at)}</p>
+                  <p className="text-sm text-[var(--color-text-muted)] mt-0.5">{n.message}</p>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-1">{timeAgo(n.created_at)}</p>
                 </div>
                 {!n.is_read && (
                   <button
@@ -130,7 +130,7 @@ export default function AdminNotificationsPage() {
                     title="Marcar como leída"
                     className="p-1.5 hover:bg-[var(--color-surface-alt)] rounded-lg transition-colors flex-shrink-0"
                   >
-                    <Check className="w-4 h-4 text-gray-500" />
+                    <Check className="w-4 h-4 text-[var(--color-text-muted)]" />
                   </button>
                 )}
               </div>
@@ -143,7 +143,7 @@ export default function AdminNotificationsPage() {
       {pagination && pagination.totalPages > 1 && (
         <div className="flex justify-center gap-2">
           <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="btn-secondary text-sm py-1.5 px-3 disabled:opacity-40">← Anterior</button>
-          <span className="text-sm text-gray-500 self-center">Página {page} de {pagination.totalPages}</span>
+          <span className="text-sm text-[var(--color-text-muted)] self-center">Página {page} de {pagination.totalPages}</span>
           <button disabled={page >= pagination.totalPages} onClick={() => setPage(page + 1)} className="btn-secondary text-sm py-1.5 px-3 disabled:opacity-40">Siguiente →</button>
         </div>
       )}

@@ -25,12 +25,12 @@ interface Stats {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending:    { label: 'Pendiente',  color: 'text-amber-400 bg-amber-400/10' },
-  confirmed:  { label: 'Confirmado', color: 'text-blue-400 bg-blue-400/10' },
-  processing: { label: 'Procesando', color: 'text-blue-400 bg-blue-400/10' },
-  shipped:    { label: 'Enviado',    color: 'text-purple-400 bg-purple-400/10' },
-  delivered:  { label: 'Entregado',  color: 'text-green-400 bg-green-400/10' },
-  cancelled:  { label: 'Cancelado',  color: 'text-gray-500 bg-gray-500/10' },
+  pending:    { label: 'Pendiente',  color: 'text-amber-600 dark:text-amber-400 bg-amber-400/10' },
+  confirmed:  { label: 'Confirmado', color: 'text-blue-600 dark:text-blue-400 bg-blue-400/10' },
+  processing: { label: 'Procesando', color: 'text-blue-600 dark:text-blue-400 bg-blue-400/10' },
+  shipped:    { label: 'Enviado',    color: 'text-purple-600 dark:text-purple-400 bg-purple-400/10' },
+  delivered:  { label: 'Entregado',  color: 'text-green-600 dark:text-green-400 bg-green-400/10' },
+  cancelled:  { label: 'Cancelado',  color: 'text-[var(--color-text-muted)] bg-gray-500/10' },
 };
 
 function formatChartDate(dateStr: string) {
@@ -43,8 +43,8 @@ function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 shadow-xl text-sm">
-      <p className="text-gray-400 mb-1">{label}</p>
-      <p className="text-white font-bold">{payload[0].value} pedidos</p>
+      <p className="text-[var(--color-text-muted)] mb-1">{label}</p>
+      <p className="text-[var(--color-text)] font-bold">{payload[0].value} pedidos</p>
     </div>
   );
 }
@@ -78,10 +78,10 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]" style={{ fontFamily: 'Playfair Display, serif' }}>
           Dashboard
         </h1>
-        <p className="text-gray-500 text-sm mt-1">Resumen de tu tienda</p>
+        <p className="text-[var(--color-text-muted)] text-sm mt-1">Resumen de tu tienda</p>
       </div>
 
       {/* ── Stat cards ── */}
@@ -96,39 +96,39 @@ export default function AdminDashboard() {
           {/* Pedidos hoy */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Pedidos hoy</p>
-              <ShoppingCart className="w-5 h-5 text-blush-400 opacity-60" />
+              <p className="text-sm text-[var(--color-text-muted)]">Pedidos hoy</p>
+              <ShoppingCart className="w-5 h-5 text-blush-600 dark:text-blush-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">{stats.today_orders}</p>
+            <p className="text-3xl font-bold text-[var(--color-text)]">{stats.today_orders}</p>
           </div>
 
           {/* Pedidos semana */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Pedidos esta semana</p>
-              <Calendar className="w-5 h-5 text-blush-400 opacity-60" />
+              <p className="text-sm text-[var(--color-text-muted)]">Pedidos esta semana</p>
+              <Calendar className="w-5 h-5 text-blush-600 dark:text-blush-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">{stats.week_orders}</p>
+            <p className="text-3xl font-bold text-[var(--color-text)]">{stats.week_orders}</p>
           </div>
 
           {/* Pedidos mes */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Pedidos este mes</p>
-              <Clock className="w-5 h-5 text-blush-400 opacity-60" />
+              <p className="text-sm text-[var(--color-text-muted)]">Pedidos este mes</p>
+              <Clock className="w-5 h-5 text-blush-600 dark:text-blush-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">{stats.month_orders}</p>
+            <p className="text-3xl font-bold text-[var(--color-text)]">{stats.month_orders}</p>
           </div>
 
           {/* Pendientes */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Pedidos pendientes</p>
+              <p className="text-sm text-[var(--color-text-muted)]">Pedidos pendientes</p>
               <AlertCircle className="w-5 h-5 text-amber-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">{stats.pending_orders}</p>
+            <p className="text-3xl font-bold text-[var(--color-text)]">{stats.pending_orders}</p>
             {stats.pending_orders > 0 && (
-              <Link href="/admin/orders?status=pending" className="text-xs text-blush-400 hover:text-blush-300 mt-2 block transition-colors">
+              <Link href="/admin/orders?status=pending" className="text-xs text-blush-600 dark:text-blush-400 hover:text-blush-500 dark:hover:text-blush-300 mt-2 block transition-colors">
                 Ver pedidos pendientes →
               </Link>
             )}
@@ -137,12 +137,12 @@ export default function AdminDashboard() {
           {/* Sin stock */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Productos sin stock</p>
+              <p className="text-sm text-[var(--color-text-muted)]">Productos sin stock</p>
               <Package className="w-5 h-5 text-red-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">{stats.out_of_stock}</p>
+            <p className="text-3xl font-bold text-[var(--color-text)]">{stats.out_of_stock}</p>
             {stats.out_of_stock > 0 && (
-              <Link href="/admin/products" className="text-xs text-blush-400 hover:text-blush-300 mt-2 block transition-colors">
+              <Link href="/admin/products" className="text-xs text-blush-600 dark:text-blush-400 hover:text-blush-500 dark:hover:text-blush-300 mt-2 block transition-colors">
                 Ver productos →
               </Link>
             )}
@@ -151,11 +151,11 @@ export default function AdminDashboard() {
           {/* Total productos */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Total productos</p>
-              <Package className="w-5 h-5 text-blush-400 opacity-60" />
+              <p className="text-sm text-[var(--color-text-muted)]">Total productos</p>
+              <Package className="w-5 h-5 text-blush-600 dark:text-blush-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">{stats.total_products}</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-3xl font-bold text-[var(--color-text)]">{stats.total_products}</p>
+            <p className="text-xs text-[var(--color-text-muted)] mt-1">
               Valor inventario: ${Number(stats.total_products_value).toFixed(2)}
             </p>
           </div>
@@ -163,20 +163,20 @@ export default function AdminDashboard() {
           {/* Unidades vendidas */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Unidades vendidas</p>
+              <p className="text-sm text-[var(--color-text-muted)]">Unidades vendidas</p>
               <TrendingUp className="w-5 h-5 text-green-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">{stats.total_units_sold}</p>
+            <p className="text-3xl font-bold text-[var(--color-text)]">{stats.total_units_sold}</p>
           </div>
 
           {/* Ganancias confirmadas */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-sm text-gray-400">Ganancias confirmadas</p>
+              <p className="text-sm text-[var(--color-text-muted)]">Ganancias confirmadas</p>
               <DollarSign className="w-5 h-5 text-green-400 opacity-60" />
             </div>
-            <p className="text-3xl font-bold text-white">${Number(stats.total_sold_revenue).toFixed(2)}</p>
-            <p className="text-xs text-gray-500 mt-1">Pedidos completados</p>
+            <p className="text-3xl font-bold text-[var(--color-text)]">${Number(stats.total_sold_revenue).toFixed(2)}</p>
+            <p className="text-xs text-[var(--color-text-muted)] mt-1">Pedidos completados</p>
           </div>
         </div>
       )}
@@ -186,20 +186,20 @@ export default function AdminDashboard() {
         {/* Últimos pedidos */}
         <div className="lg:col-span-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
-            <h2 className="font-semibold text-white">Últimos Pedidos</h2>
-            <Link href="/admin/orders" className="text-xs text-blush-400 hover:text-blush-300 transition-colors">
+            <h2 className="font-semibold text-[var(--color-text)]">Últimos Pedidos</h2>
+            <Link href="/admin/orders" className="text-xs text-blush-600 dark:text-blush-400 hover:text-blush-500 dark:hover:text-blush-300 transition-colors">
               Ver todos →
             </Link>
           </div>
           {recentOrders.length === 0 ? (
-            <div className="p-10 text-center text-gray-600">
+            <div className="p-10 text-center text-[var(--color-text-muted)]">
               <ShoppingCart className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p className="text-sm">No hay pedidos aún</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-gray-500 uppercase border-b border-[var(--color-border)]">
+                <tr className="text-xs text-[var(--color-text-muted)] uppercase border-b border-[var(--color-border)]">
                   <th className="text-left px-5 py-3">ID</th>
                   <th className="text-left px-5 py-3 hidden sm:table-cell">Cliente</th>
                   <th className="text-left px-5 py-3 hidden md:table-cell">Tipo</th>
@@ -214,20 +214,20 @@ export default function AdminDashboard() {
                   return (
                     <tr key={order.id} className="hover:bg-[var(--color-surface-alt)] transition-colors">
                       <td className="px-5 py-3">
-                        <span className="font-mono text-blush-400 font-semibold text-xs">
+                        <span className="font-mono text-blush-600 dark:text-blush-400 font-semibold text-xs">
                           #{order.order_number}
                         </span>
                       </td>
                       <td className="px-5 py-3 hidden sm:table-cell">
-                        <span className="text-gray-200">{order.customer_name}</span>
+                        <span className="text-[var(--color-text)]">{order.customer_name}</span>
                       </td>
                       <td className="px-5 py-3 hidden md:table-cell">
-                        <span className="text-gray-400 text-xs">
+                        <span className="text-[var(--color-text-muted)] text-xs">
                           {order.delivery_type === 'delivery' ? '🚚' : '🏪'}
                         </span>
                       </td>
                       <td className="px-5 py-3 hidden sm:table-cell">
-                        <span className="text-gray-500 text-xs">
+                        <span className="text-[var(--color-text-muted)] text-xs">
                           {new Date(order.created_at).toLocaleDateString('es-ES')}
                         </span>
                       </td>
@@ -237,7 +237,7 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-5 py-3 text-right">
-                        <span className="text-white font-semibold">${Number(order.total).toFixed(2)}</span>
+                        <span className="text-[var(--color-text)] font-semibold">${Number(order.total).toFixed(2)}</span>
                       </td>
                     </tr>
                   );
@@ -249,7 +249,7 @@ export default function AdminDashboard() {
 
         {/* Chart */}
         <div className="lg:col-span-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5">
-          <h2 className="font-semibold text-white mb-4">Pedidos últimos 30 días</h2>
+          <h2 className="font-semibold text-[var(--color-text)] mb-4">Pedidos últimos 30 días</h2>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[220px] flex items-center justify-center text-gray-600 text-sm">
+            <div className="h-[220px] flex items-center justify-center text-[var(--color-text-muted)] text-sm">
               Sin datos aún
             </div>
           )}

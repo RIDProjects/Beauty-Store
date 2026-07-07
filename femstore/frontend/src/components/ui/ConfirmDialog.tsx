@@ -37,8 +37,8 @@ export default function ConfirmDialog({
             <AlertTriangle className="w-5 h-5 text-red-500" />
           </div>
           <div>
-            <h3 className="font-semibold text-white">{title}</h3>
-            <p className="text-sm text-gray-400 mt-1">{message}</p>
+            <h3 className="font-semibold text-[var(--color-text)]">{title}</h3>
+            <p className="text-sm text-[var(--color-text-muted)] mt-1">{message}</p>
           </div>
         </div>
         <div className="flex justify-end gap-3">

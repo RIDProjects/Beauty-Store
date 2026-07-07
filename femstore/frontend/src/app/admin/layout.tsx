@@ -96,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="p-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
         <Link href="/" className="flex flex-col gap-1">
           <LogoSVG className="h-10 w-auto" />
-          <p className="text-xs text-gray-400 pl-1">Panel Admin</p>
+          <p className="text-xs text-[var(--color-text-muted)] pl-1">Panel Admin</p>
         </Link>
       </div>
 
@@ -112,7 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 active
                   ? 'bg-blush-500 text-white shadow-lg shadow-blush-500/20'
-                  : 'text-gray-400 hover:bg-[var(--color-surface-alt)] hover:text-white'
+                  : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-alt)] hover:text-[var(--color-text)]'
               }`}
             >
               <item.icon className="w-4 h-4 flex-shrink-0" />
@@ -132,11 +132,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="p-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 bg-blush-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-blush-400 text-sm font-bold">{user.name[0].toUpperCase()}</span>
+            <span className="text-blush-600 dark:text-blush-400 text-sm font-bold">{user.name[0].toUpperCase()}</span>
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium text-white truncate">{user.name}</p>
-            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+            <p className="text-sm font-medium text-[var(--color-text)] truncate">{user.name}</p>
+            <p className="text-xs text-[var(--color-text-muted)] truncate">{user.email}</p>
           </div>
         </div>
         <button
@@ -173,14 +173,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <header className="bg-[var(--color-bg)] border-b px-6 py-4 flex items-center gap-4" style={{ borderColor: 'var(--color-border)' }}>
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-gray-400 hover:text-white transition-colors"
+            className="lg:hidden text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-gray-500">Panel de administración</p>
+            <p className="text-sm text-[var(--color-text-muted)]">Panel de administración</p>
           </div>
-          <Link href="/" className="text-xs text-blush-400 hover:text-blush-300 transition-colors hidden sm:block">
+          <Link href="/" className="text-xs text-blush-600 dark:text-blush-400 hover:text-blush-500 dark:hover:text-blush-300 transition-colors hidden sm:block">
             Ver tienda →
           </Link>
         </header>

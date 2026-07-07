@@ -76,7 +76,7 @@ export default function AdminCategoriesPage() {
       <div className="max-w-lg space-y-6">
         <div className="flex items-center gap-3">
           <button onClick={() => setMode('list')} className="btn-ghost py-1.5 px-3 text-sm">← Volver</button>
-          <h1 className="text-xl font-bold text-white">{mode === 'create' ? 'Nueva categoría' : 'Editar categoría'}</h1>
+          <h1 className="text-xl font-bold text-[var(--color-text)]">{mode === 'create' ? 'Nueva categoría' : 'Editar categoría'}</h1>
         </div>
         <form onSubmit={handleSave} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 space-y-4">
           <div>
@@ -84,7 +84,7 @@ export default function AdminCategoriesPage() {
             <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ej: Ropa, Accesorios..." required />
           </div>
           <div>
-            <label className="label">Descripción <span className="text-gray-400 font-normal">(opcional)</span></label>
+            <label className="label">Descripción <span className="text-[var(--color-text-muted)] font-normal">(opcional)</span></label>
             <textarea className="input resize-none" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción de la categoría..." />
           </div>
           <div className="flex gap-3 pt-2">
@@ -103,8 +103,8 @@ export default function AdminCategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Categorías</h1>
-          <p className="text-sm text-gray-500">{categories.length} categorías</p>
+          <h1 className="text-xl font-bold text-[var(--color-text)]">Categorías</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{categories.length} categorías</p>
         </div>
         <button onClick={openCreate} className="btn-primary flex items-center gap-2 text-sm py-2.5">
           <Plus className="w-4 h-4" /> Nueva categoría
@@ -116,7 +116,7 @@ export default function AdminCategoriesPage() {
       ) : categories.length === 0 ? (
         <div className="text-center py-20 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl">
           <Plus className="w-10 h-10 mx-auto text-blush-400/40 mb-3" />
-          <p className="text-gray-500">No hay categorías aún.</p>
+          <p className="text-[var(--color-text-muted)]">No hay categorías aún.</p>
           <button onClick={openCreate} className="btn-primary mt-4 text-sm py-2.5">Crear primera categoría</button>
         </div>
       ) : (
@@ -124,27 +124,27 @@ export default function AdminCategoriesPage() {
           <table className="w-full">
             <thead className="bg-[var(--color-surface-alt)] border-b border-[var(--color-border)]">
               <tr>
-                <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase">Nombre</th>
-                <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Descripción</th>
-                <th className="text-left p-4 text-xs font-semibold text-gray-500 uppercase">Estado</th>
-                <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Acciones</th>
+                <th className="text-left p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase">Nombre</th>
+                <th className="text-left p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase hidden sm:table-cell">Descripción</th>
+                <th className="text-left p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase">Estado</th>
+                <th className="p-4 text-xs font-semibold text-[var(--color-text-muted)] uppercase">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
               {categories.map((cat) => (
                 <tr key={cat.id} className="hover:bg-[var(--color-surface-alt)] transition-colors">
                   <td className="p-4">
-                    <p className="text-sm font-medium text-gray-100">{cat.name}</p>
-                    <p className="text-xs text-gray-500 font-mono">{cat.slug}</p>
+                    <p className="text-sm font-medium text-[var(--color-text)]">{cat.name}</p>
+                    <p className="text-xs text-[var(--color-text-muted)] font-mono">{cat.slug}</p>
                   </td>
                   <td className="p-4 hidden sm:table-cell">
-                    <p className="text-sm text-gray-400 truncate max-w-[200px]">{cat.description || '—'}</p>
+                    <p className="text-sm text-[var(--color-text-muted)] truncate max-w-[200px]">{cat.description || '—'}</p>
                   </td>
                   <td className="p-4">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       cat.is_active
-                        ? 'text-green-400 bg-green-400/10'
-                        : 'text-gray-500 bg-gray-500/10'
+                        ? 'text-green-600 dark:text-green-400 bg-green-400/10'
+                        : 'text-[var(--color-text-muted)] bg-gray-500/10'
                     }`}>
                       {cat.is_active ? 'Activa' : 'Inactiva'}
                     </span>
@@ -152,7 +152,7 @@ export default function AdminCategoriesPage() {
                   <td className="p-4">
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => handleToggle(cat.id)} title={cat.is_active ? 'Desactivar' : 'Activar'} className="p-1.5 hover:bg-[var(--color-surface-alt)] rounded-lg transition-colors">
-                        {cat.is_active ? <EyeOff className="w-4 h-4 text-gray-500" /> : <Eye className="w-4 h-4 text-gray-500" />}
+                        {cat.is_active ? <EyeOff className="w-4 h-4 text-[var(--color-text-muted)]" /> : <Eye className="w-4 h-4 text-[var(--color-text-muted)]" />}
                       </button>
                       <button onClick={() => openEdit(cat)} className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors">
                         <Pencil className="w-4 h-4 text-blue-500" />
