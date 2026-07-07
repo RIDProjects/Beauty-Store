@@ -106,7 +106,7 @@ export default async function HomePage() {
         )}
 
         {/* Featured Products */}
-        <section className="py-14 bg-[var(--color-surface-alt)]">
+        <section className="py-14 bg-[var(--color-bg)]">
           <div className="page-container">
             <div className="flex items-end justify-between mb-10">
               <div>
