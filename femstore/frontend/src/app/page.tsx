@@ -3,7 +3,6 @@ import { Heart, Star, Truck, Shield, Phone, MessageCircle } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import ProductCard from '@/components/shop/ProductCard';
 import { Product, Category, ApiResponse } from '@/types';
-import LogoSVG from '@/components/layout/Logo';
 import { storeConfig, formatWhatsAppLink } from '@/lib/config';
 
 async function getFeaturedProducts(): Promise<Product[]> {
@@ -40,10 +39,6 @@ export default async function HomePage() {
       <main>
         {/* Hero Section */}
         <section className="relative min-h-[600px] flex items-center overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
-          <div className="absolute inset-0 opacity-10 pointer-events-none" role="img" aria-label="Logo Vainy Bliss de fondo">
-            <img src="/logo.png" alt="" className="w-full h-full object-cover" />
-          </div>
-
           <div className="page-container py-16 relative z-10">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 mb-4">
