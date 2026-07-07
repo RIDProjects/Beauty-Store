@@ -96,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Logo */}
       <div className="p-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
         <Link href="/" className="flex flex-col gap-1">
-          <LogoSVG className="h-10 w-auto" />
+          <LogoSVG className="h-14 w-auto" />
           <p className="text-xs text-[var(--color-text-muted)] pl-1">Panel Admin</p>
         </Link>
       </div>

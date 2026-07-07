@@ -1,9 +1,9 @@
 export default function LogoSVG({ className = '' }: { className?: string }) {
   return (
     <img
-      src="/logo.png"
+      src="/logo-vainybliss.png"
       alt="Vainy Bliss"
-      className={`object-contain ${className}`}
+      className={`object-contain dark:brightness-0 dark:invert ${className}`}
     />
   );
 }
