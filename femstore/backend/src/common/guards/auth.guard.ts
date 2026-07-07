@@ -29,10 +29,29 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
   try {
     const payload = jwt.verify(token, getJwtSecret()) as JwtPayload;
     req.user = payload;
+    maybeRefreshToken(payload, res);
     next();
   } catch {
     sendError(res, 'Token inválido o expirado', 401);
   }
+};
+
+// Sesión deslizante: si el token ya consumió más de la mitad de su vida,
+// se emite uno nuevo en X-Refreshed-Token. Usuarios activos nunca se
+// desloguean; usuarios inactivos expiran al vencer el último token emitido.
+const maybeRefreshToken = (payload: JwtPayload, res: Response): void => {
+  if (!payload.iat || !payload.exp) return;
+
+  const nowSec = Math.floor(Date.now() / 1000);
+  const halfLife = payload.iat + (payload.exp - payload.iat) / 2;
+  if (nowSec < halfLife) return;
+
+  const fresh = jwt.sign(
+    { sub: payload.sub, email: payload.email, role: payload.role },
+    getJwtSecret(),
+    { expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as jwt.SignOptions['expiresIn'] }
+  );
+  res.setHeader('X-Refreshed-Token', fresh);
 };
 
 export const authorize = (...roles: string[]) => {

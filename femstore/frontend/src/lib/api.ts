@@ -64,8 +64,18 @@ api.interceptors.request.use((config) => {
 });
 
 // Handle 401 globally - logout user
+// Sesión deslizante: el backend manda X-Refreshed-Token cuando el JWT pasó
+// la mitad de su vida; lo persistimos para extender la sesión de usuarios activos.
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (typeof window !== 'undefined') {
+      const refreshed = response.headers['x-refreshed-token'];
+      if (refreshed) {
+        localStorage.setItem('femstore_token', refreshed);
+      }
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       localStorage.removeItem('femstore_token');
