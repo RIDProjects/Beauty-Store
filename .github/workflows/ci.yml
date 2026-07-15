@@ -35,4 +35,4 @@ jobs:
           cache: npm
           cache-dependency-path: femstore/frontend/package-lock.json
       - run: npm ci
-      - run: npm test -- --coverage --watchAll=false
+      - run: npm test -- --watchAll=false
