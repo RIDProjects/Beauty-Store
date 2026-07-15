@@ -53,6 +53,7 @@ const corsOptions = {
     const allowedOrigins: string[] = [
       'https://www.vainybliss.com',
       'https://vainybliss.com',
+      'https://dev.vainybliss.com',
       process.env.FRONTEND_URL,
     ].filter((origin): origin is string => typeof origin === 'string' && origin.length > 0);
 
