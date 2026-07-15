@@ -54,7 +54,7 @@ const corsOptions = {
       'https://www.vainybliss.com',
       'https://vainybliss.com',
       process.env.FRONTEND_URL,
-    ].filter((origin): origin is string => typeof origin === 'string' && origin.length > 0);
+    ].filter((o): o is string => typeof o === 'string' && o.length > 0);
 
     // Normalize origin for comparison (remove trailing slash)
     const normalizedOrigin = origin?.replace(/\/$/, '');
