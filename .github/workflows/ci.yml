@@ -36,3 +36,25 @@ jobs:
           cache-dependency-path: femstore/frontend/package-lock.json
       - run: npm ci
       - run: npm test -- --watchAll=false
+
+  staging-health:
+    name: Staging Health Check
+    runs-on: ubuntu-latest
+    if: github.base_ref == 'main'
+    steps:
+      - name: Check staging backend
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://vainybliss-staging-staging.up.railway.app/health)
+          if [ "$response" != "200" ]; then
+            echo "Staging backend health check failed (HTTP $response)"
+            exit 1
+          fi
+          echo "Staging backend healthy (HTTP $response)"
+      - name: Check staging frontend
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://dev.vainybliss.com)
+          if [ "$response" != "200" ] && [ "$response" != "307" ] && [ "$response" != "308" ]; then
+            echo "Staging frontend health check failed (HTTP $response)"
+            exit 1
+          fi
+          echo "Staging frontend healthy (HTTP $response)"
