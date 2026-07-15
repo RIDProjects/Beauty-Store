@@ -53,7 +53,7 @@ jobs:
       - name: Check staging frontend
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" https://dev.vainybliss.com)
-          if [ "$response" != "200" ] && [ "$response" != "307" ] && [ "$response" != "308" ]; then
+          if [ "$response" != "200" ] && [ "$response" != "302" ] && [ "$response" != "307" ] && [ "$response" != "308" ]; then
             echo "Staging frontend health check failed (HTTP $response)"
             exit 1
           fi
