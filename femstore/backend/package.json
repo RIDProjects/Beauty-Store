@@ -5,7 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/database/run-migrations.js && node dist/database/seed-admin.js && node dist/main.js",
+    "start": "node dist/database/run-migrations.js && node dist/database/seed-admin.js && exec node dist/main.js",
     "dev": "ts-node --transpile-only src/database/run-migrations.ts && ts-node --transpile-only src/database/seed-admin.ts && ts-node-dev --respawn --transpile-only src/main.ts",
     "lint": "eslint src --ext .ts",
     "migration:run": "node dist/database/run-migrations.js",
