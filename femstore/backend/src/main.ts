@@ -22,6 +22,8 @@ if (!process.env.JWT_SECRET) {
   console.warn('⚠️  ADVERTENCIA: JWT_SECRET no definido. Usando valor por defecto (NO usar en producción)');
 }
 
+import { pool } from './config/database';
+
 // Route imports
 import authRoutes from './modules/auth/auth.controller';
 import categoryRoutes from './modules/categories/category.controller';
@@ -152,7 +154,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // ─── Start Server ─────────────────────────────────────────────
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════╗
 ║        🌸  FemStore API  🌸           ║
@@ -164,5 +166,24 @@ app.listen(PORT, () => {
 ╚═══════════════════════════════════════╝
   `);
 });
+
+// ─── Graceful Shutdown ────────────────────────────────────────
+// Railway sends SIGTERM before killing the container. Without this,
+// Node exits immediately and Postgres logs "connection reset by peer"
+// for every open pool connection.
+const shutdown = (signal: string) => {
+  console.log(`${signal} received — shutting down gracefully`);
+  server.close(async () => {
+    await pool.end();
+    console.log('DB pool closed');
+    process.exit(0);
+  });
+
+  // Force exit if connections don't drain in 10s
+  setTimeout(() => process.exit(1), 10_000).unref();
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 export default app;
