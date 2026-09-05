@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Check staging backend
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://vainybliss-staging-staging.up.railway.app/health)
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.STAGING_BACKEND_URL }}/health")
           if [ "$response" != "200" ]; then
             echo "Staging backend health check failed (HTTP $response)"
             exit 1
@@ -52,7 +52,7 @@ jobs:
           echo "Staging backend healthy (HTTP $response)"
       - name: Check staging frontend
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://dev.vainybliss.com)
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.STAGING_FRONTEND_URL }}")
           if [ "$response" != "200" ] && [ "$response" != "302" ] && [ "$response" != "307" ] && [ "$response" != "308" ]; then
             echo "Staging frontend health check failed (HTTP $response)"
             exit 1
