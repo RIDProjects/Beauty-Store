@@ -4,6 +4,18 @@ Sistema completo de eCommerce para productos para mujeres, con panel admin, carr
 
 ---
 
+## 🔗 Live Demo
+
+| Environment | URL |
+|---|---|
+| Production (frontend) | [vainybliss.com](https://www.vainybliss.com) |
+| Staging (frontend) | [dev.vainybliss.com](https://dev.vainybliss.com) |
+| Staging (backend API) | `https://vainybliss-staging-staging.up.railway.app` |
+
+Frontend is deployed on Vercel, backend on Railway.
+
+---
+
 ## 📦 Stack Tecnológico
 
 | Capa | Tecnología |
@@ -323,6 +335,12 @@ cancelled   cancelled   cancelled
 - ✅ Formato de mensaje completo con todos los datos
 - ✅ Modo simulado si Twilio no está configurado (logs en consola)
 
+### Recently Added
+- ✅ Dark mode toggle, persisted via Zustand (`theme.store.ts`) with an inline pre-hydration script to avoid flash-of-wrong-theme (`ThemeToggle.tsx`)
+- ✅ Reserved-stock model — `reserved` and `available` stock are computed per product from active orders, not persisted columns (`product.service.ts`)
+- ✅ Sliding JWT session refresh — the backend transparently reissues a token via the `X-Refreshed-Token` response header on active use; the frontend Axios client picks it up and updates `localStorage` (`auth.guard.ts`, `lib/api.ts`)
+- ✅ Custom brand logo component (`components/layout/Logo.tsx`), replacing the placeholder branding
+
 ---
 
 ## 🔧 Scripts Disponibles
@@ -368,6 +386,21 @@ O despliega en **Vercel** con un click:
 - Conecta el repositorio
 - Configura `NEXT_PUBLIC_API_URL` como variable de entorno
 - Deploy automático
+
+---
+
+## ⚙️ CI Pipeline
+
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every PR to `dev` and `main`:
+- **Backend Lint** — `npm ci` + `npm run lint` in `femstore/backend`
+- **Frontend Tests** — `npm ci` + `npm test` in `femstore/frontend`
+- **Staging Health Check** (PRs targeting `main` only) — curls the staging backend `/health` endpoint and the staging frontend, failing the build if either is down
+
+The health-check step reads the staging URLs from repository variables instead of hardcoding them. Configure these in **Settings → Secrets and variables → Actions → Variables**:
+- `STAGING_BACKEND_URL` — e.g. `https://vainybliss-staging-staging.up.railway.app`
+- `STAGING_FRONTEND_URL` — e.g. `https://dev.vainybliss.com`
+
+The backend has no automated test suite yet (`npm run lint` only); a test step will be added to CI once real backend tests exist.
 
 ---
 
